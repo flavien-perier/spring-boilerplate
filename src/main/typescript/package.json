@@ -1,0 +1,39 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "Demo project with authentication",
+  "author": "Flavien PERIER <perier@flavien.io>",
+  "scripts": {
+    "dev": "vite -m dev",
+    "build": "run-p type-check build-only",
+    "preview": "vite preview --port 4173",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@babel/types": "7.26.7",
+    "@fortawesome/fontawesome-svg-core": "6.7.2",
+    "@fortawesome/free-brands-svg-icons": "6.7.2",
+    "@fortawesome/free-solid-svg-icons": "6.7.2",
+    "@fortawesome/vue-fontawesome": "3.0.8",
+    "@tsconfig/node18": "18.2.4",
+    "@types/node": "22.10.10",
+    "@vitejs/plugin-vue": "5.2.1",
+    "@vue/tsconfig": "0.7.0",
+    "api-generated": "file:../../../target/node_modules/api-generated",
+    "axios-retry": "4.5.0",
+    "bootstrap": "5.3.3",
+    "buffer": "6.0.3",
+    "npm-run-all": "4.1.5",
+    "pinia": "2.3.1",
+    "sass": "1.83.4",
+    "scrypt-js": "3.0.1",
+    "typescript": "5.7.3",
+    "vite": "6.0.11",
+    "vue": "3.5.13",
+    "vue-i18n": "11.0.1",
+    "vue-router": "4.5.0",
+    "vue-tsc": "2.2.0",
+    "yaml": "2.7.0"
+  }
+}

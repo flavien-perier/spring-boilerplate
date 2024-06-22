@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+  labels:
+    app: {{ .Values.appName }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      tier: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        tier: database
+    spec:
+      containers:
+        - image: "postgres:15-alpine"
+          imagePullPolicy: Always
+          name: database
+
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.appName }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: application-config
+                  key: DATABASE_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: application-secret
+                  key: DATABASE_PASSWORD
+
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+
+          ports:
+            - containerPort: 5432
+              name: database
+
+          volumeMounts:
+            - mountPath: /data/
+              name: database-persistent-storage
+
+      volumes:
+        - name: database-persistent-storage
+          persistentVolumeClaim:
+            claimName: database-pvc

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valkey
+  labels:
+    app: {{ .Values.appName }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      tier: valkey
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        tier: valkey
+    spec:
+      containers:
+        - image: "valkey/valkey:7-alpine"
+          imagePullPolicy: Always
+          name: valkey
+
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+
+          ports:
+            - containerPort: 6379
+              name: valkey
+
+          volumeMounts:
+            - mountPath: /data/
+              name: valkey-persistent-storage
+
+      volumes:
+        - name: valkey-persistent-storage
+          persistentVolumeClaim:
+            claimName: valkey-pvc

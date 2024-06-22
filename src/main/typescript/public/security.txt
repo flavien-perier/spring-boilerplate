@@ -1,0 +1,6 @@
+Contact: mailto:perier@flavien.io
+Contact: tel:+33695928250
+Expires: 2025-01-01T00:00:00.000Z
+Encryption: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1db4d1b927d8ea1686ee2c9c1096e82d5f7f6d45
+Preferred-Languages: fr,en
+Canonical: https://www.flavien.io/security.txt

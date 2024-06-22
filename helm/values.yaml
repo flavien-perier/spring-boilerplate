@@ -1,0 +1,24 @@
+appName: "app"
+registry: "hub.docker.com"
+
+database:
+  embedded: true
+  address: ""
+  port: ""
+  username: user
+  password: password
+
+valkey:
+  embedded: true
+  address: ""
+  port: ""
+  password: password
+
+smtp:
+  address: localhost
+  port: 25
+  uth: true
+  username: user
+  password: password
+  starttls: true
+
