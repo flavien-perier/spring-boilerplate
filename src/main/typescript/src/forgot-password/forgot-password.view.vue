@@ -9,7 +9,11 @@
 
         <div class="form-outline mb-4">
           <label class="form-label" for="input-email">{{ $t("email") }}</label>
-          <input type="email" id="input-email" class="form-control form-control-lg" :placeholder="$t('email')" v-model="email" />
+          <input type="email" id="input-email" class="form-control form-control-lg"
+                 :placeholder="$t('email')"
+                 v-model="email"
+                 @keyup.enter="forgotPasswordStore.send"
+          />
         </div>
 
         <div class="form-outline mb-4">
@@ -17,7 +21,7 @@
               type="button"
               class="btn btn-primary form-control form-control-lg"
               :value="$t('send')"
-              :disabled="!email"
+              :disabled="!buttonEnabled"
               @click="forgotPasswordStore.send" />
         </div>
       </div>
@@ -31,7 +35,7 @@ import {storeToRefs} from "pinia";
 import {onBeforeRouteLeave} from "vue-router";
 
 const forgotPasswordStore = useForgotPasswordStore();
-const { email } = storeToRefs(forgotPasswordStore);
+const { email, buttonEnabled } = storeToRefs(forgotPasswordStore);
 
 forgotPasswordStore.init();
 

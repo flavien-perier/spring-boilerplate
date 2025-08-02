@@ -14,7 +14,11 @@
 
         <div class="form-outline mb-4">
           <label class="form-label" for="input-repeat-password">{{ $t("repeat-password") }}</label>
-          <input type="password" id="input-repeat-password" class="form-control form-control-lg" :placeholder="$t('repeat-password')" v-model="repeatPassword" />
+          <input type="password" id="input-repeat-password" class="form-control form-control-lg"
+                 :placeholder="$t('repeat-password')"
+                 v-model="repeatPassword"
+                 @keyup.enter="changePasswordStore.update"
+          />
         </div>
 
         <div class="form-outline mb-4">

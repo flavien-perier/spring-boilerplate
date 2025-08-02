@@ -10,7 +10,7 @@
         }"
     >
       {{ notification.message }}
-      <button type="button" class="btn-close" @click="applicationStore.closeNotification(notification.id)" />
+      <button class="btn-close" @click="applicationStore.closeNotification(notification.id)" />
     </div>
   </div>
 </template>

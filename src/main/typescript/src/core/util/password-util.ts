@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import * as scrypt from "scrypt-js";
 
 class PasswordUtil {
-  public encode(password: string, salt: string): string {
+  public proofOfWork(password: string, salt: string): string {
     const passwordBuffer = new Buffer(password);
     const saltBuffer = new Buffer(salt);
 

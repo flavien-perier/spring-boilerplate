@@ -15,6 +15,9 @@ data class User(
     @Column(name = "password", nullable = false)
     var password: String,
 
+    @Column(name = "proof_of_work", nullable = false)
+    var proofOfWork: String,
+
     @Column(name = "password_salt", nullable = false)
     var passwordSalt: String,
 

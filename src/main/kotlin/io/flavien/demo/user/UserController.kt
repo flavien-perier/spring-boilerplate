@@ -18,7 +18,7 @@ class UserController(
 ) : UserApi {
 
     override fun createUser(userCreationDto: UserCreationDto): ResponseEntity<Void> {
-        userService.create(userCreationDto.email, userCreationDto.password)
+        userService.create(userCreationDto.email, userCreationDto.password, userCreationDto.proofOfWork)
 
         return ResponseEntity(
             HttpStatus.NO_CONTENT,
@@ -42,7 +42,7 @@ class UserController(
     }
 
     override fun updatePassword(changePasswordDto: ChangePasswordDto): ResponseEntity<Void> {
-        userService.updatePassword(changePasswordDto.password, changePasswordDto.token)
+        userService.updatePassword(changePasswordDto.password, changePasswordDto.proofOfWork, changePasswordDto.token)
 
         return ResponseEntity(
             HttpStatus.NO_CONTENT,

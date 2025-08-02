@@ -20,6 +20,9 @@
             <column name="password" type="VARCHAR(130)">
                 <constraints nullable="false" />
             </column>
+            <column name="proof_of_work" type="VARCHAR(130)">
+                <constraints nullable="false" />
+            </column>
             <column name="password_salt" type="VARCHAR(10)">
                 <constraints nullable="false" />
             </column>

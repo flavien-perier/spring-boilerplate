@@ -18,13 +18,20 @@
 
       <div class="form-outline mb-4">
         <label class="form-label" for="input-repeat-password">{{ $t("repeat-password") }}</label>
-        <input type="password" id="input-repeat-password" class="form-control form-control-lg" :placeholder="$t('repeat-password')" v-model="repeatPassword" />
+        <input type="password" id="input-repeat-password" class="form-control form-control-lg"
+               :placeholder="$t('repeat-password')"
+               v-model="repeatPassword"
+               @keyup.enter="accountInformationStore.update"
+        />
       </div>
 
       <div class="form-outline mb-1">
-        <button class="btn btn-primary form-control form-control-lg" :disabled="!email || !password" @click="accountInformationStore.update">
-          {{ $t("update") }}
-        </button>
+        <input
+            type="button"
+            class="btn btn-primary form-control form-control-lg"
+            :value="$t('update')"
+            :disabled="!buttonEnabled"
+            @click="accountInformationStore.update" />
       </div>
     </div>
   </div>

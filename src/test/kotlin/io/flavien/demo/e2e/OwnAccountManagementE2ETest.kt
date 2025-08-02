@@ -32,7 +32,7 @@ class OwnAccountManagementE2ETest {
     @Test
     @Order(1)
     fun `Creating a new user`() {
-        val requestContent = UserCreationDto(userEmail, userPassword)
+        val requestContent = UserCreationDto(userEmail, userPassword, userProofOfWork)
         webTestClient.post().uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -44,7 +44,7 @@ class OwnAccountManagementE2ETest {
     @Test
     @Order(2)
     fun `Try to create an account with the same email address`() {
-        val requestContent = UserCreationDto(userEmail, userPassword)
+        val requestContent = UserCreationDto(userEmail, userPassword, userProofOfWork)
         webTestClient.post().uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -94,7 +94,7 @@ class OwnAccountManagementE2ETest {
     @Test
     @Order(5)
     fun `Authentication with created user`() {
-        val requestContent = LoginDto(userEmail, userPassword)
+        val requestContent = LoginDto(userEmail, userPassword, userProofOfWork)
         webTestClient.post().uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -128,7 +128,7 @@ class OwnAccountManagementE2ETest {
     @Test
     @Order(7)
     fun `The user modifies his information`() {
-        val requestContent = UserUpdateDto(userUpdatedEmail, userUpdatedPassword)
+        val requestContent = UserUpdateDto(userUpdatedEmail, userUpdatedPassword, userProofOfWork)
         webTestClient.put().uri("/api/user/me")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -147,7 +147,7 @@ class OwnAccountManagementE2ETest {
     @Test
     @Order(8)
     fun `Another user tries to create an account with the old email address`() {
-        val requestContent = UserCreationDto(userEmail, userPassword)
+        val requestContent = UserCreationDto(userEmail, userPassword, userProofOfWork)
         webTestClient.post().uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -199,7 +199,7 @@ class OwnAccountManagementE2ETest {
     @Test
     @Order(12)
     fun `User attempts to re-authenticate after account deletion`() {
-        val requestContent = LoginDto(userUpdatedEmail, userUpdatedPassword)
+        val requestContent = LoginDto(userUpdatedEmail, userUpdatedPassword, userProofOfWork)
         webTestClient.post().uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -218,6 +218,7 @@ class OwnAccountManagementE2ETest {
 
         private val userEmail = "test1@flavien.cc"
         private val userPassword = "password"
+        private val userProofOfWork = "proofOfWork"
         private val userUpdatedEmail = "test2@flavien.cc"
         private val userUpdatedPassword = "newPassword"
 

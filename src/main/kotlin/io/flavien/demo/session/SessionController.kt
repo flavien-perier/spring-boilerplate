@@ -24,7 +24,7 @@ class SessionController(
 ) : SessionApi {
 
     override fun login(loginDto: LoginDto): ResponseEntity<SessionDto> {
-        val session = sessionService.login(loginDto.email, loginDto.password)
+        val session = sessionService.login(loginDto.email, loginDto.password, loginDto.proofOfWork)
         return ResponseEntity(
             sessionMapper.toSessionDto(session),
             HttpStatus.OK,
