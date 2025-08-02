@@ -9,8 +9,11 @@ export const useLoginStore = defineStore("login", {
   state: () => ({
     email: "",
     password: "",
+    computeAction: false,
   }),
-  getters: {},
+  getters: {
+    buttonEnabled: (state) => state.email !== "" && state.password !== "" && !state.computeAction
+  },
   actions: {
     init(activationToken?: string) {
       if (activationToken) {
@@ -27,9 +30,15 @@ export const useLoginStore = defineStore("login", {
     },
 
     login() {
+      if (!this.buttonEnabled) {
+        return;
+      }
+      this.computeAction = true;
+
       sessionApi.login({
         email: this.email,
-        password: passwordUtil.encode(this.password, this.email),
+        password: this.password,
+        proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
       }).then((response) => {
         const { refreshToken, accessToken } = response.data;
         applicationStore.login(this.email, accessToken, refreshToken);
@@ -37,7 +46,7 @@ export const useLoginStore = defineStore("login", {
       }).catch(() => {
         this.password = "";
         applicationStore.sendNotification("alert", "authentication-failed");
-      });
+      }).finally(() => { this.computeAction = false });
     },
   },
 });

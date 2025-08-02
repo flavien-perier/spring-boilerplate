@@ -14,7 +14,11 @@
 
         <div class="form-outline mb-4">
           <label class="form-label" for="input-password">{{ $t("password") }}</label>
-          <input type="password" id="input-password" class="form-control form-control-lg" :placeholder="$t('password')" v-model="password" />
+          <input type="password" id="input-password" class="form-control form-control-lg"
+                 :placeholder="$t('password')"
+                 v-model="password"
+                 @keyup.enter="loginStore.login"
+          />
           <router-link :to="{ name: 'forgot-password' }">{{ $t("forgot-password") }}</router-link>
         </div>
 
@@ -23,8 +27,8 @@
               type="button"
               class="btn btn-primary form-control form-control-lg"
               :value="$t('connect')"
-              :disabled="!email || !password"
-              @click="loginStore.login()"
+              :disabled="!buttonEnabled"
+              @click="loginStore.login"
           />
         </div>
 
@@ -41,7 +45,7 @@ import {storeToRefs} from "pinia";
 import {onBeforeRouteLeave, useRoute} from "vue-router";
 
 const loginStore = useLoginStore();
-const { email, password } = storeToRefs(loginStore);
+const { email, password, buttonEnabled } = storeToRefs(loginStore);
 
 const route = useRoute();
 loginStore.init(route.query?.activationToken as string | undefined);

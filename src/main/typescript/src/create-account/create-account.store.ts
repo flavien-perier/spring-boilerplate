@@ -10,12 +10,14 @@ export const useCreateAccountStore = defineStore("create-account", {
     email: "",
     password: "",
     repeatPassword: "",
+    computeAction: false,
   }),
   getters: {
     buttonEnabled: (state) =>
       state.email !== "" &&
       state.password !== "" &&
-      state.password === state.repeatPassword
+      state.password === state.repeatPassword &&
+      !state.computeAction
   },
   actions: {
     init() {
@@ -27,13 +29,19 @@ export const useCreateAccountStore = defineStore("create-account", {
     },
 
     createAccount() {
+      if (!this.buttonEnabled) {
+        return;
+      }
+      this.computeAction = true;
+
       userApi.createUser({
         email: this.email,
-        password: passwordUtil.encode(this.password, this.email),
+        password: this.password,
+        proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
       }).then(() => {
         applicationStore.sendNotification("info", "account-created");
         this.$router.push({ name: "login" });
-      }).catch(applicationStore.axiosException);
+      }).catch(applicationStore.axiosException).finally(() => { this.computeAction = false });
     },
   },
 });

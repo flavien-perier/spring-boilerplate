@@ -4,16 +4,16 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ $t(modal.title) }}</h5>
-          <button type="button" class="btn-close" @click="applicationStore.closeModal" />
+          <button class="btn-close" @click="applicationStore.closeModal" />
         </div>
         <div class="modal-body">
           <p>{{ $t(modal.content) }}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" v-if="modal.rejectMessage" @click="applicationStore.closeModal">
+          <button class="btn btn-secondary" v-if="modal.rejectMessage" @click="applicationStore.closeModal">
             {{ $t(modal.rejectMessage) }}
           </button>
-          <button type="button" class="btn btn-primary" v-if="modal.resolveMessage" @click="applicationStore.validateModal">
+          <button class="btn btn-primary" v-if="modal.resolveMessage" @click="applicationStore.validateModal">
             {{ $t(modal.resolveMessage) }}
           </button>
         </div>

@@ -121,8 +121,7 @@ export const useApplicationStore = defineStore("application", {
     },
 
     logout() {
-      this.disconnected();
-      sessionApi.logout().then(() => {}).catch(this.axiosException);
+      sessionApi.logout().catch(this.axiosException).finally(this.disconnected);
     },
 
     async renew(email: string) {

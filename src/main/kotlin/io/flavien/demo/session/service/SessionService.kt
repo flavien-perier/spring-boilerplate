@@ -7,6 +7,7 @@ import io.flavien.demo.session.model.Session
 import io.flavien.demo.session.util.PasswordUtil
 import io.flavien.demo.user.exception.UserNotFoundException
 import io.flavien.demo.user.service.UserService
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,7 +17,7 @@ class SessionService(
     private val userService: UserService,
 ) {
 
-    fun login(email: String, password: String): Session {
+    fun login(email: String, password: String, proofOfWork: String): Session {
         val user = userService.get(email) ?: throw UserNotFoundException(email)
 
         if (!user.enabled) {
@@ -24,6 +25,12 @@ class SessionService(
         }
 
         if (!PasswordUtil.testPassword(password, user.passwordSalt, user.password)) {
+            logger.warn("Bad password for user $email")
+            throw BadPasswordException()
+        }
+
+        if (user.proofOfWork != proofOfWork) {
+            logger.warn("Bad proofOfWork for user $email")
             throw BadPasswordException()
         }
 
@@ -44,5 +51,9 @@ class SessionService(
         val accessToken = accessTokenService.create(refreshTokenObject)
 
         return Session(null, accessToken)
+    }
+
+    companion object {
+        private var logger = LoggerFactory.getLogger(SessionService::class.java)
     }
 }

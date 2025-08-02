@@ -11,11 +11,13 @@ export const useChangePasswordStore = defineStore("change-password", {
     token: "",
     password: "",
     repeatPassword: "",
+    computeAction: false,
   }),
   getters: {
     buttonEnabled: (state) =>
       state.password !== "" &&
-      state.password === state.repeatPassword
+      state.password === state.repeatPassword &&
+      !state.computeAction
   },
   actions: {
     init(email?: string, token?: string) {
@@ -28,13 +30,19 @@ export const useChangePasswordStore = defineStore("change-password", {
     },
 
     update() {
+      if (!this.buttonEnabled) {
+        return;
+      }
+      this.computeAction = true;
+
       userApi.updatePassword({
         token: this.token,
-        password: passwordUtil.encode(this.password, this.email),
+        password: this.password,
+        proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
       }).then(() => {
         applicationStore.sendNotification("info", "password-updated");
         this.$router.push({ name: "login" });
-      }).catch(applicationStore.axiosException);
+      }).catch(applicationStore.axiosException).finally(() => { this.computeAction = false });
     },
   },
 });

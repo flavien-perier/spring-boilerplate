@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-dark bg-dark navbar-expand-lg container-fluid mb-3">
-    <button class="navbar-toggler" type="button" @click="collapse()">
+    <button class="navbar-toggler" @click="collapse()">
       <span class="navbar-toggler-icon"></span>
     </button>
 

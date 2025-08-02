@@ -7,8 +7,11 @@ const applicationStore = useApplicationStore();
 export const useForgotPasswordStore = defineStore("forgot-password", {
   state: () => ({
     email: "",
+    computeAction: false,
   }),
-  getters: {},
+  getters: {
+    buttonEnabled: (state) => state.email !== "" && !state.computeAction
+  },
   actions: {
     init() {
 
@@ -19,10 +22,15 @@ export const useForgotPasswordStore = defineStore("forgot-password", {
     },
 
     send() {
+      if (!this.buttonEnabled) {
+        return;
+      }
+      this.computeAction = true;
+
       userApi.forgotPassword(this.email).then(() => {
         applicationStore.sendNotification("info", "email-sent");
         this.$router.push({ name: "login" });
-      }).catch(applicationStore.axiosException);
+      }).catch(applicationStore.axiosException).finally(() => { this.computeAction = false });
     },
   },
 });

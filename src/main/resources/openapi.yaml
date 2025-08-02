@@ -27,14 +27,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginDto'
+              $ref: "#/components/schemas/LoginDto"
       responses:
         "200":
           description: Session values.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionDto'
+                $ref: "#/components/schemas/SessionDto"
 
   /api/session/logout:
     delete:
@@ -59,14 +59,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionRenewalDto'
+              $ref: "#/components/schemas/SessionRenewalDto"
       responses:
         "200":
           description: Session values.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionDto'
+                $ref: "#/components/schemas/SessionDto"
 
     get:
       tags:
@@ -98,7 +98,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/uuid'
+            $ref: "#/components/schemas/uuid"
       responses:
         "204":
           description: Session deleted.
@@ -116,7 +116,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCreationDto'
+              $ref: "#/components/schemas/UserCreationDto"
         required: true
       responses:
         "204":
@@ -134,7 +134,7 @@ paths:
           in: query
           required: true
           schema:
-            $ref: '#/components/schemas/token'
+            $ref: "#/components/schemas/token"
       responses:
         "204":
           description: The user has been activated.
@@ -166,7 +166,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangePasswordDto'
+              $ref: "#/components/schemas/ChangePasswordDto"
         required: true
       responses:
         "204":
@@ -198,7 +198,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdateDto'
+              $ref: "#/components/schemas/UserUpdateDto"
       responses:
         "200":
           description: The user.
@@ -260,7 +260,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdateAdminDto'
+              $ref: "#/components/schemas/UserUpdateAdminDto"
       responses:
         "200":
           description: The user.
@@ -355,6 +355,13 @@ components:
 
     password:
       type: string
+      description: User password.
+      example: "password"
+      maxLength: 100
+      format: password
+
+    proofOfWork:
+      type: string
       description: The scrypted password.
       example: "password"
       maxLength: 64
@@ -366,7 +373,7 @@ components:
       description: Random token format.
       example: "RANDOMTOKEN"
       maxLength: 64
-      pattern: ^[a-zA-Z1-9]{64}*$
+      pattern: ^[a-zA-Z1-9]{64}$
 
     uuid:
       type: string
@@ -400,11 +407,14 @@ components:
       required:
         - email
         - password
+        - proofOfWork
       properties:
         email:
           $ref: "#/components/schemas/email"
         password:
           $ref: "#/components/schemas/password"
+        proofOfWork:
+          $ref: "#/components/schemas/proofOfWork"
 
     SessionDto:
       type: object
@@ -422,7 +432,7 @@ components:
       description: Information required to renew a session.
       required:
         - email
-        - accessToken
+        - refreshToken
       properties:
         email:
           $ref: "#/components/schemas/email"
@@ -459,11 +469,14 @@ components:
       required:
         - email
         - password
+        - proofOfWork
       properties:
         email:
           $ref: "#/components/schemas/email"
         password:
           $ref: "#/components/schemas/password"
+        proofOfWork:
+          $ref: "#/components/schemas/proofOfWork"
 
     UserUpdateDto:
       type: object
@@ -471,11 +484,14 @@ components:
       required:
         - email
         - password
+        - proofOfWork
       properties:
         email:
           $ref: "#/components/schemas/email"
         password:
           $ref: "#/components/schemas/password"
+        proofOfWork:
+          $ref: "#/components/schemas/proofOfWork"
 
     UserUpdateAdminDto:
       type: object
@@ -483,11 +499,14 @@ components:
       required:
         - email
         - password
+        - proofOfWork
       properties:
         email:
           $ref: "#/components/schemas/email"
         password:
           $ref: "#/components/schemas/password"
+        proofOfWork:
+          $ref: "#/components/schemas/proofOfWork"
         role:
           $ref: "#/components/schemas/Role"
 
@@ -521,11 +540,14 @@ components:
       required:
         - token
         - password
+        - proofOfWork
       properties:
         token:
           $ref: "#/components/schemas/token"
         password:
           $ref: "#/components/schemas/password"
+        proofOfWork:
+          $ref: "#/components/schemas/proofOfWork"
 
   securitySchemes:
     bearer:

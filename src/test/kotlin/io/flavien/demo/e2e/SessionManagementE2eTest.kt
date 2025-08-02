@@ -31,7 +31,7 @@ class SessionManagementE2eTest {
     @Test
     @Order(1)
     fun `Creating a first user`() {
-        val requestContent = UserCreationDto(userEmail1, userPassword1)
+        val requestContent = UserCreationDto(userEmail1, userPassword1, userProofOfWork1)
         webTestClient.post().uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -63,7 +63,7 @@ class SessionManagementE2eTest {
     @Test
     @Order(3)
     fun `Creating a second user`() {
-        val requestContent = UserCreationDto(userEmail2, userPassword2)
+        val requestContent = UserCreationDto(userEmail2, userPassword2, userProofOfWork2)
         webTestClient.post().uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -95,7 +95,7 @@ class SessionManagementE2eTest {
     @Test
     @Order(5)
     fun `Authentication failed with wrong email (For the first user)`() {
-        val requestContent = LoginDto(badEmail, userPassword1)
+        val requestContent = LoginDto(badEmail, userPassword1, userProofOfWork1)
         webTestClient.post().uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -111,7 +111,7 @@ class SessionManagementE2eTest {
     @Test
     @Order(6)
     fun `Authentication failed with wrong password (For the first user)`() {
-        val requestContent = LoginDto(userEmail1, badPassword)
+        val requestContent = LoginDto(userEmail1, badPassword, userProofOfWork1)
         webTestClient.post().uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -126,8 +126,24 @@ class SessionManagementE2eTest {
 
     @Test
     @Order(7)
+    fun `Authentication failed with wrong proof of work (For the first user)`() {
+        val requestContent = LoginDto(userEmail1, userPassword1, badProofOfWork1)
+        webTestClient.post().uri("/api/session/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .body(Mono.just(requestContent), LoginDto::class.java)
+            .exchange()
+            .expectStatus().is4xxClientError()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectBody()
+            .jsonPath("$.status").isNotEmpty()
+            .jsonPath("$.status").isEqualTo("401")
+    }
+
+    @Test
+    @Order(8)
     fun `First authentication with the first user`() {
-        val requestContent = LoginDto(userEmail1, userPassword1)
+        val requestContent = LoginDto(userEmail1, userPassword1, userProofOfWork1)
         webTestClient.post().uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -143,9 +159,9 @@ class SessionManagementE2eTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     fun `Second authentication with the first user`() {
-        val requestContent = LoginDto(userEmail1, userPassword1)
+        val requestContent = LoginDto(userEmail1, userPassword1, userProofOfWork1)
         webTestClient.post().uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -161,9 +177,9 @@ class SessionManagementE2eTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     fun `First authentication with the second user`() {
-        val requestContent = LoginDto(userEmail2, userPassword2)
+        val requestContent = LoginDto(userEmail2, userPassword2, userProofOfWork2)
         webTestClient.post().uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -179,7 +195,7 @@ class SessionManagementE2eTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     fun `The first user displays his sessions`() {
         webTestClient.get().uri("/api/session")
             .accept(MediaType.APPLICATION_JSON)
@@ -193,10 +209,9 @@ class SessionManagementE2eTest {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     fun `Using refresh token for the first user`() {
-        val requestRenew = SessionRenewalDto(userEmail1)
-        requestRenew.refreshToken = refreshTokenSessionUser1_1
+        val requestRenew = SessionRenewalDto(userEmail1, refreshTokenSessionUser1_1)
 
         webTestClient.post().uri("/api/session")
             .contentType(MediaType.APPLICATION_JSON)
@@ -226,12 +241,15 @@ class SessionManagementE2eTest {
 
         private val userEmail1 = "test1@flavien.cc"
         private val userPassword1 = "password"
+        private val userProofOfWork1 = "proofOfWork"
 
         private val userEmail2 = "test2@flavien.cc"
         private val userPassword2 = "password"
+        private val userProofOfWork2 = "proofOfWork"
 
         private val badEmail = "no@flavien.cc"
         private val badPassword = "bad"
+        private val badProofOfWork1 = "badProofOfWork"
 
         private val VALKEY_PASSWORD = "password"
 

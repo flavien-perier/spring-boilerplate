@@ -25,7 +25,7 @@ class UserService(
     private val refreshTokenService: RefreshTokenService,
 ) {
 
-    fun create(email: String, password: String): User {
+    fun create(email: String, password: String, proofOfWork: String): User {
         if (userRepository.existsByEmail(email)) {
             logger.info("User $email already exists")
             throw UserAlreadyExistsException(email)
@@ -36,6 +36,7 @@ class UserService(
         val user = User(
             email,
             PasswordUtil.hashPassword(password, salt),
+            proofOfWork,
             salt,
             UserRole.USER,
             false,
@@ -62,13 +63,14 @@ class UserService(
         forgotPasswordService.sendForgotPasswordToken(user)
     }
 
-    fun updatePassword(password: String, token: String) {
+    fun updatePassword(password: String, proofOfWork: String, token: String) {
         val forgotPassword = forgotPasswordService.validate(token)
 
         val user = get(forgotPassword.userId)
         val salt = RandomUtil.randomString(PASSWORD_SALT_LENGTH)
         user.passwordSalt = salt
         user.password = PasswordUtil.hashPassword(password, salt)
+        user.proofOfWork = proofOfWork
         user.enabled = true
         userRepository.save(user)
     }
@@ -101,6 +103,10 @@ class UserService(
             val salt = RandomUtil.randomString(PASSWORD_SALT_LENGTH)
             user.passwordSalt = salt
             user.password = PasswordUtil.hashPassword(it, salt)
+        }
+
+        userUpdate.proofOfWork?.let {
+            user.proofOfWork = it
         }
 
         userUpdate.role?.let {
