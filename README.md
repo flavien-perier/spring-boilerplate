@@ -31,7 +31,7 @@ Profile files for optimizing GraalVM compilation are generated using tests. Proj
 - [Spring Boot](https://spring.io/projects/spring-boot/)
 - [Maven](https://maven.apache.org/)
 - [GraalVM](https://www.graalvm.org/)
-- [OWASP dependency check](https://owasp.org/www-project-dependency-check/)
+- [Cyclonedx](https://cyclonedx.org/)
 
 ### Infra
 

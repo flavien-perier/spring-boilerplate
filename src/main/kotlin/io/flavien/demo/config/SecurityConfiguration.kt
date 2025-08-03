@@ -25,7 +25,6 @@ class SecurityConfiguration(
                 it
                     .requestMatchers("/**").permitAll()
                     .requestMatchers("/api/**").permitAll()
-                    .requestMatchers("/api/login").authenticated()
             }
             .cors { it.disable() }
             .csrf { it.disable() }

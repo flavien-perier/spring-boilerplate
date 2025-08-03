@@ -2,18 +2,17 @@ import { defineStore } from "pinia";
 import type { Notification, NotificationType } from "@/core/model/notification";
 import {sessionApi, userApi, setAccessToken} from "@/core/util/api-util";
 import type {UserDto} from "api-generated";
+import {cookieUtil} from "@/core/util/cookie-util.ts";
 
 const NOTIFICATION_DURATION = 3000;
 const MAX_NOTIFICATIONS = 5;
 
 const EMAIL_LOCAL_STORAGE_KEY = "email";
-const REFRESH_TOKEN_LOCAL_STORAGE_KEY = "refreshToken";
 
 export const useApplicationStore = defineStore("application", {
   state: () => ({
     user: null as UserDto | null,
     initOk: false,
-    refreshToken: "",
     accessToken: "",
     notifications: [] as Notification[],
     lastNotificationId: 0,
@@ -28,15 +27,12 @@ export const useApplicationStore = defineStore("application", {
     },
   }),
   getters: {
-    isAuthenticated: (state) => (state.user !== null && state.refreshToken !== "") ||
-      (!!localStorage.getItem(EMAIL_LOCAL_STORAGE_KEY) && !!localStorage.getItem(REFRESH_TOKEN_LOCAL_STORAGE_KEY)),
+    isAuthenticated: (state) => state.user !== null && state.accessToken !== "",
   },
   actions: {
     async init() {
-      const email = localStorage.getItem(EMAIL_LOCAL_STORAGE_KEY) || "";
-      this.refreshToken = localStorage.getItem(REFRESH_TOKEN_LOCAL_STORAGE_KEY) || "";
+      const email = cookieUtil.get(EMAIL_LOCAL_STORAGE_KEY) || "";
       await this.renew(email);
-      await this.login(email, this.accessToken, this.refreshToken);
       this.initOk = true;
     },
 
@@ -98,24 +94,19 @@ export const useApplicationStore = defineStore("application", {
       }
     },
 
-    async login(email: string, accessToken: string, refreshToken?: string) {
-      this.accessToken = accessToken;
+    async login(accessToken: string = "") {
       setAccessToken(accessToken);
-      if (refreshToken) {
-        await userApi.getUserMe().then((response) => {
-          this.user  = response.data;
-          this.refreshToken = refreshToken;
-          localStorage.setItem(EMAIL_LOCAL_STORAGE_KEY, email);
-          localStorage.setItem(REFRESH_TOKEN_LOCAL_STORAGE_KEY, refreshToken);
-        }).catch(this.axiosException)
-      }
+
+      await userApi.getUserMe().then((response) => {
+        this.user  = response.data;
+        this.accessToken = accessToken;
+      }).catch(this.axiosException)
     },
 
     disconnected() {
-      localStorage.clear();
+      cookieUtil.clearAll();
       this.user = null;
       this.accessToken = "";
-      this.refreshToken = "";
       this.$router.push({ name: "home" });
       setAccessToken();
     },
@@ -125,18 +116,18 @@ export const useApplicationStore = defineStore("application", {
     },
 
     async renew(email: string) {
-      if (email && this.refreshToken) {
-        await sessionApi.renewSession({
-          email: email,
-          refreshToken: this.refreshToken,
-        }).then((response) => {
-          const { accessToken, refreshToken } = response.data
-          this.login(email, accessToken, refreshToken);
-        }).catch((exception) => {
-          this.axiosException(exception);
-          this.disconnected();
-        });
+      if (!email || email === "") {
+        return;
       }
-    },
+
+      await sessionApi.renewSessionWeb("default", {
+        email: email,
+      }).then(response => {
+        this.login(response.data.accessToken);
+      }).catch((exception) => {
+        this.axiosException(exception);
+        this.disconnected();
+      });
+    }
   },
 });

@@ -18,7 +18,7 @@ export const useAdminUsersStore = defineStore("admin-users", {
     },
     findUsers() {
       userApi.findUsers(this.query)
-        .then((response) => {
+        .then(response => {
           this.users = response.data.content;
         }).catch(applicationStore.axiosException);
     },
