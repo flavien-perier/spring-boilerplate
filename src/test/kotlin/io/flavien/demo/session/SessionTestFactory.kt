@@ -51,11 +51,7 @@ object SessionTestFactory {
     fun initSessionDto(
         accessTokenId: String = "accessTokenId",
         refreshTokenId: String? = "refreshTokenId",
-    ) = if (refreshTokenId != null) {
-        SessionDto(accessTokenId).refreshToken(refreshTokenId)
-    } else {
-        SessionDto(accessTokenId)
-    }
+    ) = SessionDto(accessTokenId, refreshTokenId)
 
     fun initLoginDto(
         email: String = "test@example.com",

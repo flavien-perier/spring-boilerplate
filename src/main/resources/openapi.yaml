@@ -20,10 +20,11 @@ paths:
     post:
       tags:
         - Session
-      summary: User authentication.
+      summary: User authentication with tokens.
       operationId: login
       requestBody:
         description: Authentication information.
+        required: true
         content:
           application/json:
             schema:
@@ -35,6 +36,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SessionDto"
+
+  /api/session/login/web:
+    post:
+      tags:
+        - Session
+      summary: User authentication with cookies for web applications.
+      operationId: loginWeb
+      requestBody:
+        description: Authentication information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginDto"
+      responses:
+        "200":
+          description: Session values.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionWebDto"
 
   /api/session/logout:
     delete:
@@ -48,14 +70,15 @@ paths:
       security:
         - bearer: [ user, admin ]
 
-  /api/session:
+  /api/session/renew:
     post:
       tags:
         - Session
-      summary: Renewing a session.
+      summary: Renewing a session with token.
       operationId: renewSession
       requestBody:
         description: Session information.
+        required: true
         content:
           application/json:
             schema:
@@ -68,6 +91,35 @@ paths:
               schema:
                 $ref: "#/components/schemas/SessionDto"
 
+  /api/session/renew/web:
+    post:
+      tags:
+        - Session
+      summary: Renewing a session with cookie.
+      operationId: renewSessionWeb
+      parameters:
+        - name: refresh_token
+          in: cookie
+          description: The cookie with refresh token.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Session information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionRenewalWebDto"
+      responses:
+        "200":
+          description: Session values.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionWebDto"
+
+  /api/session:
     get:
       tags:
         - Session
@@ -113,11 +165,11 @@ paths:
       operationId: createUser
       requestBody:
         description: User account information.
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/UserCreationDto"
-        required: true
       responses:
         "204":
           description: User created.
@@ -163,11 +215,11 @@ paths:
       operationId: updatePassword
       requestBody:
         description: The new password and token.
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/ChangePasswordDto"
-        required: true
       responses:
         "204":
           description: User created.
@@ -195,6 +247,7 @@ paths:
       operationId: updateUserMe
       requestBody:
         description: User account information.
+        required: true
         content:
           application/json:
             schema:
@@ -257,6 +310,7 @@ paths:
             $ref: "#/components/schemas/email"
       requestBody:
         description: User account information.
+        required: true
         content:
           application/json:
             schema:
@@ -362,8 +416,8 @@ components:
 
     proofOfWork:
       type: string
-      description: The scrypted password.
-      example: "password"
+      description: The scrypted password (N=4096, r=8, p=4, len=32).
+      example: "98361fa40e1c419c38794383924e99758ab786b2f7cf3dd5898e95167d088257"
       maxLength: 64
       pattern: ^[a-fA-F0-9]{64}$
       format: password
@@ -420,10 +474,20 @@ components:
       type: object
       description: Authentication Session.
       required:
+        - refreshToken
         - accessToken
       properties:
         refreshToken:
           $ref: "#/components/schemas/refreshToken"
+        accessToken:
+          $ref: "#/components/schemas/accessToken"
+
+    SessionWebDto:
+      type: object
+      description: Authentication Session.
+      required:
+        - accessToken
+      properties:
         accessToken:
           $ref: "#/components/schemas/accessToken"
 
@@ -438,6 +502,15 @@ components:
           $ref: "#/components/schemas/email"
         refreshToken:
           $ref: "#/components/schemas/refreshToken"
+
+    SessionRenewalWebDto:
+      type: object
+      description: Information required to renew a session with token.
+      required:
+        - email
+      properties:
+        email:
+          $ref: "#/components/schemas/email"
 
     RefreshTokenPropertiesDto:
       type: object

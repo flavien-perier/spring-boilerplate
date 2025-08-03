@@ -15,7 +15,7 @@
         </thead>
         <tbody>
         <tr v-for="session in sessions">
-          <td>{{ formatDate(session.creationDate) }}</td>
+          <td>{{ dateUtil(session.creationDate) }}</td>
           <td><a class="link-offset-1 cursor-pointer" @click="accountSecurityStore.deleteSession(session.uuid)">
             <font-awesome-icon icon="trash" />
             {{ $t("delete") }}
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import {useAccountSecurityStore} from "@/account/account-security/account-security.store";
 import {storeToRefs} from "pinia";
-import {formatDate} from "@/core/util/format-date.ts";
+import {dateUtil} from "@/core/util/date-util.ts";
 
 const accountSecurityStore = useAccountSecurityStore();
 const { sessions } = storeToRefs(accountSecurityStore);

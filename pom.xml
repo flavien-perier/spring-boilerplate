@@ -12,7 +12,7 @@
 		<skipNpm>false</skipNpm>
 
 		<java.version>21</java.version>
-		<kotlin.version>2.1.0</kotlin.version>
+		<kotlin.version>2.2.0</kotlin.version>
 		<node.version>v22.12.0</node.version>
 
 		<compiler.source>21</compiler.source>
@@ -21,19 +21,19 @@
 		<native-maven-plugin.version>0.10.4</native-maven-plugin.version>
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-		<openapi-generator-maven-plugin.version>7.10.0</openapi-generator-maven-plugin.version>
+		<openapi-generator-maven-plugin.version>7.14.0</openapi-generator-maven-plugin.version>
 		<frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
-		<dependency-check.version>11.1.1</dependency-check.version>
+		<cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
 
-		<postgresql.version>42.7.4</postgresql.version>
-		<jedis.version>5.2.0</jedis.version>
-		<liquibase.version>4.30.0</liquibase.version>
+		<postgresql.version>42.7.7</postgresql.version>
+		<jedis.version>6.0.0</jedis.version>
+		<liquibase.version>4.33.0</liquibase.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 
-		<assertj.version>3.26.3</assertj.version>
-		<mockk.version>1.13.16</mockk.version>
+		<assertj.version>3.27.3</assertj.version>
+		<mockk.version>1.14.5</mockk.version>
 
-		<testcontainers.version>1.20.4</testcontainers.version>
+		<testcontainers.version>1.21.3</testcontainers.version>
 	</properties>
 
 	<parent>
@@ -527,32 +527,27 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>${dependency-check.version}</version>
-				<configuration>
-					<skip>${skipTests}</skip>
-					<formats>HTML</formats>
-					<failOnError>false</failOnError>
-				</configuration>
+				<groupId>org.cyclonedx</groupId>
+				<artifactId>cyclonedx-maven-plugin</artifactId>
+				<version>${cyclonedx-maven-plugin.version}</version>
 				<executions>
 					<execution>
+						<phase>package</phase>
 						<goals>
-							<goal>check</goal>
+							<goal>makeAggregateBom</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<outputFormat>json</outputFormat>
+					<skip>${skipTests}</skip>
+					<includeCompileScope>true</includeCompileScope>
+					<includeProvidedScope>true</includeProvidedScope>
+					<includeRuntimeScope>true</includeRuntimeScope>
+					<includeSystemScope>true</includeSystemScope>
+					<includeTestScope>false</includeTestScope>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>${dependency-check.version}</version>
-			</plugin>
-		</plugins>
-	</reporting>
 </project>

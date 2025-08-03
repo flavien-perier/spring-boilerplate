@@ -213,7 +213,7 @@ class SessionManagementE2eTest {
     fun `Using refresh token for the first user`() {
         val requestRenew = SessionRenewalDto(userEmail1, refreshTokenSessionUser1_1)
 
-        webTestClient.post().uri("/api/session")
+        webTestClient.post().uri("/api/session/renew")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .body(Mono.just(requestRenew), SessionRenewalDto::class.java)

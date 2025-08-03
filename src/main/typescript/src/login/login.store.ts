@@ -35,13 +35,13 @@ export const useLoginStore = defineStore("login", {
       }
       this.computeAction = true;
 
-      sessionApi.login({
+      sessionApi.loginWeb({
         email: this.email,
         password: this.password,
         proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
       }).then((response) => {
-        const { refreshToken, accessToken } = response.data;
-        applicationStore.login(this.email, accessToken, refreshToken);
+        const { accessToken } = response.data;
+        applicationStore.login(accessToken);
         this.$router.push({ name: "home" });
       }).catch(() => {
         this.password = "";
