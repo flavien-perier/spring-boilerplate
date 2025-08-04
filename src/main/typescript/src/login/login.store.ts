@@ -10,9 +10,13 @@ export const useLoginStore = defineStore("login", {
     email: "",
     password: "",
     computeAction: false,
+    isEmailValid: false,
   }),
   getters: {
-    buttonEnabled: (state) => state.email !== "" && state.password !== "" && !state.computeAction
+    buttonEnabled: (state) => state.email !== ""
+      && state.isEmailValid
+      && state.password !== ""
+      && !state.computeAction,
   },
   actions: {
     init(activationToken?: string) {

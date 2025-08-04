@@ -8,9 +8,10 @@ export const useForgotPasswordStore = defineStore("forgot-password", {
   state: () => ({
     email: "",
     computeAction: false,
+    isEmailValid: false,
   }),
   getters: {
-    buttonEnabled: (state) => state.email !== "" && !state.computeAction
+    buttonEnabled: (state) => !state.computeAction && state.isEmailValid,
   },
   actions: {
     init() {

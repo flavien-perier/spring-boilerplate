@@ -10,14 +10,11 @@ export const useChangePasswordStore = defineStore("change-password", {
     email: "",
     token: "",
     password: "",
-    repeatPassword: "",
+    isPasswordValid: false,
     computeAction: false,
   }),
   getters: {
-    buttonEnabled: (state) =>
-      state.password !== "" &&
-      state.password === state.repeatPassword &&
-      !state.computeAction
+    buttonEnabled: (state) => state.isPasswordValid && !state.computeAction,
   },
   actions: {
     init(email?: string, token?: string) {

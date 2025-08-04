@@ -217,10 +217,10 @@ class OwnAccountManagementE2ETest {
         private var accessToken: String? = null
 
         private val userEmail = "test1@flavien.cc"
-        private val userPassword = "password"
+        private val userPassword = "Password123!"
         private val userProofOfWork = "proofOfWork"
         private val userUpdatedEmail = "test2@flavien.cc"
-        private val userUpdatedPassword = "newPassword"
+        private val userUpdatedPassword = "NewPassword123!"
 
         private val VALKEY_PASSWORD = "password"
 

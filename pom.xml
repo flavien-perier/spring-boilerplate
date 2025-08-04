@@ -7,34 +7,36 @@
 	<version>1.0.0</version>
 	<name>demo</name>
 	<description>Demo project with authentication</description>
-	<properties>
-		<skipTests>false</skipTests>
-		<skipNpm>false</skipNpm>
+    <properties>
+        <skipTests>false</skipTests>
+        <skipNpm>false</skipNpm>
 
-		<java.version>21</java.version>
-		<kotlin.version>2.2.0</kotlin.version>
-		<node.version>v22.12.0</node.version>
+        <java.version>21</java.version>
+        <kotlin.version>2.2.0</kotlin.version>
+        <node.version>v22.12.0</node.version>
 
-		<compiler.source>21</compiler.source>
-		<compiler.target>21</compiler.target>
+        <compiler.source>21</compiler.source>
+        <compiler.target>21</compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
-		<native-maven-plugin.version>0.10.4</native-maven-plugin.version>
-		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-		<openapi-generator-maven-plugin.version>7.14.0</openapi-generator-maven-plugin.version>
-		<frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
-		<cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
+        <native-maven-plugin.version>0.10.4</native-maven-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <openapi-generator-maven-plugin.version>7.14.0</openapi-generator-maven-plugin.version>
+        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
+        <cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
 
-		<postgresql.version>42.7.7</postgresql.version>
-		<jedis.version>6.0.0</jedis.version>
-		<liquibase.version>4.33.0</liquibase.version>
-		<mapstruct.version>1.6.3</mapstruct.version>
+        <postgresql.version>42.7.7</postgresql.version>
+        <jedis.version>6.0.0</jedis.version>
+        <liquibase.version>4.33.0</liquibase.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
 
-		<assertj.version>3.27.3</assertj.version>
-		<mockk.version>1.14.5</mockk.version>
+        <assertj.version>3.27.3</assertj.version>
+        <mockk.version>1.14.5</mockk.version>
 
-		<testcontainers.version>1.21.3</testcontainers.version>
-	</properties>
+        <testcontainers.version>1.21.3</testcontainers.version>
+    </properties>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

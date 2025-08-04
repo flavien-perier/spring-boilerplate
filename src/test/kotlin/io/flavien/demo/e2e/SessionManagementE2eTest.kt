@@ -240,15 +240,15 @@ class SessionManagementE2eTest {
         private var refreshTokenSessionUser2_1_uuid: String? = null
 
         private val userEmail1 = "test1@flavien.cc"
-        private val userPassword1 = "password"
+        private val userPassword1 = "Password123!"
         private val userProofOfWork1 = "proofOfWork"
 
         private val userEmail2 = "test2@flavien.cc"
-        private val userPassword2 = "password"
+        private val userPassword2 = "Password123!"
         private val userProofOfWork2 = "proofOfWork"
 
         private val badEmail = "no@flavien.cc"
-        private val badPassword = "bad"
+        private val badPassword = "BadPassword123!"
         private val badProofOfWork1 = "badProofOfWork"
 
         private val VALKEY_PASSWORD = "password"

@@ -1,3 +1,10 @@
+FROM container-registry.oracle.com/graalvm/native-image-community:21-muslib as builder-binary
+
+WORKDIR /opt/build
+COPY --from=builder-jar /opt/build/target/*.jar /opt/build
+
+RUN mvn -Pnative clean compile spring-boot:process-aot spring-boot:process-test-aot package native:compile
+
 FROM alpine:3.20
 
 LABEL org.opencontainers.image.title="demo" \
@@ -32,8 +39,8 @@ RUN addgroup -g $DOCKER_GID demo && \
 
 WORKDIR /opt/demo
 
-COPY --chown=demo:demo --chmod=550 ./target/demo ./demo
-COPY --chown=demo:demo --chmod=440 ./target/*.so ./
+COPY --from=builder-binary --chown=demo:demo --chmod=440 /opt/build/target/*.so ./
+COPY --from=builder-binary --chown=demo:demo --chmod=550 /opt/build/target/demo ./demo
 
 USER demo
 

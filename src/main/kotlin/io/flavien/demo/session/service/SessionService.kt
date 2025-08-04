@@ -4,7 +4,6 @@ import io.flavien.demo.session.exception.BadPasswordException
 import io.flavien.demo.session.exception.BadRefreshTokenException
 import io.flavien.demo.session.exception.UserIsDisabledException
 import io.flavien.demo.session.model.Session
-import io.flavien.demo.session.util.PasswordUtil
 import io.flavien.demo.user.exception.UserNotFoundException
 import io.flavien.demo.user.service.UserService
 import org.slf4j.LoggerFactory
@@ -15,6 +14,7 @@ class SessionService(
     private val refreshTokenService: RefreshTokenService,
     private val accessTokenService: AccessTokenService,
     private val userService: UserService,
+    private val passwordService: PasswordService,
 ) {
 
     fun login(email: String, password: String, proofOfWork: String): Session {
@@ -24,7 +24,7 @@ class SessionService(
             throw UserIsDisabledException(email)
         }
 
-        if (!PasswordUtil.testPassword(password, user.passwordSalt, user.password)) {
+        if (!passwordService.testPassword(password, user.passwordSalt, user.password)) {
             logger.warn("Bad password for user $email")
             throw BadPasswordException()
         }

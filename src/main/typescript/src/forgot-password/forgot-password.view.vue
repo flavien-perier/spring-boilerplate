@@ -7,14 +7,11 @@
       <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
         <h1 class="mb-4 text-center">{{ $t("forgot-password") }}</h1>
 
-        <div class="form-outline mb-4">
-          <label class="form-label" for="input-email">{{ $t("email") }}</label>
-          <input type="email" id="input-email" class="form-control form-control-lg"
-                 :placeholder="$t('email')"
-                 v-model="email"
-                 @keyup.enter="forgotPasswordStore.send"
-          />
-        </div>
+        <input-email
+            v-model="email"
+            @update:isValid="value => isEmailValid = value"
+            @keyup.enter="forgotPasswordStore.send"
+        />
 
         <div class="form-outline mb-4">
           <input
@@ -33,9 +30,10 @@
 import {useForgotPasswordStore} from "@/forgot-password/forgot-password.store";
 import {storeToRefs} from "pinia";
 import {onBeforeRouteLeave} from "vue-router";
+import InputEmail from "@/component-library/input/input-email.vue";
 
 const forgotPasswordStore = useForgotPasswordStore();
-const { email, buttonEnabled } = storeToRefs(forgotPasswordStore);
+const { email, buttonEnabled, isEmailValid } = storeToRefs(forgotPasswordStore);
 
 forgotPasswordStore.init();
 

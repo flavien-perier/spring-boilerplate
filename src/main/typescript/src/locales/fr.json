@@ -39,5 +39,11 @@
   "are-you-sure": "Êtes vous sur ?",
   "yes": "Oui",
   "no": "Non",
-  "account-deletion-validation": "Êtes-vous sûr de vouloir supprimer votre compte ?"
+  "account-deletion-validation": "Êtes-vous sûr de vouloir supprimer votre compte ?",
+
+  "password.constraint.length": "Au moins {minPasswordLength} caractères",
+  "password.constraint.lowercase": "Au moins une lettre minuscule",
+  "password.constraint.uppercase": "Au moins une lettre majuscule",
+  "password.constraint.number": "Au moins un chiffre",
+  "password.constraint.special-character": "Au moins un caractère spécial"
 }

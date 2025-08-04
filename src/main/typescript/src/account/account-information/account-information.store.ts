@@ -9,15 +9,12 @@ export const useAccountInformationStore = defineStore("account-information", {
   state: () => ({
     email: "",
     password: "",
-    repeatPassword: "",
+    isEmailValid: false,
+    isPasswordValid: false,
     computeAction: false,
   }),
   getters: {
-    buttonEnabled: (state) =>
-      state.email !== "" &&
-      state.password !== "" &&
-      state.password === state.repeatPassword &&
-      !state.computeAction
+    buttonEnabled: (state) => state.isEmailValid && state.isPasswordValid && !state.computeAction,
   },
   actions: {
     init() {
@@ -41,7 +38,6 @@ export const useAccountInformationStore = defineStore("account-information", {
       }).then(() => {
         applicationStore.sendNotification("info", "account-updated");
         this.password = "";
-        this.repeatPassword = "";
       }).catch(applicationStore.axiosException).finally(() => { this.computeAction = false });
     },
   },

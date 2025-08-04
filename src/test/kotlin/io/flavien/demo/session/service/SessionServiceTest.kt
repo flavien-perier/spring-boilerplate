@@ -4,12 +4,9 @@ import io.flavien.demo.session.SessionTestFactory
 import io.flavien.demo.session.exception.BadPasswordException
 import io.flavien.demo.session.exception.BadRefreshTokenException
 import io.flavien.demo.session.exception.UserIsDisabledException
-import io.flavien.demo.session.util.PasswordUtil
+import io.flavien.demo.session.service.PasswordService
 import io.flavien.demo.user.UserTestFactory
 import io.flavien.demo.user.service.UserService
-import io.mockk.every
-import io.mockk.mockkObject
-import io.mockk.unmockkObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -34,12 +31,15 @@ class SessionServiceTest {
 
     @Mock
     var userService: UserService? = null
+    
+    @Mock
+    var passwordService: PasswordService? = null
 
     @Test
     fun `Should login`() {
         // Given
         val email = "perier@flavien.io"
-        val password = "password"
+        val password = "Password123!"
         val proofOfWork = "proofOfWork"
         val user = UserTestFactory.initUser().copy(id = 1L)
         val refreshToken = SessionTestFactory.initRefreshToken()
@@ -50,10 +50,7 @@ class SessionServiceTest {
         )
 
         `when`(userService!!.get(email)).thenReturn(user)
-
-        mockkObject(PasswordUtil)
-        every { PasswordUtil.testPassword(password, user.passwordSalt, user.password) } returns true
-
+        `when`(passwordService!!.testPassword(password, user.passwordSalt, user.password)).thenReturn(true)
         `when`(refreshTokenService!!.create(user.id!!, user.role)).thenReturn(refreshToken)
         `when`(accessTokenService!!.create(refreshToken)).thenReturn(accessToken)
 
@@ -62,21 +59,19 @@ class SessionServiceTest {
 
         // Then
         verify(userService!!).get(email)
+        verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
         verify(refreshTokenService!!).create(user.id!!, user.role)
         verify(accessTokenService!!).create(refreshToken)
 
         assertEquals(refreshToken, result.refreshToken)
         assertEquals(accessToken, result.accessToken)
-
-        // Clean up
-        unmockkObject(PasswordUtil)
     }
 
     @Test
     fun `Should login failed (User is disabled)`() {
         // Given
         val email = "perier@flavien.io"
-        val password = "password"
+        val password = "Password123!"
         val proofOfWork = "proofOfWork"
         val user = UserTestFactory.initUser().copy(enabled = false)
 
@@ -99,10 +94,7 @@ class SessionServiceTest {
         val user = UserTestFactory.initUser()
 
         `when`(userService!!.get(email)).thenReturn(user)
-
-        // Mock PasswordUtil.testPassword
-        mockkObject(PasswordUtil)
-        every { PasswordUtil.testPassword(password, user.passwordSalt, user.password) } returns false
+        `when`(passwordService!!.testPassword(password, user.passwordSalt, user.password)).thenReturn(false)
 
         // When/Then
         assertThrows(BadPasswordException::class.java) {
@@ -110,9 +102,7 @@ class SessionServiceTest {
         }
 
         verify(userService!!).get(email)
-
-        // Clean up
-        unmockkObject(PasswordUtil)
+        verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
     }
 
     @Test

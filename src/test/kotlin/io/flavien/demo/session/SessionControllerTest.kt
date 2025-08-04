@@ -42,7 +42,7 @@ class SessionControllerTest {
     fun `Test login`() {
         // Given
         val email = "test@example.com"
-        val password = "password"
+        val password = "Password123!"
         val proofOfWork = "proofOfWork"
         val loginDto = SessionTestFactory.initLoginDto(email, password, proofOfWork)
 
