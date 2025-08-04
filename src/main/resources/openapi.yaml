@@ -10,12 +10,28 @@ servers:
   - url: http://127.0.0.1:8080
 
 tags:
+  - name: Application
+    description: Application management.
   - name: Session
     description: User session management.
   - name: User
     description: User account management.
 
 paths:
+  /api/conf:
+    get:
+      tags:
+        - Application
+      summary: List of configurations shared between frontend and backend.
+      operationId: getConf
+      responses:
+        "200":
+          description: Configuration list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigurationDto"
+
   /api/session/login:
     post:
       tags:
@@ -454,6 +470,18 @@ components:
       type: string
       description: The user's role.
       enum: [USER, ADMIN]
+
+    ConfigurationDto:
+      type: object
+      description: List of configurations shared between frontend and backend.
+      required:
+        - minPasswordLength
+      properties:
+        minPasswordLength:
+          type: integer
+          description: Minimum password length.
+          minimum: 5
+          maximum: 50
 
     LoginDto:
       type: object

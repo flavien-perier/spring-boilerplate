@@ -17,7 +17,7 @@ export const useAccountSecurityStore = defineStore("account-security", {
 
     loadSessions() {
       sessionApi.findSessions()
-        .then((response) => {
+        .then(response => {
           this.sessions = response.data;
         }).catch(applicationStore.axiosException);
     },

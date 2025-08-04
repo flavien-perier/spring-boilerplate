@@ -39,7 +39,7 @@ export const useLoginStore = defineStore("login", {
         email: this.email,
         password: this.password,
         proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
-      }).then((response) => {
+      }).then(response => {
         const { accessToken } = response.data;
         applicationStore.login(accessToken);
         this.$router.push({ name: "home" });

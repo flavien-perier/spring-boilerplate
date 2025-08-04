@@ -1,4 +1,4 @@
-import {Configuration, SessionApiFactory, UserApiFactory} from "api-generated";
+import {Configuration, ApplicationApiFactory, SessionApiFactory, UserApiFactory} from "api-generated";
 import {useApplicationStore} from "@/core/application.store";
 import axios from "axios";
 import axiosRetry from "axios-retry";
@@ -16,6 +16,7 @@ const axiosInstance = axios.create({
 });
 
 const configuration = new Configuration();
+const applicationApi = ApplicationApiFactory(configuration, BASE_PATH, axiosInstance);
 const userApi = UserApiFactory(configuration, BASE_PATH, axiosInstance);
 const sessionApi = SessionApiFactory(configuration, BASE_PATH, axiosInstance);
 
@@ -48,4 +49,4 @@ axiosRetry(axiosInstance, {
   },
 });
 
-export { userApi, sessionApi, setAccessToken };
+export { applicationApi, userApi, sessionApi, setAccessToken };
