@@ -55,7 +55,7 @@ object SessionTestFactory {
 
     fun initLoginDto(
         email: String = "test@example.com",
-        password: String = "password",
+        password: String = "Password123!",
         proofOfWork: String = "proofOfWork",
     ) = LoginDto(email, password, proofOfWork)
 

@@ -9,6 +9,10 @@ import {
   faTrash,
   faSpinner,
   faRightToBracket,
+  faCircleCheck,
+  faCircleXmark,
+  faEye,
+  faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -25,6 +29,10 @@ library.add(
   faTrash,
   faSpinner,
   faRightToBracket,
+  faCircleCheck,
+  faCircleXmark,
+  faEye,
+  faEyeSlash,
 );
 
 const pinia = createPinia();

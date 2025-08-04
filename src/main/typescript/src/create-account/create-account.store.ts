@@ -9,15 +9,12 @@ export const useCreateAccountStore = defineStore("create-account", {
   state: () => ({
     email: "",
     password: "",
-    repeatPassword: "",
+    isEmailValid: false,
+    isPasswordValid: false,
     computeAction: false,
   }),
   getters: {
-    buttonEnabled: (state) =>
-      state.email !== "" &&
-      state.password !== "" &&
-      state.password === state.repeatPassword &&
-      !state.computeAction
+    buttonEnabled: (state) => state.isEmailValid && state.isPasswordValid && !state.computeAction,
   },
   actions: {
     init() {

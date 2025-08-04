@@ -2,8 +2,8 @@ package io.flavien.demo.user.service
 
 import io.flavien.demo.core.util.RandomUtil
 import io.flavien.demo.session.service.AccessTokenService
+import io.flavien.demo.session.service.PasswordService
 import io.flavien.demo.session.service.RefreshTokenService
-import io.flavien.demo.session.util.PasswordUtil
 import io.flavien.demo.user.entity.User
 import io.flavien.demo.user.exception.UserAlreadyExistsException
 import io.flavien.demo.user.exception.UserNotFoundException
@@ -23,6 +23,7 @@ class UserService(
     private val forgotPasswordService: ForgotPasswordService,
     private val accessTokenService: AccessTokenService,
     private val refreshTokenService: RefreshTokenService,
+    private val passwordService: PasswordService,
 ) {
 
     fun create(email: String, password: String, proofOfWork: String): User {
@@ -35,7 +36,7 @@ class UserService(
 
         val user = User(
             email,
-            PasswordUtil.hashPassword(password, salt),
+            passwordService.hashPassword(password, salt),
             proofOfWork,
             salt,
             UserRole.USER,
@@ -69,7 +70,7 @@ class UserService(
         val user = get(forgotPassword.userId)
         val salt = RandomUtil.randomString(PASSWORD_SALT_LENGTH)
         user.passwordSalt = salt
-        user.password = PasswordUtil.hashPassword(password, salt)
+        user.password = passwordService.hashPassword(password, salt)
         user.proofOfWork = proofOfWork
         user.enabled = true
         userRepository.save(user)
@@ -102,7 +103,7 @@ class UserService(
         userUpdate.password?.let {
             val salt = RandomUtil.randomString(PASSWORD_SALT_LENGTH)
             user.passwordSalt = salt
-            user.password = PasswordUtil.hashPassword(it, salt)
+            user.password = passwordService.hashPassword(it, salt)
         }
 
         userUpdate.proofOfWork?.let {

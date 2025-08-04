@@ -2,8 +2,8 @@ package io.flavien.demo.user.service
 
 import io.flavien.demo.core.util.RandomUtil
 import io.flavien.demo.session.service.AccessTokenService
+import io.flavien.demo.session.service.PasswordService
 import io.flavien.demo.session.service.RefreshTokenService
-import io.flavien.demo.session.util.PasswordUtil
 import io.flavien.demo.user.UserTestFactory
 import io.flavien.demo.user.model.UserRole
 import io.flavien.demo.user.repository.UserRepository
@@ -41,12 +41,15 @@ class UserServiceTest {
 
     @Mock
     lateinit var refreshTokenService: RefreshTokenService
+    
+    @Mock
+    lateinit var passwordService: PasswordService
 
     @Test
     fun `Should create user`() {
         // Given
         val email = "test@example.com"
-        val password = "password"
+        val password = "Password123!"
         val proofOfWork = "proofOfWork"
         val salt = "randomSalt"
         val hashedPassword = "hashedPassword"
@@ -55,9 +58,7 @@ class UserServiceTest {
         mockkObject(RandomUtil)
         every { RandomUtil.randomString(any()) } returns salt
 
-        mockkObject(PasswordUtil)
-        every { PasswordUtil.hashPassword(password, salt) } returns hashedPassword
-
+        `when`(passwordService.hashPassword(password, salt)).thenReturn(hashedPassword)
         `when`(userRepository.existsByEmail(email)).thenReturn(false)
         `when`(userRepository.save(any())).thenReturn(user)
 
@@ -77,7 +78,6 @@ class UserServiceTest {
 
         // Clean up
         unmockkObject(RandomUtil)
-        unmockkObject(PasswordUtil)
     }
 
     @Test
@@ -133,9 +133,7 @@ class UserServiceTest {
         mockkObject(RandomUtil)
         every { RandomUtil.randomString(any()) } returns newSalt
 
-        mockkObject(PasswordUtil)
-        every { PasswordUtil.hashPassword(newPassword, newSalt) } returns newHashedPassword
-
+        `when`(passwordService.hashPassword(newPassword, newSalt)).thenReturn(newHashedPassword)
         `when`(forgotPasswordService.validate(token)).thenReturn(forgotPassword)
         `when`(userRepository.getUserById(userId)).thenReturn(Optional.of(user))
 
@@ -153,7 +151,6 @@ class UserServiceTest {
 
         // Clean up
         unmockkObject(RandomUtil)
-        unmockkObject(PasswordUtil)
     }
 
     @Test
@@ -196,9 +193,7 @@ class UserServiceTest {
         mockkObject(RandomUtil)
         every { RandomUtil.randomString(any()) } returns newSalt
 
-        mockkObject(PasswordUtil)
-        every { PasswordUtil.hashPassword(newPassword, newSalt) } returns newHashedPassword
-
+        `when`(passwordService.hashPassword(newPassword, newSalt)).thenReturn(newHashedPassword)
         `when`(userRepository.getUserById(userId)).thenReturn(Optional.of(user))
         `when`(userRepository.existsByEmail(newEmail)).thenReturn(false)
 
@@ -217,7 +212,6 @@ class UserServiceTest {
 
         // Clean up
         unmockkObject(RandomUtil)
-        unmockkObject(PasswordUtil)
     }
 
     @Test
@@ -238,9 +232,7 @@ class UserServiceTest {
         mockkObject(RandomUtil)
         every { RandomUtil.randomString(any()) } returns newSalt
 
-        mockkObject(PasswordUtil)
-        every { PasswordUtil.hashPassword(newPassword, newSalt) } returns newHashedPassword
-
+        `when`(passwordService.hashPassword(newPassword, newSalt)).thenReturn(newHashedPassword)
         `when`(userRepository.getByEmail(oldEmail)).thenReturn(Optional.of(user))
         `when`(userRepository.existsByEmail(newEmail)).thenReturn(false)
 
@@ -259,7 +251,6 @@ class UserServiceTest {
 
         // Clean up
         unmockkObject(RandomUtil)
-        unmockkObject(PasswordUtil)
     }
 
     @Test

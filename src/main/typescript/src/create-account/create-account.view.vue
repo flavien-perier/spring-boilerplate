@@ -7,24 +7,15 @@
       <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
         <h1 class="mb-4 text-center">{{ $t("create-account") }}</h1>
 
-        <div class="form-outline mb-4">
-          <label class="form-label" for="input-email">{{ $t("email") }}</label>
-          <input type="email" id="input-email" class="form-control form-control-lg" :placeholder="$t('email')" v-model="email" />
-        </div>
+        <input-email
+            v-model="email"
+            @update:isValid="value => isEmailValid = value"
+        />
 
-        <div class="form-outline mb-4">
-          <label class="form-label" for="input-password">{{ $t("password") }}</label>
-          <input type="password" id="input-password" class="form-control form-control-lg" :placeholder="$t('password')" v-model="password" />
-        </div>
-
-        <div class="form-outline mb-4">
-          <label class="form-label" for="input-repeat-password">{{ $t("repeat-password") }}</label>
-          <input type="password" id="input-repeat-password" class="form-control form-control-lg"
-                 :placeholder="$t('repeat-password')"
-                 v-model="repeatPassword"
-                 @keyup.enter="createAccountStore.createAccount"
-          />
-        </div>
+        <input-create-password
+            v-model="password"
+            @update:isValid="value => isPasswordValid = value"
+        />
 
         <div class="form-outline mb-4">
           <input
@@ -43,9 +34,11 @@
 import {useCreateAccountStore} from "@/create-account/create-account.store";
 import {storeToRefs} from "pinia";
 import {onBeforeRouteLeave} from "vue-router";
+import InputCreatePassword from "@/component-library/input/input-create-password.vue";
+import InputEmail from "@/component-library/input/input-email.vue";
+const createAccountStore = useCreateAccountStore()
 
-const createAccountStore = useCreateAccountStore();
-const { email, password, repeatPassword, buttonEnabled } = storeToRefs(createAccountStore);
+const { email, password, isPasswordValid, isEmailValid, buttonEnabled } = storeToRefs(createAccountStore);
 
 createAccountStore.init();
 

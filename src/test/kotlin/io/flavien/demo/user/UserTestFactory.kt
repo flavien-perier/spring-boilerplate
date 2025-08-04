@@ -13,7 +13,7 @@ object UserTestFactory {
 
     fun initUser(
         email: String = "perier@flavien.io",
-        password: String = "password",
+        password: String = "Password123!",
         proofOfWork: String = "proofOfWork",
         passwordSalt: String = "salt",
         role: UserRole = UserRole.USER,
@@ -29,7 +29,7 @@ object UserTestFactory {
 
     fun initUserCreationDto(
         email: String = "perier@flavien.io",
-        password: String = "password",
+        password: String = "Password123!",
         proofOfWork: String = "proofOfWork",
     ) = UserCreationDto(email, password, proofOfWork)
 
