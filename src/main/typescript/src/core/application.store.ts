@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { Notification, NotificationType } from "@/core/model/notification";
-import {sessionApi, userApi, setAccessToken} from "@/core/util/api-util";
+import {applicationApi, sessionApi, userApi, setAccessToken} from "@/core/util/api-util";
 import type {UserDto} from "api-generated";
 import {cookieUtil} from "@/core/util/cookie-util.ts";
 
@@ -12,6 +12,9 @@ const EMAIL_LOCAL_STORAGE_KEY = "email";
 export const useApplicationStore = defineStore("application", {
   state: () => ({
     user: null as UserDto | null,
+    configuration: {
+      minPasswordLength: 1,
+    },
     initOk: false,
     accessToken: "",
     notifications: [] as Notification[],
@@ -32,6 +35,11 @@ export const useApplicationStore = defineStore("application", {
   actions: {
     async init() {
       const email = cookieUtil.get(EMAIL_LOCAL_STORAGE_KEY) || "";
+
+      await applicationApi.getConf().then(response => {
+        this.configuration = response.data;
+      })
+
       await this.renew(email);
       this.initOk = true;
     },
@@ -97,7 +105,7 @@ export const useApplicationStore = defineStore("application", {
     async login(accessToken: string = "") {
       setAccessToken(accessToken);
 
-      await userApi.getUserMe().then((response) => {
+      await userApi.getUserMe().then(response => {
         this.user  = response.data;
         this.accessToken = accessToken;
       }).catch(this.axiosException)
