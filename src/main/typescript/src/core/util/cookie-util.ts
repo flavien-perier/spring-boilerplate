@@ -8,7 +8,7 @@ class CookieUtil {
     for (const cookie of cookies) {
       const [cookieName, cookieValue] = cookie.trim().split('=');
       if (cookieName === name) {
-        return cookieValue;
+        return cookieValue!;
       }
     }
     return null;

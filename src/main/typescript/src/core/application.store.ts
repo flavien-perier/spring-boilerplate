@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import type { Notification, NotificationType } from "@/core/model/notification";
 import {applicationApi, sessionApi, userApi, setAccessToken} from "@/core/util/api-util";
 import type {UserDto} from "api-generated";
-import {cookieUtil} from "@/core/util/cookie-util.ts";
+import {cookieUtil} from "@/core/util/cookie-util";
 
 const NOTIFICATION_DURATION = 3000;
 const MAX_NOTIFICATIONS = 5;
@@ -61,11 +61,9 @@ export const useApplicationStore = defineStore("application", {
     },
 
     closeNotification(id: number) {
-      for(let notificationIndex in this.notifications) {
-        if (this.notifications[notificationIndex].id === id) {
-          this.notifications.splice(+notificationIndex, 1);
-          break;
-        }
+      const index = this.notifications.findIndex(n => n.id === id);
+      if (index !== -1) {
+        this.notifications.splice(index, 1);
       }
     },
 

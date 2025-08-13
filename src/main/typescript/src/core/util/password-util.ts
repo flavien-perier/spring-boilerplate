@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 import * as scrypt from "scrypt-js";
-import {useApplicationStore} from "@/core/application.store.ts";
+import {useApplicationStore} from "@/core/application.store";
 
 class PasswordUtil {
   public proofOfWork(password: string, salt: string): string {
