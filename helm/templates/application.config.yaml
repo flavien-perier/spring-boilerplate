@@ -6,4 +6,32 @@ metadata:
     app: {{ .Values.appName }}
 immutable: true
 data:
+  # Database configuration
+  {{- if .Values.database.embedded }}
+  POSTGRES_URL: "postgresql://database:5432/{{ .Values.database.name }}"
+  {{- else }}
+  POSTGRES_URL: "postgresql://{{ .Values.database.address }}:{{ .Values.database.port }}/{{ .Values.database.name }}"
+  {{- end }}
+  POSTGRES_USER: "{{ .Values.database.username }}"
   DATABASE_USERNAME: "{{ .Values.database.username }}"
+
+  # Valkey/Redis configuration
+  {{- if .Values.valkey.embedded }}
+  VALKEY_HOST: "valkey"
+  VALKEY_PORT: "6379"
+  {{- else }}
+  VALKEY_HOST: "{{ .Values.valkey.address }}"
+  VALKEY_PORT: "{{ .Values.valkey.port }}"
+  {{- end }}
+
+  # SMTP configuration
+  SMTP_HOST: "{{ .Values.smtp.host }}"
+  SMTP_PORT: "{{ .Values.smtp.port }}"
+  SMTP_USERNAME: "{{ .Values.smtp.username }}"
+  SMTP_AUTH: "{{ if .Values.smtp.auth }}yes{{ else }}no{{ end }}"
+  SMTP_STARTTLS: "{{ if .Values.smtp.starttls }}yes{{ else }}no{{ end }}"
+
+  # Application custom configuration
+  MAIL_ACCOUNT_CREATOR: "{{ .Values.smtp.accountCreator }}"
+  MAIL_DOMAIN_LINKS: "{{ .Values.smtp.domainLinks }}"
+  MIN_PASSWORD_LENGTH: "{{ .Values.application.minPasswordLength }}"

@@ -1,24 +1,61 @@
 appName: "app"
 registry: "hub.docker.com"
+image: "demo"
+imageTag: "1.0.0"
 
+# Application configuration
+application:
+  replicaCount: 1
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "2000m"
+  minPasswordLength: 12
+
+# Database configuration
 database:
-  embedded: true
-  address: ""
-  port: ""
-  username: user
-  password: password
+  embedded: true  # Set to false to use external database
+  address: ""     # External database address (if embedded: false)
+  port: ""        # External database port (if embedded: false)
+  name: "app"     # Database name
+  username: "user"
+  password: "password"
 
+# Valkey/Redis configuration
 valkey:
-  embedded: true
-  address: ""
-  port: ""
-  password: password
+  embedded: true  # Set to false to use external Valkey/Redis
+  address: ""     # External Valkey address (if embedded: false)
+  port: ""        # External Valkey port (if embedded: false)
+  password: "password"
 
+# SMTP configuration
 smtp:
-  address: localhost
+  host: "localhost"
   port: 25
-  uth: true
-  username: user
-  password: password
-  starttls: true
+  auth: false
+  username: ""
+  password: ""
+  starttls: false
+  accountCreator: "no-reply@example.com"  # Sender email for account creation
+  domainLinks: "https://example.com"      # Base URL for email links
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+    # - secretName: app-tls
+    #   hosts:
+    #     - example.local
 

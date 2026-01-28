@@ -1,3 +1,4 @@
+{{- if .Values.database.embedded }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,10 +25,10 @@ spec:
 
           env:
             - name: POSTGRES_DB
-              value: {{ .Values.appName }}
+              value: {{ .Values.database.name }}
             - name: POSTGRES_USER
               valueFrom:
-                secretKeyRef:
+                configMapKeyRef:
                   name: application-config
                   key: DATABASE_USERNAME
             - name: POSTGRES_PASSWORD
@@ -56,3 +57,4 @@ spec:
         - name: database-persistent-storage
           persistentVolumeClaim:
             claimName: database-pvc
+{{- end }}
