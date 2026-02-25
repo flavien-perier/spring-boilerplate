@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import {useAccountSecurityStore} from "@/account/account-security/account-security.store";
 import {storeToRefs} from "pinia";
-import {dateUtil} from "@/core/util/date-util.ts";
+import {dateUtil} from "@/core/util/date-util";
 
 const accountSecurityStore = useAccountSecurityStore();
 const { sessions } = storeToRefs(accountSecurityStore);
