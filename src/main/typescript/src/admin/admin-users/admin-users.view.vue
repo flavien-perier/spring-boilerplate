@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import {useAdminUsersStore} from "@/admin/admin-users/admin-users.store.ts";
+import {useAdminUsersStore} from "@/admin/admin-users/admin-users.store";
 import {storeToRefs} from "pinia";
 
 const adminUsersStore = useAdminUsersStore();

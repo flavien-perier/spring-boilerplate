@@ -6,7 +6,7 @@ import createAccountRouter from "@/create-account/create-account.router";
 import forgotPasswordRouter from "@/forgot-password/forgot-password.router";
 import accountRouter from "@/account/account.router";
 import {useApplicationStore} from "@/core/application.store";
-import adminRouter from "@/admin/admin.router.ts";
+import adminRouter from "@/admin/admin.router";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
