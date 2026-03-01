@@ -5,7 +5,8 @@
       "Bash(touch:*)",
       "Bash(mkdir:*)",
       "Bash(mvn:*)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(jar tf:*)"
     ],
     "deny": [],
     "ask": []
