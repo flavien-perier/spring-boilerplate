@@ -1,6 +1,6 @@
 package io.flavien.demo.session.service
 
-import io.flavien.demo.core.util.RandomUtil
+import io.flavien.demo.utils.RandomUtil
 import io.flavien.demo.session.entity.AccessToken
 import io.flavien.demo.session.entity.RefreshToken
 import io.flavien.demo.session.exception.BadAccessTokenCreationException

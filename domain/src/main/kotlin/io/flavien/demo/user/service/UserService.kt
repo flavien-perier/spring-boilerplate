@@ -1,6 +1,6 @@
 package io.flavien.demo.user.service
 
-import io.flavien.demo.core.util.RandomUtil
+import io.flavien.demo.utils.RandomUtil
 import io.flavien.demo.session.service.AccessTokenService
 import io.flavien.demo.session.service.PasswordService
 import io.flavien.demo.session.service.RefreshTokenService
@@ -159,6 +159,6 @@ class UserService(
     companion object {
         private var logger = LoggerFactory.getLogger(UserService::class.java)
 
-        private const val PASSWORD_SALT_LENGTH = 10L
+        private const val PASSWORD_SALT_LENGTH = 10
     }
 }

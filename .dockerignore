@@ -1,5 +1,9 @@
 .git
 .idea
 .run
+.kotlin
 helm
-target
+.gradle
+gradle/wrapper
+**/target/
+**/build/

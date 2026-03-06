@@ -29,7 +29,7 @@ Profile files for optimizing GraalVM compilation are generated using tests. Proj
 
 - [Kotlin](https://kotlinlang.org/)
 - [Spring Boot](https://spring.io/projects/spring-boot/)
-- [Maven](https://maven.apache.org/)
+- [Gradle](https://gradle.org/)
 - [GraalVM](https://www.graalvm.org/)
 - [Cyclonedx](https://cyclonedx.org/)
 

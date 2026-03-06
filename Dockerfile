@@ -1,9 +1,20 @@
-FROM container-registry.oracle.com/graalvm/native-image-community:21-muslib as builder-binary
+FROM container-registry.oracle.com/graalvm/native-image-community:21-muslib AS builder
 
 WORKDIR /opt/build
-COPY --from=builder-jar /opt/build/target/*.jar /opt/build
 
-RUN mvn -Pnative clean compile spring-boot:process-aot spring-boot:process-test-aot package native:compile
+COPY gradlew gradlew.bat* ./
+COPY gradle ./gradle
+COPY settings.gradle.kts build.gradle.kts ./
+COPY api/build.gradle.kts ./api/
+COPY domain/build.gradle.kts ./domain/
+COPY frontend/build.gradle.kts ./frontend/
+COPY utils/build.gradle.kts ./utils/
+
+RUN chmod +x gradlew && ./gradlew dependencies --no-daemon 2>/dev/null || true
+
+COPY . .
+
+RUN chmod +x gradlew && ./gradlew :api:nativeCompile --no-daemon
 
 FROM alpine:3.20
 
@@ -39,8 +50,7 @@ RUN addgroup -g $DOCKER_GID demo && \
 
 WORKDIR /opt/demo
 
-COPY --from=builder-binary --chown=demo:demo --chmod=440 /opt/build/target/*.so ./
-COPY --from=builder-binary --chown=demo:demo --chmod=550 /opt/build/target/demo ./demo
+COPY --from=builder --chown=demo:demo --chmod=550 /opt/build/api/build/native/nativeCompile/demo ./demo
 
 USER demo
 

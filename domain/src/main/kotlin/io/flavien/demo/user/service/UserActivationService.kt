@@ -1,7 +1,7 @@
 package io.flavien.demo.user.service
 
 import io.flavien.demo.config.MailProperties
-import io.flavien.demo.core.util.RandomUtil
+import io.flavien.demo.utils.RandomUtil
 import io.flavien.demo.user.entity.User
 import io.flavien.demo.user.entity.UserActivation
 import io.flavien.demo.user.exception.ActivationFailedException

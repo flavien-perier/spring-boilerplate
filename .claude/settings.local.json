@@ -6,7 +6,16 @@
       "Bash(mkdir:*)",
       "Bash(mvn:*)",
       "Bash(npm:*)",
-      "Bash(jar tf:*)"
+      "Bash(jar tf:*)",
+      "Bash(/home/flavien/.sdkman/candidates/gradle/current/bin/gradle:*)",
+      "Bash(chmod +x:*)",
+      "Bash(./gradlew :api:bootJar:*)",
+      "Bash(./gradlew :api:dependencies:*)",
+      "Bash(./gradlew :domain:test:*)",
+      "Bash(./gradlew :utils:compileKotlin:*)",
+      "Bash(./gradlew build:*)",
+      "Bash(./gradlew :api:bootRun:*)",
+      "Bash(./gradlew :api:compileKotlin:*)"
     ],
     "deny": [],
     "ask": []

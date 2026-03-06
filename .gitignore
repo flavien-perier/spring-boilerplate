@@ -1,3 +1,7 @@
 .idea/
 .vscode/
+.kotlin
+.gradle
+gradle/wrapper
 **/target/
+**/build/
