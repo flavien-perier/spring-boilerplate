@@ -11,11 +11,11 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
-      "api-generated": fileURLToPath(new URL("./src/api/generated", import.meta.url)),
+      "api-generated": fileURLToPath(new URL("./src/generated/api", import.meta.url)),
+      "utils-generated": fileURLToPath(new URL("./src/generated/utils", import.meta.url)),
     },
   },
   server: {
-    base: "/vue-user.html",
     proxy: {
       "/api": {
         changeOrigin: true,

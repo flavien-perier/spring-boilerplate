@@ -20,6 +20,9 @@ class SessionAuthenticationFilter(
     private val accessTokenService: AccessTokenService,
 ) : OncePerRequestFilter() {
 
+    private val OPENAPI_URL_VARIABLE_REGEX = "\\{[a-zA-Z]+}".toRegex()
+    private val urlPatternToRegex = HashMap<String, Regex>()
+
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
         httpServletRequest: HttpServletRequest,
@@ -89,7 +92,11 @@ class SessionAuthenticationFilter(
     }
 
     private fun testUri(pattern: String, requestURI: String): Boolean {
-        val patternRegex = pattern.replace("\\{[a-zA-Z]+}".toRegex(), "[^/?]+").toRegex()
+        if (!urlPatternToRegex.containsKey(pattern)) {
+            urlPatternToRegex[pattern] = pattern.replace(OPENAPI_URL_VARIABLE_REGEX, "[^/?]+").toRegex()
+        }
+
+        val patternRegex = urlPatternToRegex[pattern]!!
         return patternRegex.matches(requestURI)
     }
 

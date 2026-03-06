@@ -25,7 +25,7 @@
         </li>
       </ul>
 
-      <ul class="navbar-nav" v-if="applicationStore.user?.role == Role.ADMIN">
+      <ul class="navbar-nav" v-if="applicationStore.user?.role == Role.Admin">
         <li class="nav-item">
           <router-link :to="{ name: 'admin-users' }" class="nav-link" @click="hide()">
             <font-awesome-icon icon="gear" />

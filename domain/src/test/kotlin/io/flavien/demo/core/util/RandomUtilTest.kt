@@ -1,4 +1,4 @@
-package io.flavien.demo.core.util
+package io.flavien.demo.utils
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest

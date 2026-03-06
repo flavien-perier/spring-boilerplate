@@ -19,7 +19,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "api-generated": ["./src/api/generated"]
+      "api-generated/*": ["./src/generated/api/*"],
+      "utils-generated/*": ["./src/generated/utils/*"],
     }
   }
 }
