@@ -14,7 +14,7 @@ Profile files for optimizing GraalVM compilation are generated using tests. Proj
 
 ## Base documentation
 
-[OpenAPI Documentation](src/main/resources/openapi.yaml)
+[OpenAPI Documentation](api/src/main/resources/openapi.yaml)
 
 ## Technologies used
 
@@ -29,9 +29,9 @@ Profile files for optimizing GraalVM compilation are generated using tests. Proj
 
 - [Kotlin](https://kotlinlang.org/)
 - [Spring Boot](https://spring.io/projects/spring-boot/)
-- [Maven](https://maven.apache.org/)
+- [Gradle](https://gradle.org/)
 - [GraalVM](https://www.graalvm.org/)
-- [Cyclonedx](https://cyclonedx.org/)
+- [CycloneDX](https://cyclonedx.org/)
 
 ### Infra
 
@@ -55,5 +55,5 @@ Profile files for optimizing GraalVM compilation are generated using tests. Proj
 Build GraalVM :
 
 ```bash
-mvn -Pnative clean compile spring-boot:process-aot spring-boot:process-test-aot package native:compile
+./gradlew :api:nativeCompile -Pnative --no-daemon
 ```

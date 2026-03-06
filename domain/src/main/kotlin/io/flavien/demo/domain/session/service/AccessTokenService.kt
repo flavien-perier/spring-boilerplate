@@ -1,0 +1,54 @@
+package io.flavien.demo.domain.session.service
+
+import io.flavien.demo.domain.session.entity.AccessToken
+import io.flavien.demo.domain.session.entity.RefreshToken
+import io.flavien.demo.domain.session.exception.BadAccessTokenCreationException
+import io.flavien.demo.domain.session.exception.BadAccessTokenException
+import io.flavien.demo.domain.session.repository.AccessTokenRepository
+import io.flavien.demo.utils.RandomUtil
+import org.springframework.stereotype.Service
+import java.time.OffsetDateTime
+
+@Service
+class AccessTokenService(
+    private val accessTokenRepository: AccessTokenRepository,
+    private val refreshTokenService: RefreshTokenService,
+) {
+
+    fun create(refreshToken: RefreshToken): AccessToken {
+        var id = RandomUtil.randomString(64)
+        while (accessTokenRepository.existsById(id)) {
+            id = RandomUtil.randomString(64)
+        }
+
+        if (!refreshTokenService.exists(refreshToken.id)) {
+            throw BadAccessTokenCreationException()
+        }
+
+        val accessToken = AccessToken(id, refreshToken.userId, refreshToken.role, refreshToken.id, OffsetDateTime.now())
+        accessTokenRepository.save(accessToken)
+
+        return accessToken
+    }
+
+    fun get(token: String): AccessToken {
+        val optionalAccessToken = accessTokenRepository.findById(token)
+
+        if (optionalAccessToken.isEmpty) {
+            throw BadAccessTokenException()
+        }
+
+        val accessToken = optionalAccessToken.get()
+
+        if (!refreshTokenService.exists(accessToken.refreshTokenId)) {
+            delete(token)
+            throw BadAccessTokenException()
+        }
+
+        return accessToken
+    }
+
+    fun delete(token: String) = accessTokenRepository.deleteById(token)
+
+    fun deleteByUserId(userId: Long) = accessTokenRepository.deleteByUserId(userId)
+}
