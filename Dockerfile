@@ -1,5 +1,7 @@
 FROM container-registry.oracle.com/graalvm/native-image:21-muslib AS builder
 
+RUN microdnf install -y findutils
+
 WORKDIR /opt/build
 
 COPY gradlew gradlew.bat* ./

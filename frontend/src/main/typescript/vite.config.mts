@@ -11,8 +11,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
-      "api-generated": fileURLToPath(new URL("./src/generated/api", import.meta.url)),
-      "utils-generated": fileURLToPath(new URL("./src/generated/utils", import.meta.url)),
+      "api-generated": fileURLToPath(new URL("./generated/api", import.meta.url)),
+      "utils-generated": fileURLToPath(new URL("./generated/utils", import.meta.url)),
+      "url": "buffer",
     },
   },
   server: {

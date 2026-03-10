@@ -2,8 +2,9 @@
 .idea
 .run
 .kotlin
-helm
 .gradle
-gradle/wrapper
+.claude
+.env
+helm
 **/target/
 **/build/
