@@ -7,7 +7,7 @@ plugins {
 openApiGenerate {
     generatorName.set("typescript-axios")
     inputSpec.set("${projectDir}/../api/src/main/resources/openapi.yaml")
-    outputDir.set(layout.buildDirectory.dir("node_modules/api-generated").map { it.asFile.absolutePath })
+    outputDir.set("${projectDir}/src/main/typescript/generated/api")
 
     configOptions.set(mapOf(
         "npmName" to "api-generated",
@@ -27,7 +27,7 @@ node {
 val copyUtilsJs = tasks.register<Sync>("copyUtilsJs") {
     dependsOn(":utils:jsBrowserProductionLibraryDistribution")
     from("${rootProject.projectDir}/utils/build/dist/js/productionLibrary")
-    into("${projectDir}/src/main/typescript/src/generated/utils")
+    into("${projectDir}/src/main/typescript/generated/utils")
 }
 
 val npmInstall = tasks.named<com.github.gradle.node.npm.task.NpmInstallTask>("npmInstall") {

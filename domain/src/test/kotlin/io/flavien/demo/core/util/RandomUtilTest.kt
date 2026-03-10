@@ -8,7 +8,7 @@ class RandomUtilTest {
 
     @ParameterizedTest
     @CsvSource("5", "10", "20", "30", "40")
-    fun `Test randomString`(length: Long) {
+    fun `Test randomString`(length: Int) {
         // When
         val randomString = RandomUtil.randomString(length)
 

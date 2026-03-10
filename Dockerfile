@@ -1,5 +1,7 @@
 FROM container-registry.oracle.com/graalvm/native-image-community:21-muslib AS builder
 
+RUN microdnf install -y findutils
+
 WORKDIR /opt/build
 
 COPY gradlew gradlew.bat* ./
@@ -14,7 +16,8 @@ RUN chmod +x gradlew && ./gradlew dependencies --no-daemon 2>/dev/null || true
 
 COPY . .
 
-RUN chmod +x gradlew && ./gradlew :api:nativeCompile --no-daemon
+# RUN chmod +x gradlew && ./gradlew :api:nativeCompile -Pnative --no-daemon
+RUN chmod +x gradlew && ./gradlew :api:build -x test --no-daemon
 
 FROM alpine:3.20
 
