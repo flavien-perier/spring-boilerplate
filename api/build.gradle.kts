@@ -43,8 +43,8 @@ openApiGenerate {
     generatorName.set("kotlin-spring")
     inputSpec.set("$projectDir/src/main/resources/openapi.yaml")
     outputDir.set(layout.buildDirectory.dir("generated/openapi").get().asFile.path)
-    apiPackage.set("io.flavien.demo.api")
-    modelPackage.set("io.flavien.demo.dto")
+    apiPackage.set("io.flavien.demo.api.api")
+    modelPackage.set("io.flavien.demo.api.dto")
 
     additionalProperties.set(mapOf(
         "developerEmail" to "perier@flavien.io",
@@ -77,7 +77,7 @@ tasks.withType<KotlinCompile> {
 }
 
 springBoot {
-    mainClass.set("io.flavien.demo.ApplicationKt")
+    mainClass.set("io.flavien.demo.api.ApplicationKt")
 }
 
 if (project.hasProperty("native")) {
