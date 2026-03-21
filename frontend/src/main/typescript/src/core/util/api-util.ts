@@ -1,4 +1,4 @@
-import {Configuration, ApplicationApiFactory, SessionApiFactory, UserApiFactory} from "api-generated";
+import {Configuration, ApplicationApiFactory, SessionApiFactory, UserApiFactory} from "@generated/api";
 import {useApplicationStore} from "@/core/application.store";
 import axios from "axios";
 import axiosRetry from "axios-retry";

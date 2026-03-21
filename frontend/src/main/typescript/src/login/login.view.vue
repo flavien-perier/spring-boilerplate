@@ -5,33 +5,29 @@
         <img src="../assets/img/undraw_login.svg" class="img-fluid" alt="Login image">
       </div>
       <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-        <h1 class="mb-4 text-center">{{ $t("login") }}</h1>
+        <h1 class="mb-4 text-center">{{ $t("menu.login") }}</h1>
 
-        <input-email
+        <fio-input-email
             v-model="email"
             @update:isValid="value => isEmailValid = value"
         />
 
         <div class="form-outline mb-4">
-          <input-password
+          <fio-input-password
               v-model="password"
-              :label="$t('password')"
+              :label="$t('field.password')"
               @keyup.enter="loginStore.login"
           />
-          <router-link :to="{ name: 'forgot-password' }">{{ $t("forgot-password") }}</router-link>
+          <router-link :to="{ name: 'forgot-password' }">{{ $t("action.forgot-password") }}</router-link>
         </div>
 
-        <div class="form-outline mb-1">
-          <input
-              type="button"
-              class="btn btn-primary form-control form-control-lg"
-              :value="$t('connect')"
-              :disabled="!buttonEnabled"
-              @click="loginStore.login"
-          />
-        </div>
+        <fio-input-button
+            :label="$t('action.connect')"
+            :disabled="!buttonEnabled"
+            @click="loginStore.login"
+        />
 
-        <router-link :to="{ name: 'create-account' }">{{ $t("create-account") }}</router-link>
+        <router-link :to="{ name: 'create-account' }">{{ $t("menu.create-account") }}</router-link>
       </div>
     </div>
   </section>
@@ -41,8 +37,6 @@
 import {useLoginStore} from "@/login/login.store";
 import {storeToRefs} from "pinia";
 import {onBeforeRouteLeave, useRoute} from "vue-router";
-import InputEmail from "@/component-library/input/input-email.vue";
-import InputPassword from "@/component-library/input/input-password.vue";
 
 const loginStore = useLoginStore();
 const { email, password, isEmailValid, buttonEnabled } = storeToRefs(loginStore);

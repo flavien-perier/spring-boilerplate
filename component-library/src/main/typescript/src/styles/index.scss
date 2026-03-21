@@ -10,6 +10,12 @@
 );
 @use "@fortawesome/fontawesome-svg-core/styles.css";
 
+@use "variables" as *;
+@use "colors" as *;
+@use "fonts" as *;
+
+@use "inputs" as *;
+
 .cursor-pointer {
   cursor: pointer;
 }

@@ -10,6 +10,7 @@ import io.flavien.demo.domain.user.model.UserRole
 import io.flavien.demo.domain.user.model.UserUpdate
 import io.flavien.demo.domain.user.repository.UserRepository
 import io.flavien.demo.utils.RandomUtil
+import java.time.OffsetDateTime
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -41,6 +42,7 @@ class UserService(
             salt,
             UserRole.USER,
             false,
+            OffsetDateTime.now(),
         )
 
         val savedUser = userRepository.save(user)

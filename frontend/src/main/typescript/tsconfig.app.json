@@ -19,8 +19,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "api-generated/*": ["./generated/api/*"],
-      "utils-generated/*": ["./generated/utils/*"],
+      "@generated/component-library/style.css": ["./generated/component-library/component-library.es.css"],
+      "@generated/component-library": ["./generated/component-library/src/index.d.ts"],
+      "@generated/api": ["./generated/api"],
+      "@generated/utils": ["./generated/utils"],
     }
   }
 }

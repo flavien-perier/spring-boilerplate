@@ -1,6 +1,6 @@
 <template>
   <section class="container">
-    <h1>{{ $t("account") }}</h1>
+    <h1>{{ $t("menu.account") }}</h1>
     <ul class="nav nav-tabs mt-3 mb-2">
       <li class="nav-item">
         <router-link
@@ -8,7 +8,7 @@
             class="nav-link"
             :class="{ active: $route.name == 'account-information' }"
         >
-          {{ $t("information") }}
+          {{ $t("menu.information") }}
         </router-link>
       </li>
       <li class="nav-item">
@@ -17,7 +17,7 @@
             class="nav-link"
             :class="{ active: $route.name == 'account-security' }"
         >
-          {{ $t("security") }}
+          {{ $t("menu.security") }}
         </router-link>
       </li>
     </ul>

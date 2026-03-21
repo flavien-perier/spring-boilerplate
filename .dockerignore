@@ -4,7 +4,9 @@
 .kotlin
 .gradle
 .claude
+.opencode
 .env
 helm
 **/target/
 **/build/
+**/*.old

@@ -1,12 +1,12 @@
 <template>
   <div class="form-outline mb-4">
-    <label for="email" class="form-label">{{ $t("email")  }}</label>
+    <label for="email" class="form-label">{{ $t("fio.email")  }}</label>
     <input
         type="text"
         id="email"
         class="form-control form-control-lg z-0"
         :class="{'is-invalid': !isValid && email.length > 0}"
-        :placeholder="$t('email')"
+        :placeholder="$t('fio.email')"
         v-model="email"
         @input="emitInput($event)"
         @focus="emitFocus($event)"
@@ -19,7 +19,7 @@
 import { computed, ref } from "vue";
 
 defineOptions({
-  name: "InputEmail",
+  name: "FioInputEmail",
 });
 
 const isValid = ref(true);

@@ -4,7 +4,7 @@
   <RouterView v-if="initOk" style="flex: auto" />
   <div v-if="!initOk" style="flex: auto" class="d-flex align-items-center justify-content-center">
     <div>
-      <font-awesome-icon icon="spinner" size="6x" spin-pulse />
+      <fio-icon icon="spinner" size="6x" spin-pulse />
     </div>
   </div>
 

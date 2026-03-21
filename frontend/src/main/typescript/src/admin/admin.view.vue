@@ -1,6 +1,6 @@
 <template>
   <section class="container">
-    <h1>{{ $t("administration") }}</h1>
+    <h1>{{ $t("menu.administration") }}</h1>
     <ul class="nav nav-tabs mt-3 mb-2">
       <li class="nav-item">
         <router-link
@@ -8,7 +8,7 @@
             class="nav-link"
             :class="{ active: $route.name == 'admin-users' }"
         >
-          {{ $t("users") }}
+          {{ $t("menu.users") }}
         </router-link>
       </li>
     </ul>

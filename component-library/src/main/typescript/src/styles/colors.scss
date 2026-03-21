@@ -1,0 +1,47 @@
+@use "sass:color";
+
+$primary: #0d6efd;
+$secondary: #777777;
+
+$info: #37d;
+$success: #295;
+$warning: #eb0;
+$danger: #d12;
+
+$primary-darker-10: color.scale($primary, $lightness: -10%);
+$primary-darker-20: color.scale($primary, $lightness: -20%);
+$primary-darker-30: color.scale($primary, $lightness: -30%);
+$primary-darker-40: color.scale($primary, $lightness: -40%);
+$primary-darker-50: color.scale($primary, $lightness: -50%);
+$primary-darker-60: color.scale($primary, $lightness: -60%);
+$primary-darker-70: color.scale($primary, $lightness: -70%);
+$primary-darker-80: color.scale($primary, $lightness: -80%);
+$primary-darker-90: color.scale($primary, $lightness: -90%);
+$primary-lighter-10: color.scale($primary, $lightness: 10%);
+$primary-lighter-20: color.scale($primary, $lightness: 20%);
+$primary-lighter-30: color.scale($primary, $lightness: 30%);
+$primary-lighter-40: color.scale($primary, $lightness: 40%);
+$primary-lighter-50: color.scale($primary, $lightness: 50%);
+$primary-lighter-60: color.scale($primary, $lightness: 60%);
+$primary-lighter-70: color.scale($primary, $lightness: 70%);
+$primary-lighter-80: color.scale($primary, $lightness: 80%);
+$primary-lighter-90: color.scale($primary, $lightness: 90%);
+
+$secondary-darker-10: color.scale($secondary, $lightness: -10%);
+$secondary-darker-20: color.scale($secondary, $lightness: -20%);
+$secondary-darker-30: color.scale($secondary, $lightness: -30%);
+$secondary-darker-40: color.scale($secondary, $lightness: -40%);
+$secondary-darker-50: color.scale($secondary, $lightness: -50%);
+$secondary-darker-60: color.scale($secondary, $lightness: -60%);
+$secondary-darker-70: color.scale($secondary, $lightness: -70%);
+$secondary-darker-80: color.scale($secondary, $lightness: -80%);
+$secondary-darker-90: color.scale($secondary, $lightness: -90%);
+$secondary-lighter-10: color.scale($secondary, $lightness: 10%);
+$secondary-lighter-20: color.scale($secondary, $lightness: 20%);
+$secondary-lighter-30: color.scale($secondary, $lightness: 30%);
+$secondary-lighter-40: color.scale($secondary, $lightness: 40%);
+$secondary-lighter-50: color.scale($secondary, $lightness: 50%);
+$secondary-lighter-60: color.scale($secondary, $lightness: 60%);
+$secondary-lighter-70: color.scale($secondary, $lightness: 70%);
+$secondary-lighter-80: color.scale($secondary, $lightness: 80%);
+$secondary-lighter-90: color.scale($secondary, $lightness: 90%);

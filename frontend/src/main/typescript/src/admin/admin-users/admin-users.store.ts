@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import {userApi} from "@/core/util/api-util";
 import {useApplicationStore} from "@/core/application.store";
-import {passwordUtil} from "@/core/util/password-util";
-import type {UserDto} from "api-generated";
+import { passwordUtil } from "@generated/component-library";
+import type {UserDto} from "@generated/api";
 
 const applicationStore = useApplicationStore();
 

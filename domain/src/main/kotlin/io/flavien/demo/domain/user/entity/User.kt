@@ -28,6 +28,9 @@ data class User(
     @Column(name = "enabled", nullable = false)
     var enabled: Boolean,
 
+    @Column(name = "last_login", nullable = false)
+    var lastLogin: OffsetDateTime,
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false, unique = true, updatable = false)

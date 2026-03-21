@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import {useApplicationStore} from "@/core/application.store";
 import {sessionApi, userApi} from "@/core/util/api-util";
-import {passwordUtil} from "@/core/util/password-util";
+import { passwordUtil } from "@generated/component-library";
 
 const applicationStore = useApplicationStore();
 
@@ -22,9 +22,9 @@ export const useLoginStore = defineStore("login", {
     init(activationToken?: string) {
       if (activationToken) {
         userApi.activateUser(activationToken).then(() => {
-          applicationStore.sendNotification("info", "account-activated");
+          applicationStore.sendNotification("info", "notification.account-activated");
         }).catch(() => {
-          applicationStore.sendNotification("alert", "account-activation-failed");
+          applicationStore.sendNotification("alert", "notification.account-activation-failed");
         });
       }
     },
@@ -49,7 +49,7 @@ export const useLoginStore = defineStore("login", {
         this.$router.push({ name: "home" });
       }).catch(() => {
         this.password = "";
-        applicationStore.sendNotification("alert", "authentication-failed");
+        applicationStore.sendNotification("alert", "notification.authentication-failed");
       }).finally(() => { this.computeAction = false });
     },
   },

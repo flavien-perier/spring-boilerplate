@@ -5,22 +5,20 @@
         <img src="../assets/img/undraw_authentication.svg" class="img-fluid" alt="Change password image">
       </div>
       <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-        <h1 class="mb-4 text-center">{{ $t("change-password") }}</h1>
+        <h1 class="mb-4 text-center">{{ $t("action.change-password") }}</h1>
 
-        <input-create-password
+        <fio-input-create-password
             v-model="password"
+            :min-password-length="applicationStore.configuration.minPasswordLength"
             @update:isValid="value => isPasswordValid = value"
             @keyup.enter="changePasswordStore.update"
         />
 
-        <div class="form-outline mb-4">
-          <input
-              type="button"
-              class="btn btn-primary form-control form-control-lg"
-              :value="$t('update')"
-              :disabled="!buttonEnabled"
-              @click="changePasswordStore.update" />
-        </div>
+        <fio-input-button
+            :label="$t('action.update')"
+            :disabled="!buttonEnabled"
+            @click="changePasswordStore.update"
+        />
       </div>
     </div>
   </section>
@@ -30,9 +28,10 @@
 import {storeToRefs} from "pinia";
 import {onBeforeRouteLeave, useRoute} from "vue-router";
 import {useChangePasswordStore} from "@/change-password/change-password.store";
-import InputCreatePassword from "@/component-library/input/input-create-password.vue";
+import {useApplicationStore} from "@/core/application.store";
 
 const changePasswordStore = useChangePasswordStore();
+const applicationStore = useApplicationStore();
 const { password, buttonEnabled, isPasswordValid } = storeToRefs(changePasswordStore);
 
 const route = useRoute();

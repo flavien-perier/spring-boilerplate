@@ -5,22 +5,19 @@
         <img src="../assets/img/undraw_forgot_password.svg" class="img-fluid" alt="Forgot password image">
       </div>
       <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-        <h1 class="mb-4 text-center">{{ $t("forgot-password") }}</h1>
+        <h1 class="mb-4 text-center">{{ $t("action.forgot-password") }}</h1>
 
-        <input-email
+        <fio-input-email
             v-model="email"
             @update:isValid="value => isEmailValid = value"
             @keyup.enter="forgotPasswordStore.send"
         />
 
-        <div class="form-outline mb-4">
-          <input
-              type="button"
-              class="btn btn-primary form-control form-control-lg"
-              :value="$t('send')"
-              :disabled="!buttonEnabled"
-              @click="forgotPasswordStore.send" />
-        </div>
+        <fio-input-button
+            :label="$t('action.send')"
+            :disabled="!buttonEnabled"
+            @click="forgotPasswordStore.send"
+        />
       </div>
     </div>
   </section>
@@ -30,7 +27,6 @@
 import {useForgotPasswordStore} from "@/forgot-password/forgot-password.store";
 import {storeToRefs} from "pinia";
 import {onBeforeRouteLeave} from "vue-router";
-import InputEmail from "@/component-library/input/input-email.vue";
 
 const forgotPasswordStore = useForgotPasswordStore();
 const { email, buttonEnabled, isEmailValid } = storeToRefs(forgotPasswordStore);

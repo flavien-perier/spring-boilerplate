@@ -8,7 +8,7 @@ Guidance for agentic coding agents operating in this repository.
 
 Multi-module Gradle (Kotlin DSL) project. Module dependency chain: `utils` → `domain` → `api` ← `frontend`.
 
-- **Backend**: Kotlin 2.x, Spring Boot 4.x, Java 21, JPA (PostgreSQL), Redis (Valkey), Liquibase, MapStruct
+- **Backend**: Kotlin 2.x, Spring Boot 4.x, Java 21, JPA (PostgreSQL), Valkey (Redis), Liquibase, MapStruct
 - **Frontend**: Vue 3, TypeScript, Pinia, Vite, Bootstrap, Axios
 - **Infra**: Docker Compose, Helm, K3s, GraalVM native image
 - **API contract**: OpenAPI spec drives code generation for both backend controllers and frontend HTTP client
@@ -84,7 +84,7 @@ No Detekt, Ktlint, Checkstyle, or Spotless is configured. The only automated sta
 - One blank line between class members; two blank lines between top-level declarations.
 
 ### Immutability
-- Prefer `val` over `var` everywhere. Use `var` only when mutation is required.
+- Prefer `val` over `var` everywhere. Use `var` only when mutation is required (e.g., JPA entity fields updated by the framework).
 - Prefer immutable collections (`listOf`, `mapOf`) unless mutation is necessary.
 
 ### Null Safety
@@ -113,7 +113,7 @@ No Detekt, Ktlint, Checkstyle, or Spotless is configured. The only automated sta
 
 ### Imports
 - Prefer explicit single-symbol imports.
-- Wildcard imports are acceptable only for generated packages (`import io.flavien.demo.api.dto.*`) and standard `java.util.*` or `org.junit.jupiter.api.*`.
+- Wildcard imports are acceptable only for generated packages (`import io.flavien.demo.api.dto.*`) and `java.util.*` or `org.junit.jupiter.api.*`.
 
 ### Lambdas
 - Use `it` for single-argument lambdas when the meaning is clear from context.
@@ -139,7 +139,10 @@ Extend `RuntimeException` and annotate with `@ResponseStatus`. Spring MVC maps t
 
 ```kotlin
 @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "User not found")
-class UserNotFoundException(email: String) : RuntimeException("User ($email) not found")
+class UserNotFoundException : RuntimeException {
+    constructor(email: String) : super("User ($email) not found")
+    constructor(userId: Long) : super("User (id: $userId) not found")
+}
 ```
 
 ### Framework-Level Errors
@@ -161,7 +164,7 @@ redisRepo.findById(id) ?: throw SessionNotFoundException()
 ```
 
 ### Filter-Level Error Handling
-Catch all exceptions in `OncePerRequestFilter` implementations, log a warning, and return the appropriate HTTP status code directly on the response without propagating the exception.
+Catch all exceptions in `OncePerRequestFilter` implementations, log a warning, and write the HTTP status directly to the response — do not propagate the exception.
 
 ---
 
@@ -183,6 +186,7 @@ api/       io.flavien.demo.api            Controllers, mappers, filters, securit
            └── {session,user}/
                ├── mapper/               MapStruct @Mapper interfaces
                └── filter/               OncePerRequestFilter subclasses
+component-library/                       Shared Vue 3 components (fio-* prefix) + PasswordUtil
 frontend/  src/main/typescript           Vue 3 SPA (Vite, Pinia, Vue Router)
 ```
 
@@ -192,14 +196,21 @@ frontend/  src/main/typescript           Vue 3 SPA (Vite, Pinia, Vue Router)
 
 ## Code Generation
 
-The OpenAPI spec (`api/src/main/resources/openapi.yml`) is the single source of truth for the HTTP contract:
+The OpenAPI spec (`api/src/main/resources/openapi.yaml`) is the single source of truth for the HTTP contract:
 
 - **Backend**: generates controller interfaces and DTOs into `api/build/generated/openapi/src/main/kotlin/`
-  - `apiPackage = "io.flavien.demo.api.api"`
+  - `apiPackage = "io.flavien.demo.api.api"` — one interface per OpenAPI tag
   - `modelPackage = "io.flavien.demo.api.dto"`
 - **Frontend**: generates a TypeScript Axios client into `frontend/src/main/typescript/generated/api/`
 
 Do not edit generated files directly. All changes to the API contract must go through the OpenAPI spec.
+
+### OpenAPI Conventions
+- Tags map 1:1 to controller interfaces: `Session` → `SessionApi`
+- Security: `bearer: [user]`, `bearer: [admin]`, `bearer: [user, admin]`; public endpoints have no `security` block
+- `operationId` must exactly match the controller method name in camelCase
+- DTO naming: `XxxDto`, `XxxCreationDto`, `XxxUpdateDto`, `XxxUpdateAdminDto`, `XxxPageDto`
+- Reuse `$ref` schemas for common primitives: `email`, `password`, `proofOfWork`, `uuid`, `token`
 
 ---
 
@@ -213,19 +224,63 @@ domain/src/main/resources/db/changelog/
 
 Follow the existing changelog master file (`db.changelog-master.yaml`). Use `snake_case` for all table and column names.
 
+### Liquibase Conventions
+- Changeset IDs: `{version}-{action}-{object}` (e.g., `1.0.0-create-table-app_user`)
+- Always use `<preConditions onFail="MARK_RAN">` to make changesets idempotent
+- Primary key columns: `{table_singular}_id` with `BIGINT autoIncrement`
+- Always include `creation_date` and `update_date` timestamp columns
+- Enums stored as `VARCHAR(N)` strings; index names: `index_{table}_{column}`
+
 ---
 
 ## Testing Conventions
 
-- Unit tests use **MockK** (preferred over Mockito for Kotlin code) and **AssertJ** assertions.
-- Test fixture factories are `object` singletons named `XxxTestFactory` with `initXxx(...)` functions using default parameters for easy customization.
 - Test method names use backtick string literals describing the scenario:
   ```kotlin
   @Test
   fun `Should return 401 when token is expired`() { ... }
   ```
-- E2E tests extend a shared base class, spin up real containers via Testcontainers, and are ordered with `@TestMethodOrder(MethodOrderer.OrderAnnotation::class)`.
+- **MockK** is preferred for new tests. Use `mockk<T>()`, `every { }`, and `verify { }`.
+- Domain tests currently use Mockito (`@Mock`, `@InjectMocks`) — follow existing patterns in the file being modified. Use MockK for mocking Kotlin `object` singletons in all cases (`mockkObject` / `unmockkObject`).
+- **AssertJ** assertions are preferred: `assertThat(result).usingRecursiveComparison().isEqualTo(expected)`.
+- Use `OffsetDateTimeTestComparator` when comparing timestamps to allow ±1 minute tolerance.
+- Test fixture factories are `object` singletons named `XxxTestFactory` with `initXxx(...)` functions using default parameters:
+  ```kotlin
+  object UserTestFactory {
+      fun initUser(email: String = "test@test.com", role: UserRole = UserRole.USER) = User(...)
+  }
+  ```
+- Customize fixtures in individual tests with `.copy(field = value)` on data classes.
+- E2E tests extend a shared base class, spin up real containers via Testcontainers, and are ordered with `@TestMethodOrder(MethodOrderer.OrderAnnotation::class)`. Shared state between ordered test methods is stored in nullable `companion object` properties.
 - Use `@DynamicPropertySource` to inject container connection properties.
+
+---
+
+## Code Style — Frontend (Vue 3 / TypeScript)
+
+### TypeScript
+- `const` always; `var` never; `let` only when reassignment is required.
+- No `any` in business logic — use proper DTO types from the generated `api-generated` package.
+- All API calls go through the pre-configured Axios instances exported from `api-util.ts`.
+
+### Vue Components
+- Use `<script setup lang="ts">` (Composition API) for all components.
+- Destructure reactive store state with `storeToRefs(store)`.
+- Always call `onBeforeRouteLeave(store.close)` in view components to reset state on navigation.
+- All user-visible text uses `$t("key")` (vue-i18n). No hardcoded strings in templates.
+- Route components are lazy-loaded: `component: () => import("@/feature/feature.view.vue")`.
+- Authenticated routes use `meta: { authenticated: true }`.
+
+### Pinia Stores
+- Use the **options API style**: `defineStore("name", { state, getters, actions })`.
+- Always include a `computeAction: boolean` state flag to disable buttons during async calls.
+- Always include an `init()` action for setup and a `close()` action calling `this.$reset()`.
+- Route errors through `applicationStore.axiosException` or a local `.catch()` handler.
+
+### Component Library
+- Reusable components live in `component-library/` with a `fio-` prefix (e.g., `<fio-input-email>`).
+- Components emit `update:modelValue` (v-model) and `update:isValid` for validation state.
+- Use `defineOptions({ name: "ComponentName" })` for Vue DevTools naming.
 
 ---
 

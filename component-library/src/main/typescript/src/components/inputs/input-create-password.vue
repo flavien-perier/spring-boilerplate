@@ -1,7 +1,7 @@
 <template>
   <div class="form-outline mb-4">
     <input-password
-        :label="$t('password')"
+        :label="$t('fio.password')"
         v-model="password"
         :is-valid="lengthValid && lowercaseValid && uppercaseValid && numberValid && specialCharValid"
         @focus="showPasswordInfo = true"
@@ -14,29 +14,29 @@
     >
       <ul class="list-unstyled mb-0">
         <li>
-          <font-awesome-icon icon="circle-check" class="text-success" v-if="lengthValid" />
-          <font-awesome-icon icon="circle-xmark" class="text-danger" v-else />
-          {{ $t("password.constraint.length", { "minPasswordLength": minPasswordLength }) }}
+          <fio-icon icon="circle-check" class="text-success" v-if="lengthValid" />
+          <fio-icon icon="circle-xmark" class="text-danger" v-else />
+          {{ $t("fio.password.constraint.length", { "minPasswordLength": props.minPasswordLength }) }}
         </li>
         <li>
-          <font-awesome-icon icon="circle-check" class="text-success" v-if="lowercaseValid" />
-          <font-awesome-icon icon="circle-xmark" class="text-danger" v-else />
-          {{ $t("password.constraint.lowercase") }}
+          <fio-icon icon="circle-check" class="text-success" v-if="lowercaseValid" />
+          <fio-icon icon="circle-xmark" class="text-danger" v-else />
+          {{ $t("fio.password.constraint.lowercase") }}
         </li>
         <li>
-          <font-awesome-icon icon="circle-check" class="text-success" v-if="uppercaseValid" />
-          <font-awesome-icon icon="circle-xmark" class="text-danger" v-else />
-          {{ $t("password.constraint.uppercase") }}
+          <fio-icon icon="circle-check" class="text-success" v-if="uppercaseValid" />
+          <fio-icon icon="circle-xmark" class="text-danger" v-else />
+          {{ $t("fio.password.constraint.uppercase") }}
         </li>
         <li>
-          <font-awesome-icon icon="circle-check" class="text-success" v-if="numberValid" />
-          <font-awesome-icon icon="circle-xmark" class="text-danger" v-else />
-          {{ $t("password.constraint.number") }}
+          <fio-icon icon="circle-check" class="text-success" v-if="numberValid" />
+          <fio-icon icon="circle-xmark" class="text-danger" v-else />
+          {{ $t("fio.password.constraint.number") }}
         </li>
         <li>
-          <font-awesome-icon icon="circle-check" class="text-success" v-if="specialCharValid" />
-          <font-awesome-icon icon="circle-xmark" class="text-danger" v-else />
-          {{ $t("password.constraint.special-character") }}
+          <fio-icon icon="circle-check" class="text-success" v-if="specialCharValid" />
+          <fio-icon icon="circle-xmark" class="text-danger" v-else />
+          {{ $t("fio.password.constraint.special-character") }}
         </li>
       </ul>
     </div>
@@ -44,7 +44,7 @@
 
   <div class="form-outline mb-4">
     <input-password
-        :label="$t('repeat-password')"
+        :label="$t('fio.repeat-password')"
         v-model="confirmPassword"
         :is-valid="passwordMatch"
         @input="validatePassword"
@@ -54,25 +54,22 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
-import { passwordUtil } from "@/core/util/password-util";
-import { useApplicationStore } from "@/core/application.store";
-import InputPassword from "@/component-library/input/input-password.vue";
+import { passwordUtil } from "../../utils/password-util";
+import InputPassword from "./input-password.vue";
 
 defineOptions({
-  name: "InputCreatePassword"
+  name: "FioInputCreatePassword"
 });
 
-const { modelValue } = defineProps({
+const props = defineProps({
   modelValue: { type: String, default: "" },
+  minPasswordLength: { type: Number, default: 8 },
 });
 
 const emit = defineEmits(["update:modelValue", "update:isValid"]);
 
-const applicationStore = useApplicationStore();
-const minPasswordLength = computed(() => applicationStore.configuration.minPasswordLength);
-
 const password = computed({
-  get: () => modelValue,
+  get: () => props.modelValue,
   set: (value) => emit("update:modelValue", value)
 });
 const confirmPassword = ref("");
@@ -87,7 +84,7 @@ const passwordMatch = ref(false);
 const showPasswordInfo = ref(false);
 
 function validatePassword() {
-  lengthValid.value = passwordUtil.checkPasswordLength(password.value);
+  lengthValid.value = passwordUtil.checkPasswordLength(password.value, props.minPasswordLength);
   lowercaseValid.value = passwordUtil.checkPasswordLowercase(password.value);
   uppercaseValid.value = passwordUtil.checkPasswordUppercase(password.value);
   numberValid.value = passwordUtil.checkPasswordNumber(password.value);
@@ -112,7 +109,10 @@ onMounted(() => {
   validatePassword();
 });
 
-watch(() => modelValue, () => {
+watch(() => props.modelValue, () => {
+  validatePassword();
+});
+watch(() => props.minPasswordLength, () => {
   validatePassword();
 });
 </script>

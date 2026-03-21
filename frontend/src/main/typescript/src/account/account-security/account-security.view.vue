@@ -4,21 +4,21 @@
       <img src="../../assets/img/undraw_security_on.svg" class="img-fluid" alt="Security image">
     </div>
     <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-      <h2 class="mb-4 text-center">{{ $t("sessions") }}</h2>
+      <h2 class="mb-4 text-center">{{ $t("menu.sessions") }}</h2>
 
       <table class="table">
         <thead>
         <tr>
-          <th scope="col">{{ $t("date") }}</th>
-          <th scope="col">{{ $t("actions") }}</th>
+          <th scope="col">{{ $t("field.date") }}</th>
+          <th scope="col">{{ $t("field.actions") }}</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="session in sessions">
           <td>{{ dateUtil(session.creationDate) }}</td>
           <td><a class="link-offset-1 cursor-pointer" @click="accountSecurityStore.deleteSession(session.uuid)">
-            <font-awesome-icon icon="trash" />
-            {{ $t("delete") }}
+            <fio-icon icon="trash" />
+            {{ $t("action.delete") }}
           </a></td>
         </tr>
         </tbody>
@@ -27,9 +27,10 @@
   </div>
 
   <div class="d-flex justify-content-center mt-4">
-    <button type="button" class="btn btn-danger mt-3 mb-4" @click="accountSecurityStore.deleteAccount">
-      {{ $t("delete-account") }}
-    </button>
+    <fio-input-button variant="danger"
+        :label="$t('action.delete-account')"
+        @click="accountSecurityStore.deleteAccount"
+    />
   </div>
 </template>
 

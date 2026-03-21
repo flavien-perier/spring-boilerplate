@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import {userApi} from "@/core/util/api-util";
 import {useApplicationStore} from "@/core/application.store";
-import {passwordUtil} from "@/core/util/password-util";
+import { passwordUtil } from "@generated/component-library";
 
 const applicationStore = useApplicationStore();
 
@@ -36,7 +36,7 @@ export const useAccountInformationStore = defineStore("account-information", {
         password: this.password,
         proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
       }).then(() => {
-        applicationStore.sendNotification("info", "account-updated");
+        applicationStore.sendNotification("info", "notification.account-updated");
         this.password = "";
       }).catch(applicationStore.axiosException).finally(() => { this.computeAction = false });
     },

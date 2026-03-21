@@ -13,17 +13,18 @@
         @blur="emitBlur($event)"
     />
     <span class="input-group-text cursor-pointer" @click="showPassword = !showPassword" >
-        <font-awesome-icon v-if="!showPassword" icon="eye" />
-        <font-awesome-icon v-else icon="eye-slash" />
+        <fio-icon v-if="!showPassword" icon="eye" />
+        <fio-icon v-else icon="eye-slash" />
       </span>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import FioIcon from "../fio-icon.vue";
 
 defineOptions({
-  name: "InputPassword",
+  name: "FioInputPassword",
 });
 
 const { modelValue } = defineProps({

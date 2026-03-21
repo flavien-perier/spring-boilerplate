@@ -1,7 +1,5 @@
 import { Buffer } from "buffer";
 import * as scrypt from "scrypt-js";
-import {useApplicationStore} from "@/core/application.store";
-
 class PasswordUtil {
   public proofOfWork(password: string, salt: string): string {
     const passwordBuffer = new Buffer(password);
@@ -15,16 +13,16 @@ class PasswordUtil {
     return scrypt.syncScrypt(passwordBuffer, saltBuffer, N, r, p, dkLen).join("");
   }
 
-  public checkPassword(password: string): boolean {
-    return this.checkPasswordLength(password) &&
+  public checkPassword(password: string, minLength: number = 8): boolean {
+    return this.checkPasswordLength(password, minLength) &&
       this.checkPasswordNumber(password) &&
       this.checkPasswordUppercase(password) &&
       this.checkPasswordLowercase(password) &&
       this.checkSpecialCharacter(password);
   }
 
-  public checkPasswordLength(password: string): boolean {
-    return password.length >= useApplicationStore().configuration.minPasswordLength;
+  public checkPasswordLength(password: string, minLength: number = 8): boolean {
+    return password.length >= minLength;
   }
 
   public checkPasswordNumber(password: string): boolean {

@@ -5,26 +5,24 @@
         <img src="../assets/img/undraw_create_account.svg" class="img-fluid" alt="Create account image">
       </div>
       <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-        <h1 class="mb-4 text-center">{{ $t("create-account") }}</h1>
+        <h1 class="mb-4 text-center">{{ $t("menu.create-account") }}</h1>
 
-        <input-email
+        <fio-input-email
             v-model="email"
             @update:isValid="value => isEmailValid = value"
         />
 
-        <input-create-password
+        <fio-input-create-password
             v-model="password"
+            :min-password-length="applicationStore.configuration.minPasswordLength"
             @update:isValid="value => isPasswordValid = value"
         />
 
-        <div class="form-outline mb-4">
-          <input
-              type="button"
-              class="btn btn-primary form-control form-control-lg"
-              :value="$t('create')"
-              :disabled="!buttonEnabled"
-              @click="createAccountStore.createAccount" />
-        </div>
+        <fio-input-button
+            :label="$t('action.create')"
+            :disabled="!buttonEnabled"
+            @click="createAccountStore.createAccount"
+        />
       </div>
     </div>
   </section>
@@ -32,11 +30,11 @@
 
 <script setup lang="ts">
 import {useCreateAccountStore} from "@/create-account/create-account.store";
+import {useApplicationStore} from "@/core/application.store";
 import {storeToRefs} from "pinia";
 import {onBeforeRouteLeave} from "vue-router";
-import InputCreatePassword from "@/component-library/input/input-create-password.vue";
-import InputEmail from "@/component-library/input/input-email.vue";
 const createAccountStore = useCreateAccountStore()
+const applicationStore = useApplicationStore()
 
 const { email, password, isPasswordValid, isEmailValid, buttonEnabled } = storeToRefs(createAccountStore);
 

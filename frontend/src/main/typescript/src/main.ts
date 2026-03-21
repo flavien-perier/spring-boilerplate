@@ -1,39 +1,11 @@
 import { createApp, markRaw } from "vue";
 import { createPinia } from "pinia";
-import "@/assets/scss/index.scss";
-import {
-  faHome,
-  faUser,
-  faFlag,
-  faGear,
-  faTrash,
-  faSpinner,
-  faRightToBracket,
-  faCircleCheck,
-  faCircleXmark,
-  faEye,
-  faEyeSlash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import "@generated/component-library/style.css";
+import componentLibrary from "@generated/component-library";
 
 import App from "@/core/application.view.vue";
 import i18n from "./i18n";
 import router from "./router";
-
-library.add(
-  faHome,
-  faUser,
-  faFlag,
-  faGear,
-  faTrash,
-  faSpinner,
-  faRightToBracket,
-  faCircleCheck,
-  faCircleXmark,
-  faEye,
-  faEyeSlash,
-);
 
 const pinia = createPinia();
 pinia.use(({ store }) => {
@@ -42,8 +14,8 @@ pinia.use(({ store }) => {
 });
 
 createApp(App)
-  .component("font-awesome-icon", FontAwesomeIcon)
   .use(pinia)
   .use(router)
   .use(i18n)
+  .use(componentLibrary)
   .mount("#app");

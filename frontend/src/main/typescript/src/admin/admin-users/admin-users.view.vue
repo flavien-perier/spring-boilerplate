@@ -1,19 +1,19 @@
 <template>
-  <input type="text" class="form-control mb-2" :placeholder="$t('query')" v-model="query" @input="adminUsersStore.findUsers()">
+  <input type="text" class="form-control mb-2" :placeholder="$t('field.query')" v-model="query" @input="adminUsersStore.findUsers()">
 
   <table class="table">
     <thead>
     <tr>
-      <th scope="col">{{ $t("user") }}</th>
-      <th scope="col">{{ $t("actions") }}</th>
+      <th scope="col">{{ $t("field.user") }}</th>
+      <th scope="col">{{ $t("field.actions") }}</th>
     </tr>
     </thead>
     <tbody>
     <tr v-for="user in users">
       <td>{{ user.email }}</td>
       <td><a class="link-offset-1 cursor-pointer" @click="adminUsersStore.deleteUser(user.email)">
-        <font-awesome-icon icon="trash" />
-        {{ $t("delete") }}
+        <fio-icon icon="trash" />
+        {{ $t("action.delete") }}
       </a></td>
     </tr>
     </tbody>

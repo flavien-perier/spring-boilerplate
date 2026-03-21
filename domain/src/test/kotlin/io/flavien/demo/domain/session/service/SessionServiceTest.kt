@@ -5,6 +5,7 @@ import io.flavien.demo.domain.session.SessionTestFactory
 import io.flavien.demo.domain.session.exception.BadPasswordException
 import io.flavien.demo.domain.session.exception.BadRefreshTokenException
 import io.flavien.demo.domain.session.exception.UserIsDisabledException
+import io.flavien.demo.domain.user.repository.UserRepository
 import io.flavien.demo.domain.user.service.UserService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -30,7 +31,10 @@ class SessionServiceTest {
 
     @Mock
     var userService: UserService? = null
-    
+
+    @Mock
+    var userRepository: UserRepository? = null
+
     @Mock
     var passwordService: PasswordService? = null
 
@@ -50,6 +54,7 @@ class SessionServiceTest {
 
         `when`(userService!!.get(email)).thenReturn(user)
         `when`(passwordService!!.testPassword(password, user.passwordSalt, user.password)).thenReturn(true)
+        `when`(userRepository!!.save(user)).thenReturn(user)
         `when`(refreshTokenService!!.create(user.id!!, user.role)).thenReturn(refreshToken)
         `when`(accessTokenService!!.create(refreshToken)).thenReturn(accessToken)
 
@@ -59,6 +64,7 @@ class SessionServiceTest {
         // Then
         verify(userService!!).get(email)
         verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
+        verify(userRepository!!).save(user)
         verify(refreshTokenService!!).create(user.id!!, user.role)
         verify(accessTokenService!!).create(refreshToken)
 

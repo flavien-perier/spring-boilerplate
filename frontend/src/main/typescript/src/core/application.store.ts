@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import type { Notification, NotificationType } from "@/core/model/notification";
 import {applicationApi, sessionApi, userApi, setAccessToken} from "@/core/util/api-util";
-import type {UserDto} from "api-generated";
+import type {UserDto} from "@generated/api";
 import {cookieUtil} from "@/core/util/cookie-util";
 
 const NOTIFICATION_DURATION = 3000;
@@ -23,7 +23,7 @@ export const useApplicationStore = defineStore("application", {
       show: false,
       title: "",
       content: "",
-      resolveMessage: "validate",
+      resolveMessage: "action.validate",
       rejectMessage: "",
       resolve: (value: unknown) => {},
       reject: () => {},

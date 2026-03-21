@@ -29,7 +29,7 @@ export const useForgotPasswordStore = defineStore("forgot-password", {
       this.computeAction = true;
 
       userApi.forgotPassword(this.email).then(() => {
-        applicationStore.sendNotification("info", "email-sent");
+        applicationStore.sendNotification("info", "notification.email-sent");
         this.$router.push({ name: "login" });
       }).catch(applicationStore.axiosException).finally(() => { this.computeAction = false });
     },

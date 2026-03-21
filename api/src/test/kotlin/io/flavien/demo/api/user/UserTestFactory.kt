@@ -5,6 +5,7 @@ import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.entity.UserActivation
 import io.flavien.demo.domain.user.model.UserRole
 import io.flavien.demo.domain.user.model.UserUpdate
+import java.time.OffsetDateTime
 
 object UserTestFactory {
 
@@ -15,9 +16,10 @@ object UserTestFactory {
         passwordSalt: String = "salt",
         role: UserRole = UserRole.USER,
         enabled: Boolean = true,
+        lastLogin: OffsetDateTime = OffsetDateTime.now(),
         id: Long? = null,
     ): User {
-        val user = User(email, password, proofOfWork, passwordSalt, role, enabled)
+        val user = User(email, password, proofOfWork, passwordSalt, role, enabled, lastLogin)
         if (id != null) {
             user.id = id
         }

@@ -1,6 +1,6 @@
 <template>
   <section class="container">
-    <h1>{{ $t("home") }}</h1>
+    <h1>{{ $t("menu.home") }}</h1>
 
     <div class="mb-5">
       <img src="../assets/img/undraw_hello.svg" class="img-fluid d-block mx-auto" alt="Hello">

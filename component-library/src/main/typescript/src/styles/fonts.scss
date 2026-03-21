@@ -1,0 +1,76 @@
+@use "variables" as *;
+@use "colors" as *;
+
+@font-face {
+  font-family: "medium";
+  src: local("arial");
+}
+
+@font-face {
+  font-family: "bold";
+  src: local("arial");
+}
+
+@font-face {
+  font-family: "light";
+  src: local("arial");
+}
+
+body {
+  font-family: medium, sans-serif;
+  font-size: $font-size;
+  line-height: 1;
+  color: $secondary-darker-70;
+}
+
+strong {
+  font-family: bold, sans-serif;
+  font-weight: normal;
+  color: $secondary-darker-80;
+}
+
+.low {
+  font-family: light, sans-serif;
+  color: $secondary-darker-60;
+  font-size: $font-s-size;
+}
+
+@mixin title-style {
+  font-family: bold, sans-serif;
+  text-transform: uppercase;
+  color: $secondary-darker-90;
+  margin-bottom: $margin-s;
+}
+
+h1 {
+  @include title-style;
+  font-size: $h1-size;
+}
+
+$h2-size: calc($h1-size - (($h1-size - $h6-size) * 1 / 5));
+h2 {
+  @include title-style;
+  font-size: $h2-size;
+}
+
+$h3-size: calc($h1-size - (($h1-size - $h6-size) * 2 / 5));
+h3 {
+  @include title-style;
+  font-size: $h3-size;
+}
+
+$h4-size: calc($h1-size - (($h1-size - $h6-size) * 3 / 5));
+h4 {
+  @include title-style;
+  font-size: $h4-size;
+}
+
+$h5-size: calc($h1-size - (($h1-size - $h6-size) * 4 / 5));
+h5 {
+  @include title-style;
+  font-size: $h5-size;
+}
+
+h6 {
+  font-size: $h6-size;
+}

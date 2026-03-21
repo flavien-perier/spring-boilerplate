@@ -562,6 +562,10 @@ components:
           $ref: "#/components/schemas/email"
         role:
           $ref: "#/components/schemas/Role"
+        lastLogin:
+          type: string
+          format: date-time
+          description: The date and time of the last login.
 
     UserCreationDto:
       type: object

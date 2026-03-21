@@ -1,0 +1,17 @@
+@use "colors" as *;
+
+$margin-xxs: 0.25rem;
+$margin-xs: 0.5rem;
+$margin-s: 0.75rem;
+$margin: 1rem;
+$margin-l: 1.25rem;
+$margin-xl: 1.5rem;
+$margin-xxl: 1.75rem;
+
+$shadow: $primary-darker-80 0 15px 25px, $primary-darker-80 0 5px 10px;
+
+$font-s-size: 0.75rem;
+$font-size: 1rem;
+$font-l-size: 1.25rem;
+$h1-size: 1.5rem;
+$h6-size: 1.1rem;
