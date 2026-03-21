@@ -1,4 +1,4 @@
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
 export function dateUtil(value: string | Date): string {
   let date = typeof value === "string" ? new Date(value) : value;

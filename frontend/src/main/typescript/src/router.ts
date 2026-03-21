@@ -5,7 +5,7 @@ import changePasswordRouter from "@/change-password/change-password.router";
 import createAccountRouter from "@/create-account/create-account.router";
 import forgotPasswordRouter from "@/forgot-password/forgot-password.router";
 import accountRouter from "@/account/account.router";
-import {useApplicationStore} from "@/core/application.store";
+import { useApplicationStore } from "@/core/application.store";
 import adminRouter from "@/admin/admin.router";
 
 const router = createRouter({

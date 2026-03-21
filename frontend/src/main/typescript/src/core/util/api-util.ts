@@ -1,5 +1,10 @@
-import {Configuration, ApplicationApiFactory, SessionApiFactory, UserApiFactory} from "api-generated";
-import {useApplicationStore} from "@/core/application.store";
+import {
+  Configuration,
+  ApplicationApiFactory,
+  SessionApiFactory,
+  UserApiFactory,
+} from "@generated/api";
+import { useApplicationStore } from "@/core/application.store";
 import axios from "axios";
 import axiosRetry from "axios-retry";
 
@@ -16,13 +21,19 @@ const axiosInstance = axios.create({
 });
 
 const configuration = new Configuration();
-const applicationApi = ApplicationApiFactory(configuration, BASE_PATH, axiosInstance);
+const applicationApi = ApplicationApiFactory(
+  configuration,
+  BASE_PATH,
+  axiosInstance
+);
 const userApi = UserApiFactory(configuration, BASE_PATH, axiosInstance);
 const sessionApi = SessionApiFactory(configuration, BASE_PATH, axiosInstance);
 
 function setAccessToken(accessToken?: string) {
   if (accessToken) {
-    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+    axiosInstance.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${accessToken}`;
   } else {
     axiosInstance.defaults.headers.common["Authorization"] = undefined;
   }
@@ -31,9 +42,15 @@ function setAccessToken(accessToken?: string) {
 axiosRetry(axiosInstance, {
   retries: 1,
   retryCondition: (error) => {
-    const isSession = error.response?.config?.url === "/api/session" && error.response?.config?.method == "post";
+    const isSession =
+      error.response?.config?.url === "/api/session" &&
+      error.response?.config?.method == "post";
     const status = error?.response?.status || 0;
-    return (status === 401 || status === 403) && !isSession && useApplicationStore().isAuthenticated;
+    return (
+      (status === 401 || status === 403) &&
+      !isSession &&
+      useApplicationStore().isAuthenticated
+    );
   },
   retryDelay: (retryCount) => {
     return 500 * retryCount;

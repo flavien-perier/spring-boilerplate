@@ -6,13 +6,14 @@ import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.exception.ChangePasswordFailedException
 import io.flavien.demo.domain.user.repository.ForgotPasswordRepository
 import io.flavien.demo.utils.RandomUtil
+import io.github.resilience4j.retry.annotation.Retry
+import org.slf4j.LoggerFactory
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 import kotlin.jvm.optionals.getOrNull
-
 
 @Service
 class ForgotPasswordService(
@@ -21,7 +22,7 @@ class ForgotPasswordService(
     private val emailSender: JavaMailSender,
     private val mailProperties: MailProperties,
 ) {
-
+    @Retry(name = "mailSend")
     fun sendForgotPasswordToken(user: User) {
         var forgotPasswordToken = RandomUtil.randomString(64)
         while (forgotPasswordRepository.existsById(forgotPasswordToken)) {
@@ -42,8 +43,10 @@ class ForgotPasswordService(
         message.subject = "Change password"
         message.text = templateEngine.process("forgot-password", context)
         emailSender.send(message)
+        logger.info("Sent forgot password email to ${user.email}")
     }
 
+    @Retry(name = "mailSend")
     fun validate(token: String): ForgotPassword {
         val forgotPassword = forgotPasswordRepository.findById(token).getOrNull() ?: throw ChangePasswordFailedException()
 
@@ -52,8 +55,12 @@ class ForgotPasswordService(
         return forgotPassword
     }
 
-
+    @Retry(name = "mailSend")
     fun deleteByUserId(userId: Long) {
         forgotPasswordRepository.deleteByUserId(userId)
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(ForgotPasswordService::class.java)
     }
 }

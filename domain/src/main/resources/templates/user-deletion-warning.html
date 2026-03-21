@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Account deletion warning</title>
+</head>
+<body>
+<h1>Account deletion warning</h1>
+
+<div>
+  Your account (<span th:text="${email}"></span>) has been inactive for 11 months and will be deleted in approximately 1 month.
+  To keep your account, please <a th:href="@{${domainLinks}+'/login'}">log in</a>.
+</div>
+</body>
+</html>

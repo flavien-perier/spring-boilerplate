@@ -1,0 +1,68 @@
+LoginDto:
+  type: object
+  description: Authentication information.
+  required:
+    - email
+    - password
+    - proofOfWork
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"
+
+SessionDto:
+  type: object
+  description: Authentication Session.
+  required:
+    - accessToken
+  properties:
+    refreshToken:
+      $ref: "common.yaml#/refreshToken"
+    accessToken:
+      $ref: "common.yaml#/accessToken"
+
+SessionWebDto:
+  type: object
+  description: Authentication Session.
+  required:
+    - accessToken
+  properties:
+    accessToken:
+      $ref: "common.yaml#/accessToken"
+
+SessionRenewalDto:
+  type: object
+  description: Information required to renew a session.
+  required:
+    - email
+    - refreshToken
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    refreshToken:
+      $ref: "common.yaml#/refreshToken"
+
+SessionRenewalWebDto:
+  type: object
+  description: Information required to renew a session with token.
+  required:
+    - email
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+
+RefreshTokenPropertiesDto:
+  type: object
+  description: Information identifying a refresh token.
+  required:
+    - uuid
+    - creationDate
+  properties:
+    uuid:
+      $ref: "common.yaml#/uuid"
+    creationDate:
+      type: string
+      format: date-time

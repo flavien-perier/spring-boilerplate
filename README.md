@@ -45,7 +45,6 @@ Profile files for optimizing GraalVM compilation are generated using tests. Proj
 
 - [Vue3](https://vuejs.org/)
 - [Pinia](https://pinia.vuejs.org/)
-- [Bootstrap](https://getbootstrap.com/)
 - [Font Awesome](https://fontawesome.com/)
 - [Undraw](https://undraw.co/)
 - [Axios](https://axios-http.com/)

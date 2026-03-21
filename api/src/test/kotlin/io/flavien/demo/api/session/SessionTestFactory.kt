@@ -5,10 +5,9 @@ import io.flavien.demo.domain.session.entity.RefreshToken
 import io.flavien.demo.domain.session.model.Session
 import io.flavien.demo.domain.user.model.UserRole
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 object SessionTestFactory {
-
     fun initRefreshToken(
         id: String = "test",
         uuid: UUID = UUID.randomUUID(),
@@ -20,7 +19,7 @@ object SessionTestFactory {
         uuid,
         userId,
         role,
-        creationDate
+        creationDate,
     )
 
     fun initAccessToken(
@@ -34,7 +33,7 @@ object SessionTestFactory {
         userId,
         role,
         refreshTokenId,
-        creationDate
+        creationDate,
     )
 
     fun initSession(
@@ -42,6 +41,6 @@ object SessionTestFactory {
         accessToken: AccessToken = initAccessToken(refreshTokenId = refreshToken?.id ?: "refreshTokenId"),
     ) = Session(
         refreshToken,
-        accessToken
+        accessToken,
     )
 }

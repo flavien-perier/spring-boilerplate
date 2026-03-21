@@ -1,0 +1,191 @@
+@use "variables" as *;
+
+// Margin
+.ml-xxs {
+  margin-left: $margin-xxs;
+}
+.ml-xs {
+  margin-left: $margin-xs;
+}
+.ml-s {
+  margin-left: $margin-s;
+}
+.ml {
+  margin-left: $margin;
+}
+.ml-l {
+  margin-left: $margin-l;
+}
+.ml-xl {
+  margin-left: $margin-xl;
+}
+.ml-xxl {
+  margin-left: $margin-xxl;
+}
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-xxs {
+  margin-right: $margin-xxs;
+}
+.mr-xs {
+  margin-right: $margin-xs;
+}
+.mr-s {
+  margin-right: $margin-s;
+}
+.mr {
+  margin-right: $margin;
+}
+.mr-l {
+  margin-right: $margin-l;
+}
+.mr-xl {
+  margin-right: $margin-xl;
+}
+.mr-xxl {
+  margin-right: $margin-xxl;
+}
+.mr-auto {
+  margin-right: auto;
+}
+
+.mt-xxs {
+  margin-top: $margin-xxs;
+}
+.mt-xs {
+  margin-top: $margin-xs;
+}
+.mt-s {
+  margin-top: $margin-s;
+}
+.mt {
+  margin-top: $margin;
+}
+.mt-l {
+  margin-top: $margin-l;
+}
+.mt-xl {
+  margin-top: $margin-xl;
+}
+.mt-xxl {
+  margin-top: $margin-xxl;
+}
+.mt-auto {
+  margin-top: auto;
+}
+
+.mb-xxs {
+  margin-bottom: $margin-xxs;
+}
+.mb-xs {
+  margin-bottom: $margin-xs;
+}
+.mb-s {
+  margin-bottom: $margin-s;
+}
+.mb {
+  margin-bottom: $margin;
+}
+.mb-l {
+  margin-bottom: $margin-l;
+}
+.mb-xl {
+  margin-bottom: $margin-xl;
+}
+.mb-xxl {
+  margin-bottom: $margin-xxl;
+}
+.mb-auto {
+  margin-bottom: auto;
+}
+
+// Padding
+.pl-xxs {
+  padding-left: $margin-xxs;
+}
+.pl-xs {
+  padding-left: $margin-xs;
+}
+.pl-s {
+  padding-left: $margin-s;
+}
+.pl {
+  padding-left: $margin;
+}
+.pl-l {
+  padding-left: $margin-l;
+}
+.pl-xl {
+  padding-left: $margin-xl;
+}
+.pl-xxl {
+  padding-left: $margin-xxl;
+}
+
+.pr-xxs {
+  padding-right: $margin-xxs;
+}
+.pr-xs {
+  padding-right: $margin-xs;
+}
+.pr-s {
+  padding-right: $margin-s;
+}
+.pr {
+  padding-right: $margin;
+}
+.pr-l {
+  padding-right: $margin-l;
+}
+.pr-xl {
+  padding-right: $margin-xl;
+}
+.pr-xxl {
+  padding-right: $margin-xxl;
+}
+
+.pt-xxs {
+  padding-top: $margin-xxs;
+}
+.pt-xs {
+  padding-top: $margin-xs;
+}
+.pt-s {
+  padding-top: $margin-s;
+}
+.pt {
+  padding-top: $margin;
+}
+.pt-l {
+  padding-top: $margin-l;
+}
+.pt-xl {
+  padding-top: $margin-xl;
+}
+.pt-xxl {
+  padding-top: $margin-xxl;
+}
+
+.pb-xxs {
+  padding-bottom: $margin-xxs;
+}
+.pb-xs {
+  padding-bottom: $margin-xs;
+}
+.pb-s {
+  padding-bottom: $margin-s;
+}
+.pb {
+  padding-bottom: $margin;
+}
+.pb-l {
+  padding-bottom: $margin-l;
+}
+.pb-xl {
+  padding-bottom: $margin-xl;
+}
+.pb-xxl {
+  padding-bottom: $margin-xxl;
+}

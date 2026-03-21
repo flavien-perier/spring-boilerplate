@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
-import {userApi} from "@/core/util/api-util";
-import {useApplicationStore} from "@/core/application.store";
-import {passwordUtil} from "@/core/util/password-util";
-import type {UserDto} from "api-generated";
+import { userApi } from "@/core/util/api-util";
+import { useApplicationStore } from "@/core/application.store";
+import { passwordUtil } from "@generated/component-library";
+import type { UserDto } from "@generated/api";
 
 const applicationStore = useApplicationStore();
 
@@ -17,13 +17,16 @@ export const useAdminUsersStore = defineStore("admin-users", {
       this.findUsers();
     },
     findUsers() {
-      userApi.findUsers(this.query)
-        .then(response => {
+      userApi
+        .findUsers(this.query)
+        .then((response) => {
           this.users = response.data.content;
-        }).catch(applicationStore.axiosException);
+        })
+        .catch(applicationStore.axiosException);
     },
     deleteUser(email: string) {
-      userApi.deleteUser(email)
+      userApi
+        .deleteUser(email)
         .then(this.findUsers)
         .catch(applicationStore.axiosException);
     },

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
-import {useApplicationStore} from "@/core/application.store";
-import {sessionApi, userApi} from "@/core/util/api-util";
-import {passwordUtil} from "@/core/util/password-util";
+import { useApplicationStore } from "@/core/application.store";
+import { sessionApi, userApi } from "@/core/util/api-util";
+import { passwordUtil } from "@generated/component-library";
 
 const applicationStore = useApplicationStore();
 
@@ -13,19 +13,29 @@ export const useLoginStore = defineStore("login", {
     isEmailValid: false,
   }),
   getters: {
-    buttonEnabled: (state) => state.email !== ""
-      && state.isEmailValid
-      && state.password !== ""
-      && !state.computeAction,
+    buttonEnabled: (state) =>
+      state.email !== "" &&
+      state.isEmailValid &&
+      state.password !== "" &&
+      !state.computeAction,
   },
   actions: {
     init(activationToken?: string) {
       if (activationToken) {
-        userApi.activateUser(activationToken).then(() => {
-          applicationStore.sendNotification("info", "account-activated");
-        }).catch(() => {
-          applicationStore.sendNotification("alert", "account-activation-failed");
-        });
+        userApi
+          .activateUser(activationToken)
+          .then(() => {
+            applicationStore.sendNotification(
+              "info",
+              "notification.account-activated"
+            );
+          })
+          .catch(() => {
+            applicationStore.sendNotification(
+              "danger",
+              "notification.account-activation-failed"
+            );
+          });
       }
     },
 
@@ -39,18 +49,27 @@ export const useLoginStore = defineStore("login", {
       }
       this.computeAction = true;
 
-      sessionApi.loginWeb({
-        email: this.email,
-        password: this.password,
-        proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
-      }).then(response => {
-        const { accessToken } = response.data;
-        applicationStore.login(accessToken);
-        this.$router.push({ name: "home" });
-      }).catch(() => {
-        this.password = "";
-        applicationStore.sendNotification("alert", "authentication-failed");
-      }).finally(() => { this.computeAction = false });
+      sessionApi
+        .loginWeb({
+          email: this.email,
+          password: this.password,
+          proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
+        })
+        .then((response) => {
+          const { accessToken } = response.data;
+          applicationStore.login(accessToken);
+          this.$router.push({ name: "home" });
+        })
+        .catch(() => {
+          this.password = "";
+          applicationStore.sendNotification(
+            "danger",
+            "notification.authentication-failed"
+          );
+        })
+        .finally(() => {
+          this.computeAction = false;
+        });
     },
   },
 });

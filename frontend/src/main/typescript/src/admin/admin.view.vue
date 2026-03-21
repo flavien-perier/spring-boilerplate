@@ -1,22 +1,25 @@
 <template>
-  <section class="container">
-    <h1>{{ $t("administration") }}</h1>
-    <ul class="nav nav-tabs mt-3 mb-2">
-      <li class="nav-item">
-        <router-link
-            :to="{ name: 'admin-users' }"
-            class="nav-link"
-            :class="{ active: $route.name == 'admin-users' }"
-        >
-          {{ $t("users") }}
-        </router-link>
-      </li>
-    </ul>
-
-    <RouterView />
-  </section>
+  <fio-page-view :title="$t('menu.administration')">
+    <fio-tab-layout :tabs="adminTabs">
+      <RouterView />
+    </fio-tab-layout>
+  </fio-page-view>
 </template>
 
 <script setup lang="ts">
-import {RouterView} from "vue-router";
+import { computed } from "vue";
+import { RouterView, useRouter, useRoute } from "vue-router";
+import type { TabElement } from "@generated/component-library";
+
+const router = useRouter();
+const route = useRoute();
+
+const adminTabs = computed<TabElement[]>(() => [
+  {
+    i18nKey: "menu.users",
+    isActive: route.name === "admin-users",
+    action: () => router.push({ name: "admin-users" }),
+  },
+]);
 </script>
+

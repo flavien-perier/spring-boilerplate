@@ -3,8 +3,10 @@ package io.flavien.demo.domain.comparator
 import java.time.OffsetDateTime
 
 class OffsetDateTimeTestComparator : Comparator<OffsetDateTime> {
-
-    override fun compare(o1: OffsetDateTime, o2: OffsetDateTime): Int {
+    override fun compare(
+        o1: OffsetDateTime,
+        o2: OffsetDateTime,
+    ): Int {
         val min = o1.minusMinutes(1)
         val max = o1.plusMinutes(1)
 

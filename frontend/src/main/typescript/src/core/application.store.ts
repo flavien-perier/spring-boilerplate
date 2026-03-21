@@ -1,8 +1,13 @@
 import { defineStore } from "pinia";
 import type { Notification, NotificationType } from "@/core/model/notification";
-import {applicationApi, sessionApi, userApi, setAccessToken} from "@/core/util/api-util";
-import type {UserDto} from "api-generated";
-import {cookieUtil} from "@/core/util/cookie-util";
+import {
+  applicationApi,
+  sessionApi,
+  userApi,
+  setAccessToken,
+} from "@/core/util/api-util";
+import type { UserDto } from "@generated/api";
+import { cookieUtil } from "@/core/util/cookie-util";
 
 const NOTIFICATION_DURATION = 3000;
 const MAX_NOTIFICATIONS = 5;
@@ -23,7 +28,7 @@ export const useApplicationStore = defineStore("application", {
       show: false,
       title: "",
       content: "",
-      resolveMessage: "validate",
+      resolveMessage: "action.validate",
       rejectMessage: "",
       resolve: (value: unknown) => {},
       reject: () => {},
@@ -36,9 +41,9 @@ export const useApplicationStore = defineStore("application", {
     async init() {
       const email = cookieUtil.get(EMAIL_LOCAL_STORAGE_KEY) || "";
 
-      await applicationApi.getConf().then(response => {
+      await applicationApi.getConf().then((response) => {
         this.configuration = response.data;
-      })
+      });
 
       await this.renew(email);
       this.initOk = true;
@@ -57,17 +62,25 @@ export const useApplicationStore = defineStore("application", {
         type,
       });
 
-      setTimeout(() => this.closeNotification(notificationId), NOTIFICATION_DURATION);
+      setTimeout(
+        () => this.closeNotification(notificationId),
+        NOTIFICATION_DURATION
+      );
     },
 
     closeNotification(id: number) {
-      const index = this.notifications.findIndex(n => n.id === id);
+      const index = this.notifications.findIndex((n) => n.id === id);
       if (index !== -1) {
         this.notifications.splice(index, 1);
       }
     },
 
-    showModal(title: string, content: string, resolveMessage = "validate", rejectMessage = "") {
+    showModal(
+      title: string,
+      content: string,
+      resolveMessage = "validate",
+      rejectMessage = ""
+    ) {
       this.modal.show = true;
       this.modal.title = title;
       this.modal.content = content;
@@ -92,10 +105,13 @@ export const useApplicationStore = defineStore("application", {
 
     axiosException(exception: any) {
       if (exception.isAxiosError) {
-        if (exception.response.status === 401 || exception.response.status === 403) {
+        if (
+          exception.response.status === 401 ||
+          exception.response.status === 403
+        ) {
           this.disconnected();
         } else {
-          this.sendNotification("alert", exception.response.statusText);
+          this.sendNotification("danger", exception.response.statusText);
         }
       }
     },
@@ -103,10 +119,13 @@ export const useApplicationStore = defineStore("application", {
     async login(accessToken: string = "") {
       setAccessToken(accessToken);
 
-      await userApi.getUserMe().then(response => {
-        this.user  = response.data;
-        this.accessToken = accessToken;
-      }).catch(this.axiosException)
+      await userApi
+        .getUserMe()
+        .then((response) => {
+          this.user = response.data;
+          this.accessToken = accessToken;
+        })
+        .catch(this.axiosException);
     },
 
     disconnected() {
@@ -126,14 +145,17 @@ export const useApplicationStore = defineStore("application", {
         return;
       }
 
-      await sessionApi.renewSessionWeb("default", {
-        email: email,
-      }).then(response => {
-        this.login(response.data.accessToken);
-      }).catch((exception) => {
-        this.axiosException(exception);
-        this.disconnected();
-      });
-    }
+      await sessionApi
+        .renewSessionWeb("default", {
+          email: email,
+        })
+        .then((response) => {
+          this.login(response.data.accessToken);
+        })
+        .catch((exception) => {
+          this.axiosException(exception);
+          this.disconnected();
+        });
+    },
   },
 });

@@ -9,7 +9,6 @@ class UserActivation(
     @Id
     @Indexed
     val id: String,
-
     @Indexed
     val userId: Long,
 )

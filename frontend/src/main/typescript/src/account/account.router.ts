@@ -12,7 +12,8 @@ export default {
       meta: {
         authenticated: true,
       },
-      component: () => import("@/account/account-information/account-information.view.vue"),
+      component: () =>
+        import("@/account/account-information/account-information.view.vue"),
     },
     {
       path: "security",
@@ -20,7 +21,8 @@ export default {
       meta: {
         authenticated: true,
       },
-      component: () => import("@/account/account-security/account-security.view.vue"),
+      component: () =>
+        import("@/account/account-security/account-security.view.vue"),
     },
-  ]
+  ],
 };
