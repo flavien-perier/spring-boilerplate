@@ -1,0 +1,59 @@
+UserCreationDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+    - password
+    - proofOfWork
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"
+
+UserUpdateDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+    - password
+    - proofOfWork
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"
+
+UserUpdateAdminDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+    - password
+    - proofOfWork
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"
+
+ChangePasswordDto:
+  type: object
+  description: Change password after forgetting it.
+  required:
+    - token
+    - password
+    - proofOfWork
+  properties:
+    token:
+      $ref: "common.yaml#/token"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"

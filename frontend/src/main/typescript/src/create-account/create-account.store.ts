@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
-import {useApplicationStore} from "@/core/application.store";
-import {userApi} from "@/core/util/api-util";
-import {passwordUtil} from "@/core/util/password-util";
+import { useApplicationStore } from "@/core/application.store";
+import { userApi } from "@/core/util/api-util";
+import { passwordUtil } from "@generated/component-library";
 
 const applicationStore = useApplicationStore();
 
@@ -14,12 +14,11 @@ export const useCreateAccountStore = defineStore("create-account", {
     computeAction: false,
   }),
   getters: {
-    buttonEnabled: (state) => state.isEmailValid && state.isPasswordValid && !state.computeAction,
+    buttonEnabled: (state) =>
+      state.isEmailValid && state.isPasswordValid && !state.computeAction,
   },
   actions: {
-    init() {
-
-    },
+    init() {},
 
     close() {
       this.$reset();
@@ -31,14 +30,23 @@ export const useCreateAccountStore = defineStore("create-account", {
       }
       this.computeAction = true;
 
-      userApi.createUser({
-        email: this.email,
-        password: this.password,
-        proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
-      }).then(() => {
-        applicationStore.sendNotification("info", "account-created");
-        this.$router.push({ name: "login" });
-      }).catch(applicationStore.axiosException).finally(() => { this.computeAction = false });
+      userApi
+        .createUser({
+          email: this.email,
+          password: this.password,
+          proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
+        })
+        .then(() => {
+          applicationStore.sendNotification(
+            "info",
+            "notification.account-created"
+          );
+          this.$router.push({ name: "login" });
+        })
+        .catch(applicationStore.axiosException)
+        .finally(() => {
+          this.computeAction = false;
+        });
     },
   },
 });

@@ -1,0 +1,11 @@
+@use "normalize.css/normalize.css";
+@use "@fortawesome/fontawesome-svg-core/styles.css";
+@use "global";
+@use "colors";
+
+@use "variables" as *;
+@use "variables-colors" as *;
+@use "fonts" as *;
+@use "margin" as *;
+
+@use "table";

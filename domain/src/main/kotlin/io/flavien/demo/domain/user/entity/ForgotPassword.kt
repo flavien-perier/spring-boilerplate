@@ -8,7 +8,6 @@ import org.springframework.data.redis.core.index.Indexed
 class ForgotPassword(
     @Id
     val id: String,
-
     @Indexed
     val userId: Long,
 )

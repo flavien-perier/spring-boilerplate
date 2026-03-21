@@ -1,0 +1,71 @@
+userMail:
+  name: userMail
+  in: path
+  description: User's email address.
+  required: true
+  schema:
+    $ref: "../schemas/common.yaml#/email"
+
+sessionUuid:
+  name: sessionUuid
+  in: path
+  description: The session UUID to delete.
+  required: true
+  schema:
+    $ref: "../schemas/common.yaml#/uuid"
+
+activationToken:
+  name: token
+  in: query
+  description: Activation token sent by email.
+  required: true
+  schema:
+    $ref: "../schemas/common.yaml#/token"
+
+q:
+  name: q
+  in: query
+  description: Partial search of the user's email address.
+  required: false
+  schema:
+    type: string
+    maxLength: 100
+    pattern: ^[^$\[\]"`\\]*$
+
+page:
+  name: page
+  in: query
+  description: Page number.
+  required: false
+  schema:
+    type: integer
+    minimum: 1
+    maximum: 1000000
+
+pageSize:
+  name: pageSize
+  in: query
+  description: Number of elements per page.
+  required: false
+  schema:
+    type: integer
+    minimum: 0
+    maximum: 1000000
+
+sortColumn:
+  name: sortColumn
+  in: query
+  description: Indicates which column will be used for sorting.
+  required: false
+  schema:
+    type: string
+    enum: [ email, firstname, lastname ]
+
+sortOrder:
+  name: sortOrder
+  in: query
+  description: Order of the sorting function.
+  required: false
+  schema:
+    type: string
+    enum: [ asc, desc ]

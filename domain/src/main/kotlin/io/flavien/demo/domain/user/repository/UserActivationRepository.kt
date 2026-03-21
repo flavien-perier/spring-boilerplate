@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UserActivationRepository : CrudRepository<UserActivation, String> {
-
     fun deleteByUserId(userId: Long)
 }

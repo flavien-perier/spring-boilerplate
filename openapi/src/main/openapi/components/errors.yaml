@@ -1,0 +1,59 @@
+ErrorDto:
+  type: object
+  description: Error response body.
+  required:
+    - status
+    - message
+  properties:
+    status:
+      type: integer
+      description: HTTP status code.
+    message:
+      type: string
+      description: Human-readable error message.
+    timestamp:
+      type: string
+      format: date-time
+      description: Time of the error.
+
+BadRequest:
+  description: Validation failure.
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorDto"
+
+Unauthorized:
+  description: Missing or expired token.
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorDto"
+
+Forbidden:
+  description: Insufficient role.
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorDto"
+
+NotFound:
+  description: Resource not found.
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorDto"
+
+Conflict:
+  description: Resource conflict (e.g. duplicate email or already-used token).
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorDto"
+
+InternalServerError:
+  description: Generic server error.
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorDto"

@@ -5,7 +5,6 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ForgotPasswordRepository  : CrudRepository<ForgotPassword, String> {
-
+interface ForgotPasswordRepository : CrudRepository<ForgotPassword, String> {
     fun deleteByUserId(userId: Long)
 }

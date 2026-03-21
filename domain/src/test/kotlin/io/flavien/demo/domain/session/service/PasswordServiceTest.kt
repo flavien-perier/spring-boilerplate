@@ -16,7 +16,6 @@ import kotlin.jvm.java
 
 @ExtendWith(MockitoExtension::class)
 class PasswordServiceTest {
-
     @InjectMocks
     lateinit var passwordService: PasswordService
 
@@ -29,7 +28,11 @@ class PasswordServiceTest {
         "Drowssap123!,salt1,66d21616620df490eea6c4ad4fa86bdd5c6490fef546049a69ca5042da293d159d34b3b81c1da4251893abbe9a051aad62ec55cc1df311b66eea3fb8fe17bba4",
         "Drowssap123!,salt2,39feb93deac296f0075e517cc5eb5f6193bebe212669485bef9ca54aa445738c65fa7f623dab479fb376855908ca1e824c9f9117e318da1c35c7be02d543340f",
     )
-    fun `should have the same hash`(password: String, salt: String, hash: String) {
+    fun `should have the same hash`(
+        password: String,
+        salt: String,
+        hash: String,
+    ) {
         // Given
         `when`(applicationProperties.minPasswordLength).thenReturn(12)
 

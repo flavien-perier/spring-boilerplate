@@ -1,0 +1,54 @@
+email:
+  type: string
+  description: Email of the user.
+  example: "perier@flavien.io"
+  maxLength: 100
+  format: email
+
+password:
+  type: string
+  description: User password.
+  example: "password"
+  maxLength: 100
+  format: password
+
+proofOfWork:
+  type: string
+  description: The scrypted password (N=4096, r=8, p=4, len=32).
+  example: "98361fa40e1c419c38794383924e99758ab786b2f7cf3dd5898e95167d088257"
+  maxLength: 100
+  pattern: ^[a-fA-F0-9]+$
+  format: password
+
+token:
+  type: string
+  description: Random token format.
+  example: "RANDOMTOKEN"
+  maxLength: 64
+  pattern: ^[a-zA-Z0-9]{64}$
+
+uuid:
+  type: string
+  description: Universally unique identifier
+  example: "1562e7b4-14dc-4891-8b6c-a791e7d7c293"
+  maxLength: 37
+  pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+
+refreshToken:
+  type: string
+  description: User refresh token.
+  example: "AZERTYUIOPQSDFGHJKLM"
+  maxLength: 64
+  pattern: ^[A-Za-z0-9]*$
+
+accessToken:
+  type: string
+  description: User access token.
+  example: "AZERTYUIOPQSDFGHJKLM"
+  maxLength: 64
+  pattern: ^[A-Za-z0-9]*$
+
+Role:
+  type: string
+  description: The user's role.
+  enum: [USER, ADMIN]

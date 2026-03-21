@@ -5,9 +5,8 @@ import io.flavien.demo.api.dto.UserUpdateAdminDto
 import io.flavien.demo.domain.user.entity.User
 import org.mapstruct.Mapper
 
-@Mapper(componentModel="spring")
+@Mapper(componentModel = "spring")
 interface UserMapper {
-
     fun toUserDto(user: User): UserDto
 
     fun fromUserDto(userDto: UserDto): User

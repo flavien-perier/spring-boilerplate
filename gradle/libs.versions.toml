@@ -1,63 +1,83 @@
 [versions]
-spring-boot = "4.0.3"
-kotlin = "2.3.10"
+spring-boot = "4.0.5"
+kotlin = "2.3.20"
 spring-dependency-management = "1.1.7"
-openapi-generator = "7.20.0"
+openapi-generator = "7.21.0"
 node-gradle = "7.1.0"
-graalvm-native = "0.10.4"
+graalvm-native = "0.10.6"
+node-version = "24.14.0"
+yarn-version = "1.22.22"
+spotless = "8.4.0"
+ben-manes-versions = "0.53.0"
 
 postgresql = "42.7.10"
-jedis = "7.3.0"
+jedis = "7.4.1"
 mapstruct = "1.6.3"
-jackson-databind-nullable = "0.2.6"
-springdoc-openapi = "2.8.5"
-swagger-parser = "2.1.38"
+jackson-databind-nullable = "0.2.10"
+springdoc-openapi = "3.0.2"
+swagger-parser = "2.1.39"
 subethasmtp = "7.2.2"
 assertj = "3.27.7"
 mockk = "1.14.9"
 testcontainers = "1.21.4"
+archunit = "1.4.1"
+resilience4j = "2.3.0"
+logstash-logback-encoder = "8.1"
 
 [plugins]
-spring-boot             = { id = "org.springframework.boot",                   version.ref = "spring-boot" }
-dependency-management   = { id = "io.spring.dependency-management",            version.ref = "spring-dependency-management" }
-kotlin-jvm              = { id = "org.jetbrains.kotlin.jvm",                   version.ref = "kotlin" }
-kotlin-multiplatform    = { id = "org.jetbrains.kotlin.multiplatform",         version.ref = "kotlin" }
-kotlin-spring           = { id = "org.jetbrains.kotlin.plugin.spring",         version.ref = "kotlin" }
-kotlin-jpa              = { id = "org.jetbrains.kotlin.plugin.jpa",            version.ref = "kotlin" }
-kotlin-serialization    = { id = "org.jetbrains.kotlin.plugin.serialization",  version.ref = "kotlin" }
-kotlin-kapt             = { id = "org.jetbrains.kotlin.kapt",                  version.ref = "kotlin" }
-openapi-generator       = { id = "org.openapi.generator",                      version.ref = "openapi-generator" }
-node                    = { id = "com.github.node-gradle.node",                version.ref = "node-gradle" }
-graalvm-native          = { id = "org.graalvm.buildtools.native",              version.ref = "graalvm-native" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+openapi-generator = { id = "org.openapi.generator", version.ref = "openapi-generator" }
+node = { id = "com.github.node-gradle.node", version.ref = "node-gradle" }
+graalvm-native = { id = "org.graalvm.buildtools.native", version.ref = "graalvm-native" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions" }
 
 [libraries]
-spring-boot-starter-web        = { module = "org.springframework.boot:spring-boot-starter-web" }
-spring-boot-starter-security   = { module = "org.springframework.boot:spring-boot-starter-security" }
-spring-boot-starter-data-jpa   = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
-spring-boot-starter-mail       = { module = "org.springframework.boot:spring-boot-starter-mail" }
-spring-boot-starter-thymeleaf  = { module = "org.springframework.boot:spring-boot-starter-thymeleaf" }
-spring-boot-starter-liquibase  = { module = "org.springframework.boot:spring-boot-starter-liquibase" }
-spring-boot-starter-test       = { module = "org.springframework.boot:spring-boot-starter-test" }
-spring-boot-starter-webflux    = { module = "org.springframework.boot:spring-boot-starter-webflux" }
-spring-boot-testcontainers     = { module = "org.springframework.boot:spring-boot-testcontainers" }
-spring-boot-dockercompose      = { module = "org.springframework.boot:spring-boot-docker-compose" }
+spring-boot-starter-mail = { module = "org.springframework.boot:spring-boot-starter-mail" }
+spring-boot-starter-thymeleaf = { module = "org.springframework.boot:spring-boot-starter-thymeleaf" }
+spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase" }
+spring-boot-starter-aspectj = { module = "org.springframework.boot:spring-boot-starter-aspectj" }
+spring-boot-starter-batch = { module = "org.springframework.boot:spring-boot-starter-batch" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+spring-boot-dockercompose = { module = "org.springframework.boot:spring-boot-docker-compose" }
 
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect",  version.ref = "kotlin" }
-kotlin-stdlib  = { module = "org.jetbrains.kotlin:kotlin-stdlib",   version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 
-postgresql = { module = "org.postgresql:postgresql",    version.ref = "postgresql" }
-jedis      = { module = "redis.clients:jedis",          version.ref = "jedis" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
 
-mapstruct           = { module = "org.mapstruct:mapstruct",           version.ref = "mapstruct" }
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
 mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
 
-jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable",            version.ref = "jackson-databind-nullable" }
-springdoc-openapi         = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui",    version.ref = "springdoc-openapi" }
-swagger-parser            = { module = "io.swagger.parser.v3:swagger-parser",                  version.ref = "swagger-parser" }
+jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version.ref = "jackson-databind-nullable" }
+springdoc-openapi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
+swagger-parser = { module = "io.swagger.parser.v3:swagger-parser", version.ref = "swagger-parser" }
 
-subethasmtp            = { module = "com.github.davidmoten:subethasmtp",    version.ref = "subethasmtp" }
-assertj                = { module = "org.assertj:assertj-core",             version.ref = "assertj" }
-mockk                  = { module = "io.mockk:mockk-jvm",                  version.ref = "mockk" }
-testcontainers-junit        = { module = "org.testcontainers:junit-jupiter",    version.ref = "testcontainers" }
-testcontainers-postgresql   = { module = "org.testcontainers:postgresql",       version.ref = "testcontainers" }
+subethasmtp = { module = "com.github.davidmoten:subethasmtp", version.ref = "subethasmtp" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+mockk = { module = "io.mockk:mockk-jvm", version.ref = "mockk" }
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
+
+micrometer-tracing-bridge-brave = { module = "io.micrometer:micrometer-tracing-bridge-brave" }
+zipkin-reporter-brave = { module = "io.zipkin.reporter2:zipkin-reporter-brave" }
+spring-boot-micrometer-tracing-brave = { module = "org.springframework.boot:spring-boot-micrometer-tracing-brave" }
+
+resilience4j-spring-boot3 = { module = "io.github.resilience4j:resilience4j-spring-boot3", version.ref = "resilience4j" }
+logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder" }

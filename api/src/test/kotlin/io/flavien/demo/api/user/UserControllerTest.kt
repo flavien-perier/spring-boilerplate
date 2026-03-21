@@ -1,7 +1,7 @@
 package io.flavien.demo.api.user
 
 import io.flavien.demo.api.dto.UserPageDto
-import io.flavien.demo.domain.session.util.ContextUtil
+import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper
 import io.flavien.demo.domain.user.entity.User
@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity
 
 @ExtendWith(MockitoExtension::class)
 class UserControllerTest {
-
     @InjectMocks
     var userController: UserController? = null
 
@@ -43,7 +42,8 @@ class UserControllerTest {
         val response = userController!!.createUser(userCreationDto)
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
         Mockito.verify(userService!!).create(userCreationDto.email, userCreationDto.password, userCreationDto.proofOfWork)
@@ -58,7 +58,8 @@ class UserControllerTest {
         val response = userController!!.activateUser(token)
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
         Mockito.verify(userService!!).activate(token)
@@ -73,7 +74,8 @@ class UserControllerTest {
         val response = userController!!.forgotPassword(email)
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
         Mockito.verify(userService!!).sendForgotPassword(email)
@@ -88,13 +90,14 @@ class UserControllerTest {
         val response = userController!!.updatePassword(changePasswordDto)
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
         Mockito.verify(userService!!).updatePassword(
             changePasswordDto.password,
             changePasswordDto.proofOfWork,
-            changePasswordDto.token
+            changePasswordDto.token,
         )
     }
 
@@ -112,7 +115,8 @@ class UserControllerTest {
         val response = userController!!.getUser(email)
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity.ok(userDto))
     }
 
@@ -133,7 +137,8 @@ class UserControllerTest {
         val response = userController!!.updateUser(email, userUpdateAdminDto)
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity.ok(userDto))
     }
 
@@ -146,7 +151,8 @@ class UserControllerTest {
         val response = userController!!.deleteUser(email)
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
         Mockito.verify(userService!!).delete(email)
@@ -169,7 +175,8 @@ class UserControllerTest {
         val response = userController!!.getUserMe()
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity.ok(userDto))
     }
 
@@ -193,7 +200,8 @@ class UserControllerTest {
         val response = userController!!.updateUserMe(userUpdateDto)
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity.ok(userDto))
     }
 
@@ -209,7 +217,8 @@ class UserControllerTest {
         val response = userController!!.deleteUserMe()
 
         // Then
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
         Mockito.verify(userService!!).delete(userId)
@@ -241,13 +250,15 @@ class UserControllerTest {
         val response = userController!!.findUsers(query, page, pageSize, sortColumn, sortOrder)
 
         // Then
-        val expectedUserPageDto = UserPageDto(
-            users.size.toLong(),
-            1,
-            listOf(userDto1, userDto2)
-        )
+        val expectedUserPageDto =
+            UserPageDto(
+                users.size.toLong(),
+                1,
+                listOf(userDto1, userDto2),
+            )
 
-        assertThat(response).usingRecursiveComparison()
+        assertThat(response)
+            .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<UserPageDto>(expectedUserPageDto, HttpStatus.OK))
     }
 }

@@ -1,31 +1,30 @@
 <template>
-  <section class="container">
-    <h1>{{ $t("account") }}</h1>
-    <ul class="nav nav-tabs mt-3 mb-2">
-      <li class="nav-item">
-        <router-link
-            :to="{ name: 'account-information' }"
-            class="nav-link"
-            :class="{ active: $route.name == 'account-information' }"
-        >
-          {{ $t("information") }}
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link
-            :to="{ name: 'account-security' }"
-            class="nav-link"
-            :class="{ active: $route.name == 'account-security' }"
-        >
-          {{ $t("security") }}
-        </router-link>
-      </li>
-    </ul>
-
-    <RouterView />
-  </section>
+  <fio-page-view :title="$t('menu.account')">
+    <fio-tab-layout :tabs="accountTabs">
+      <RouterView />
+    </fio-tab-layout>
+  </fio-page-view>
 </template>
 
 <script setup lang="ts">
-import {RouterView} from "vue-router";
+import { computed } from "vue";
+import { RouterView, useRouter, useRoute } from "vue-router";
+import type { TabElement } from "@generated/component-library";
+
+const router = useRouter();
+const route = useRoute();
+
+const accountTabs = computed<TabElement[]>(() => [
+  {
+    i18nKey: "menu.information",
+    isActive: route.name === "account-information",
+    action: () => router.push({ name: "account-information" }),
+  },
+  {
+    i18nKey: "menu.security",
+    isActive: route.name === "account-security",
+    action: () => router.push({ name: "account-security" }),
+  },
+]);
 </script>
+

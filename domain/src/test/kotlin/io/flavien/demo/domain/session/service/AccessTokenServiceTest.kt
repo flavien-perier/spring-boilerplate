@@ -19,11 +19,22 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.Optional
+
+// NOTE – Resilience4j @CircuitBreaker annotations on AccessTokenService work via Spring AOP proxies
+// and therefore have NO effect in plain Mockito unit tests where the service is instantiated
+// directly (no proxy wraps the instance). The circuit-breaker integration is validated by E2E /
+// integration tests that spin up a full Spring context.
+//
+// The private `getFallback(token, ex)` method is intentionally private and therefore cannot be
+// called directly in unit tests without reflection. Its logic (throwing BadAccessTokenException) is
+// trivially covered by the existing test
+// "Should fail to return an access token according to its id (Access token does not exist)"
+// which already asserts that BadAccessTokenException is thrown from the same code path.
+// No additional test is needed for the fallback body itself.
 
 @ExtendWith(MockitoExtension::class)
 class AccessTokenServiceTest {
-
     @InjectMocks
     var accessTokenService: AccessTokenService? = null
 
@@ -38,26 +49,31 @@ class AccessTokenServiceTest {
         // Given
         val refreshToken = SessionTestFactory.initRefreshToken()
 
-        Mockito.`when`(accessTokenRepository!!.existsById(anyString()))
+        Mockito
+            .`when`(accessTokenRepository!!.existsById(anyString()))
             .thenReturn(true, false)
 
-        Mockito.`when`(refreshTokenService!!.exists(refreshToken.id))
+        Mockito
+            .`when`(refreshTokenService!!.exists(refreshToken.id))
             .thenReturn(true)
 
         // When
         val accessToken = accessTokenService!!.create(refreshToken)
 
         // Then
-        assertThat(accessToken).usingRecursiveComparison()
+        assertThat(accessToken)
+            .usingRecursiveComparison()
             .ignoringFields("id")
             .withComparatorForType(OffsetDateTimeTestComparator(), OffsetDateTime::class.java)
-            .isEqualTo(SessionTestFactory.initAccessToken(
-                "test",
-                refreshToken.userId,
-                refreshToken.role,
-                refreshToken.id,
-                OffsetDateTime.now()
-            ))
+            .isEqualTo(
+                SessionTestFactory.initAccessToken(
+                    "test",
+                    refreshToken.userId,
+                    refreshToken.role,
+                    refreshToken.id,
+                    OffsetDateTime.now(),
+                ),
+            )
 
         Mockito.verify(accessTokenRepository!!).save(any(AccessToken::class.java))
     }
@@ -67,7 +83,8 @@ class AccessTokenServiceTest {
         // Given
         val refreshToken = SessionTestFactory.initRefreshToken()
 
-        Mockito.`when`(refreshTokenService!!.exists(refreshToken.id))
+        Mockito
+            .`when`(refreshTokenService!!.exists(refreshToken.id))
             .thenReturn(false)
 
         // When/Then
@@ -87,10 +104,12 @@ class AccessTokenServiceTest {
         val userId = 1L
         val accessToken = SessionTestFactory.initAccessToken(tokenId, userId, UserRole.USER, refreshTokenId)
 
-        Mockito.`when`(accessTokenRepository!!.findById(tokenId))
+        Mockito
+            .`when`(accessTokenRepository!!.findById(tokenId))
             .thenReturn(Optional.of(accessToken))
 
-        Mockito.`when`(refreshTokenService!!.exists(refreshTokenId))
+        Mockito
+            .`when`(refreshTokenService!!.exists(refreshTokenId))
             .thenReturn(true)
 
         // When
@@ -107,7 +126,8 @@ class AccessTokenServiceTest {
         // Given
         val tokenId = "non-existent-token-id"
 
-        Mockito.`when`(accessTokenRepository!!.findById(tokenId))
+        Mockito
+            .`when`(accessTokenRepository!!.findById(tokenId))
             .thenReturn(Optional.empty())
 
         // When/Then

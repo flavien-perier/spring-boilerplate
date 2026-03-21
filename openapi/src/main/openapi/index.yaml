@@ -1,0 +1,574 @@
+openapi: 3.1.1
+info:
+  title: demo
+  description: Demo project with authentication
+  termsOfService: https://www.flavien.io
+  contact:
+    email: perier@flavien.io
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8080
+
+tags:
+  - name: Application
+    description: Application management.
+  - name: Session
+    description: User session management.
+  - name: User
+    description: User account management.
+
+paths:
+  /api/conf:
+    get:
+      tags:
+        - Application
+      summary: List of configurations shared between frontend and backend.
+      operationId: getConf
+      responses:
+        "200":
+          description: Configuration list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigurationDto"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/session/login:
+    post:
+      tags:
+        - Session
+      summary: User authentication with tokens.
+      operationId: login
+      requestBody:
+        description: Authentication information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginDto"
+      responses:
+        "200":
+          description: Session values.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionDto"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/session/login/web:
+    post:
+      tags:
+        - Session
+      summary: User authentication with cookies for web applications.
+      operationId: loginWeb
+      requestBody:
+        description: Authentication information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginDto"
+      responses:
+        "200":
+          description: Session values.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionWebDto"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/session/logout:
+    delete:
+      tags:
+        - Session
+      summary: Delete current session.
+      operationId: logout
+      responses:
+        "204":
+          description: Session deleted.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user, admin ]
+
+  /api/session/renew:
+    post:
+      tags:
+        - Session
+      summary: Renewing a session with token.
+      operationId: renewSession
+      requestBody:
+        description: Session information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionRenewalDto"
+      responses:
+        "200":
+          description: Session values.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionDto"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/session/renew/web:
+    post:
+      tags:
+        - Session
+      summary: Renewing a session with cookie.
+      operationId: renewSessionWeb
+      parameters:
+        - name: refresh_token
+          in: cookie
+          description: The cookie with refresh token.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Session information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionRenewalWebDto"
+      responses:
+        "200":
+          description: Session values.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionWebDto"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/session:
+    get:
+      tags:
+        - Session
+      summary: Lists the user's active sessions.
+      operationId: findSessions
+      responses:
+        "200":
+          description: Session list.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of active refresh tokens.
+                items:
+                  $ref: "#/components/schemas/RefreshTokenPropertiesDto"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user, admin ]
+
+  /api/session/{sessionUuid}:
+    delete:
+      tags:
+        - Session
+      summary: Delete a session via its uuid.
+      operationId: deleteSession
+      parameters:
+        - $ref: "#/components/parameters/sessionUuid"
+      responses:
+        "204":
+          description: Session deleted.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user, admin ]
+
+  /api/user:
+    post:
+      tags:
+        - User
+      summary: Creation of a new account for an user.
+      operationId: createUser
+      requestBody:
+        description: User account information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreationDto"
+      responses:
+        "204":
+          description: User created.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/user/activate:
+    post:
+      tags:
+        - User
+      summary: Activate a user after creation using the token sent by email.
+      operationId: activateUser
+      parameters:
+        - $ref: "#/components/parameters/activationToken"
+      responses:
+        "204":
+          description: The user has been activated.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/user/password:
+    get:
+      tags:
+        - User
+      summary: Send a token by email to change password.
+      operationId: forgotPassword
+      parameters:
+        - name: email
+          description: Email address to which to send the token.
+          in: query
+          required: true
+          schema:
+            $ref: "schemas/common.yaml#/email"
+      responses:
+        "204":
+          description: The email has been sent.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - User
+      summary: Use the token sent by email to change password.
+      operationId: updatePassword
+      requestBody:
+        description: The new password and token.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordDto"
+      responses:
+        "204":
+          description: Password updated.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/user/me:
+    get:
+      tags:
+        - User
+      summary: Returns the user sending the request.
+      operationId: getUserMe
+      responses:
+        "200":
+          description: The user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user, admin ]
+    put:
+      tags:
+        - User
+      summary: Modifies the user sending the request.
+      operationId: updateUserMe
+      requestBody:
+        description: User account information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateDto"
+      responses:
+        "200":
+          description: The user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user, admin ]
+    delete:
+      tags:
+        - User
+      summary: Deletes the user sending the request.
+      operationId: deleteUserMe
+      responses:
+        "204":
+          description: The user has been deleted.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user ]
+
+  /api/user/{userMail}:
+    get:
+      tags:
+        - User
+      summary: Returns information about an user.
+      operationId: getUser
+      parameters:
+        - $ref: "#/components/parameters/userMail"
+      responses:
+        "200":
+          description: The user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ admin ]
+    put:
+      tags:
+        - User
+      summary: Updating information about an user.
+      operationId: updateUser
+      parameters:
+        - $ref: "#/components/parameters/userMail"
+      requestBody:
+        description: User account information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateAdminDto"
+      responses:
+        "200":
+          description: The user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ admin ]
+    delete:
+      tags:
+        - User
+      summary: Deleting a user.
+      operationId: deleteUser
+      parameters:
+        - $ref: "#/components/parameters/userMail"
+      responses:
+        "204":
+          description: The user has been deleted.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ admin ]
+
+  /api/users:
+    get:
+      tags:
+        - User
+      summary: Returns a list of users.
+      operationId: findUsers
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/sortColumn"
+        - $ref: "#/components/parameters/sortOrder"
+      responses:
+        "200":
+          description: Paginated list of users.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPageDto"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ admin ]
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  schemas:
+    ConfigurationDto:
+      $ref: "schemas/application.yaml#/ConfigurationDto"
+    LoginDto:
+      $ref: "schemas/session.yaml#/LoginDto"
+    SessionDto:
+      $ref: "schemas/session.yaml#/SessionDto"
+    SessionWebDto:
+      $ref: "schemas/session.yaml#/SessionWebDto"
+    SessionRenewalDto:
+      $ref: "schemas/session.yaml#/SessionRenewalDto"
+    SessionRenewalWebDto:
+      $ref: "schemas/session.yaml#/SessionRenewalWebDto"
+    RefreshTokenPropertiesDto:
+      $ref: "schemas/session.yaml#/RefreshTokenPropertiesDto"
+    Role:
+      type: string
+      description: The user's role.
+      enum: [ USER, ADMIN ]
+    UserDto:
+      type: object
+      description: An account of an user or an organization.
+      required:
+        - email
+      properties:
+        email:
+          $ref: "schemas/common.yaml#/email"
+        role:
+          $ref: "#/components/schemas/Role"
+        lastLogin:
+          type: string
+          format: date-time
+          description: The date and time of the last login.
+    UserCreationDto:
+      $ref: "schemas/user.yaml#/UserCreationDto"
+    UserUpdateDto:
+      $ref: "schemas/user.yaml#/UserUpdateDto"
+    UserUpdateAdminDto:
+      type: object
+      description: An account of an user or an organization.
+      required:
+        - email
+        - password
+        - proofOfWork
+      properties:
+        email:
+          $ref: "schemas/common.yaml#/email"
+        password:
+          $ref: "schemas/common.yaml#/password"
+        proofOfWork:
+          $ref: "schemas/common.yaml#/proofOfWork"
+        role:
+          $ref: "#/components/schemas/Role"
+    UserPageDto:
+      type: object
+      description: A page of user.
+      required:
+        - totalElements
+        - totalPages
+        - content
+      properties:
+        totalElements:
+          type: integer
+          description: Total elements.
+          minimum: 0
+          format: int64
+        totalPages:
+          type: integer
+          description: Total pages.
+          minimum: 0
+          format: int32
+        content:
+          type: array
+          description: Content.
+          items:
+            $ref: "#/components/schemas/UserDto"
+    ChangePasswordDto:
+      $ref: "schemas/user.yaml#/ChangePasswordDto"
+    ErrorDto:
+      $ref: "components/errors.yaml#/ErrorDto"
+  parameters:
+    userMail:
+      $ref: "components/parameters.yaml#/userMail"
+    sessionUuid:
+      $ref: "components/parameters.yaml#/sessionUuid"
+    activationToken:
+      $ref: "components/parameters.yaml#/activationToken"
+    q:
+      $ref: "components/parameters.yaml#/q"
+    page:
+      $ref: "components/parameters.yaml#/page"
+    pageSize:
+      $ref: "components/parameters.yaml#/pageSize"
+    sortColumn:
+      $ref: "components/parameters.yaml#/sortColumn"
+    sortOrder:
+      $ref: "components/parameters.yaml#/sortOrder"
+  responses:
+    BadRequest:
+      $ref: "components/errors.yaml#/BadRequest"
+    Unauthorized:
+      $ref: "components/errors.yaml#/Unauthorized"
+    Forbidden:
+      $ref: "components/errors.yaml#/Forbidden"
+    NotFound:
+      $ref: "components/errors.yaml#/NotFound"
+    Conflict:
+      $ref: "components/errors.yaml#/Conflict"
+    InternalServerError:
+      $ref: "components/errors.yaml#/InternalServerError"

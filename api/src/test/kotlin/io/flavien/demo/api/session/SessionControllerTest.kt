@@ -3,9 +3,9 @@ package io.flavien.demo.api.session
 import io.flavien.demo.api.dto.RefreshTokenPropertiesDto
 import io.flavien.demo.api.session.mapper.RefreshTokenMapper
 import io.flavien.demo.api.session.mapper.SessionMapper
+import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.domain.session.service.RefreshTokenService
 import io.flavien.demo.domain.session.service.SessionService
-import io.flavien.demo.domain.session.util.ContextUtil
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
@@ -18,11 +18,10 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class SessionControllerTest {
-
     @InjectMocks
     var sessionController: SessionController? = null
 
@@ -89,9 +88,10 @@ class SessionControllerTest {
         // Given
         val userId = 1L
         val refreshTokens = listOf(SessionTestFactory.initRefreshToken())
-        val refreshTokenPropertiesDtos = listOf(
-            RefreshTokenPropertiesDto(refreshTokens[0].uuid.toString(), refreshTokens[0].creationDate)
-        )
+        val refreshTokenPropertiesDtos =
+            listOf(
+                RefreshTokenPropertiesDto(refreshTokens[0].uuid.toString(), refreshTokens[0].creationDate),
+            )
 
         mockkObject(ContextUtil)
         every { ContextUtil.userId } returns userId

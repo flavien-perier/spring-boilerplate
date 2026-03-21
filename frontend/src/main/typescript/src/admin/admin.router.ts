@@ -14,5 +14,5 @@ export default {
       },
       component: () => import("@/admin/admin-users/admin-users.view.vue"),
     },
-  ]
+  ],
 };

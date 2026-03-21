@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class RandomUtilTest {
-
     @ParameterizedTest
     @CsvSource("5", "10", "20", "30", "40")
     fun `Test randomString`(length: Int) {

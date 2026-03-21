@@ -6,6 +6,7 @@ import io.flavien.demo.domain.session.exception.BadAccessTokenCreationException
 import io.flavien.demo.domain.session.exception.BadAccessTokenException
 import io.flavien.demo.domain.session.repository.AccessTokenRepository
 import io.flavien.demo.utils.RandomUtil
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
@@ -14,7 +15,7 @@ class AccessTokenService(
     private val accessTokenRepository: AccessTokenRepository,
     private val refreshTokenService: RefreshTokenService,
 ) {
-
+    @CircuitBreaker(name = "redis")
     fun create(refreshToken: RefreshToken): AccessToken {
         var id = RandomUtil.randomString(64)
         while (accessTokenRepository.existsById(id)) {
@@ -31,6 +32,7 @@ class AccessTokenService(
         return accessToken
     }
 
+    @CircuitBreaker(name = "redis", fallbackMethod = "getFallback")
     fun get(token: String): AccessToken {
         val optionalAccessToken = accessTokenRepository.findById(token)
 
@@ -48,7 +50,14 @@ class AccessTokenService(
         return accessToken
     }
 
+    @CircuitBreaker(name = "redis")
     fun delete(token: String) = accessTokenRepository.deleteById(token)
 
+    @CircuitBreaker(name = "redis")
     fun deleteByUserId(userId: Long) = accessTokenRepository.deleteByUserId(userId)
+
+    private fun getFallback(
+        token: String,
+        ex: Exception,
+    ): AccessToken = throw BadAccessTokenException()
 }

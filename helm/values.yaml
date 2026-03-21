@@ -1,6 +1,14 @@
 appName: "app"
 registry: "hub.docker.com"
 
+application:
+  image: "api"
+  imageTag: "latest"
+
+batch:
+  image: "batch"
+  imageTag: "latest"
+
 database:
   embedded: true
   address: ""
@@ -17,8 +25,12 @@ valkey:
 smtp:
   address: localhost
   port: 25
-  uth: true
-  username: user
+  auth: false
+  username: ""
   password: password
-  starttls: true
+  starttls: false
+
+mail:
+  accountCreator: "no-reply@flavien.io"
+  domainLinks: "https://flavien.io:443"
 

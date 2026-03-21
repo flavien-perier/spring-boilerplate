@@ -1,23 +1,18 @@
 <template>
   <div class="notification-zone">
-    <div
-        v-for="notification in notifications"
-        :key="notification.id"
-        class="alert alert-info alert-dismissible fade show"
-        :class="{
-          'alert-info': notification.type === 'info',
-          'alert-danger': notification.type === 'alert',
-        }"
-    >
-      {{ notification.message }}
-      <button class="btn-close" @click="applicationStore.closeNotification(notification.id)" />
-    </div>
+    <fio-alert
+      v-for="notification in notifications"
+      :key="notification.id"
+      :type="notification.type"
+      :message="notification.message"
+      @close="applicationStore.closeNotification(notification.id)"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import {useApplicationStore} from "@/core/application.store";
-import {storeToRefs} from "pinia";
+import { useApplicationStore } from "@/core/application.store";
+import { storeToRefs } from "pinia";
 
 const applicationStore = useApplicationStore();
 const { notifications } = storeToRefs(applicationStore);
@@ -28,6 +23,6 @@ const { notifications } = storeToRefs(applicationStore);
   position: absolute;
   width: 25vw;
   right: 2rem;
-  top: 2rem
+  top: 2rem;
 }
 </style>

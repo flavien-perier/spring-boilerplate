@@ -1,6 +1,9 @@
 .idea/
 .vscode/
-.kotlin
-.gradle
+.kotlin/
+.gradle/
+.worktrees/
 **/target/
 **/build/
+**/node_modules/
+**/*.old

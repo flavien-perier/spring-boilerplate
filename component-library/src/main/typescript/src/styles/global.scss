@@ -1,0 +1,21 @@
+@use "variables" as *;
+@use "variables-colors" as *;
+
+html,
+body {
+  color: $secondary-darker-80;
+  background-color: $secondary-lighter-90;
+}
+
+a {
+  color: $primary;
+  text-decoration: none;
+
+  &:hover {
+    color: $primary-darker-40;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
