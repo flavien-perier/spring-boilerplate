@@ -10,8 +10,10 @@ import java.security.MessageDigest
 class PasswordService(
     private val applicationProperties: ApplicationProperties,
 ) {
-
-    fun hashPassword(password: String, salt: String): String {
+    fun hashPassword(
+        password: String,
+        salt: String,
+    ): String {
         testPasswordFormat(password)
 
         val md = MessageDigest.getInstance("SHA-512")
@@ -20,7 +22,11 @@ class PasswordService(
         return no.toString(16)
     }
 
-    fun testPassword(password: String, salt: String, hash: String) = hashPassword(password, salt) == hash
+    fun testPassword(
+        password: String,
+        salt: String,
+        hash: String,
+    ) = hashPassword(password, salt) == hash
 
     private fun testPasswordFormat(password: String) {
         // Test password length

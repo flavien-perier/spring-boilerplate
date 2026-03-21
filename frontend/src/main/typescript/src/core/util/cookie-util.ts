@@ -4,9 +4,9 @@ class CookieUtil {
   }
 
   public get(name: string): string | null {
-    const cookies = document.cookie.split(';');
+    const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.trim().split('=');
+      const [cookieName, cookieValue] = cookie.trim().split("=");
       if (cookieName === name) {
         return cookieValue!;
       }
@@ -17,4 +17,4 @@ class CookieUtil {
 
 const cookieUtil = new CookieUtil();
 
-export {cookieUtil};
+export { cookieUtil };

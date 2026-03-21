@@ -5,7 +5,6 @@ import io.flavien.demo.api.dto.SessionDto
 import io.flavien.demo.api.dto.SessionRenewalDto
 
 object SessionDtoTestFactory {
-
     fun initSessionDto(
         accessTokenId: String = "accessTokenId",
         refreshTokenId: String = "refreshTokenId",

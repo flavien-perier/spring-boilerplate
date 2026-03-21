@@ -13,7 +13,6 @@ import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 import kotlin.jvm.optionals.getOrNull
 
-
 @Service
 class ForgotPasswordService(
     private val forgotPasswordRepository: ForgotPasswordRepository,
@@ -21,7 +20,6 @@ class ForgotPasswordService(
     private val emailSender: JavaMailSender,
     private val mailProperties: MailProperties,
 ) {
-
     fun sendForgotPasswordToken(user: User) {
         var forgotPasswordToken = RandomUtil.randomString(64)
         while (forgotPasswordRepository.existsById(forgotPasswordToken)) {
@@ -51,7 +49,6 @@ class ForgotPasswordService(
 
         return forgotPassword
     }
-
 
     fun deleteByUserId(userId: Long) {
         forgotPasswordRepository.deleteByUserId(userId)

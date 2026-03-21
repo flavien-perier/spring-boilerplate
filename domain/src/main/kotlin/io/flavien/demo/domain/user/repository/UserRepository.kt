@@ -6,11 +6,10 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import java.util.*
+import java.util.Optional
 
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
-
     fun existsByEmail(email: String): Boolean
 
     fun getByEmail(email: String): Optional<User>
@@ -18,5 +17,8 @@ interface UserRepository : JpaRepository<User, Long> {
     fun getUserById(userId: Long): Optional<User>
 
     @Query("SELECT u FROM app_user u WHERE u.email LIKE %:query%")
-    fun find(query: String, page: Pageable): Page<User>
+    fun find(
+        query: String,
+        page: Pageable,
+    ): Page<User>
 }

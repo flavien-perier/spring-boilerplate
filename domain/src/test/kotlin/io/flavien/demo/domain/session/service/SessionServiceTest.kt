@@ -1,10 +1,11 @@
 package io.flavien.demo.domain.session.service
 
-import io.flavien.demo.domain.user.UserTestFactory
 import io.flavien.demo.domain.session.SessionTestFactory
 import io.flavien.demo.domain.session.exception.BadPasswordException
 import io.flavien.demo.domain.session.exception.BadRefreshTokenException
 import io.flavien.demo.domain.session.exception.UserIsDisabledException
+import io.flavien.demo.domain.user.UserTestFactory
+import io.flavien.demo.domain.user.repository.UserRepository
 import io.flavien.demo.domain.user.service.UserService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -18,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
 class SessionServiceTest {
-
     @InjectMocks
     var sessionService: SessionService? = null
 
@@ -30,7 +30,10 @@ class SessionServiceTest {
 
     @Mock
     var userService: UserService? = null
-    
+
+    @Mock
+    var userRepository: UserRepository? = null
+
     @Mock
     var passwordService: PasswordService? = null
 
@@ -42,14 +45,16 @@ class SessionServiceTest {
         val proofOfWork = "proofOfWork"
         val user = UserTestFactory.initUser().copy(id = 1L)
         val refreshToken = SessionTestFactory.initRefreshToken()
-        val accessToken = SessionTestFactory.initAccessToken(
-            userId = user.id!!,
-            role = user.role,
-            refreshTokenId = refreshToken.id
-        )
+        val accessToken =
+            SessionTestFactory.initAccessToken(
+                userId = user.id!!,
+                role = user.role,
+                refreshTokenId = refreshToken.id,
+            )
 
         `when`(userService!!.get(email)).thenReturn(user)
         `when`(passwordService!!.testPassword(password, user.passwordSalt, user.password)).thenReturn(true)
+        `when`(userRepository!!.save(user)).thenReturn(user)
         `when`(refreshTokenService!!.create(user.id!!, user.role)).thenReturn(refreshToken)
         `when`(accessTokenService!!.create(refreshToken)).thenReturn(accessToken)
 
@@ -59,6 +64,7 @@ class SessionServiceTest {
         // Then
         verify(userService!!).get(email)
         verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
+        verify(userRepository!!).save(user)
         verify(refreshTokenService!!).create(user.id!!, user.role)
         verify(accessTokenService!!).create(refreshToken)
 
@@ -111,11 +117,12 @@ class SessionServiceTest {
         val refreshTokenId = "refresh-token-id"
         val user = UserTestFactory.initUser().copy(id = 1L)
         val refreshToken = SessionTestFactory.initRefreshToken().copy(id = refreshTokenId, userId = user.id!!)
-        val accessToken = SessionTestFactory.initAccessToken(
-            userId = user.id!!,
-            role = user.role,
-            refreshTokenId = refreshTokenId
-        )
+        val accessToken =
+            SessionTestFactory.initAccessToken(
+                userId = user.id!!,
+                role = user.role,
+                refreshTokenId = refreshTokenId,
+            )
 
         `when`(refreshTokenService!!.get(refreshTokenId)).thenReturn(refreshToken)
         `when`(userService!!.get(email)).thenReturn(user)

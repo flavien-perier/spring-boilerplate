@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
-import {userApi} from "@/core/util/api-util";
-import {useApplicationStore} from "@/core/application.store";
-import {passwordUtil} from "@/core/util/password-util";
+import { userApi } from "@/core/util/api-util";
+import { useApplicationStore } from "@/core/application.store";
+import { passwordUtil } from "@generated/component-library";
 
 const applicationStore = useApplicationStore();
 
@@ -14,7 +14,8 @@ export const useAccountInformationStore = defineStore("account-information", {
     computeAction: false,
   }),
   getters: {
-    buttonEnabled: (state) => state.isEmailValid && state.isPasswordValid && !state.computeAction,
+    buttonEnabled: (state) =>
+      state.isEmailValid && state.isPasswordValid && !state.computeAction,
   },
   actions: {
     init() {
@@ -31,14 +32,23 @@ export const useAccountInformationStore = defineStore("account-information", {
       }
       this.computeAction = true;
 
-      userApi.updateUserMe({
-        email: this.email,
-        password: this.password,
-        proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
-      }).then(() => {
-        applicationStore.sendNotification("info", "account-updated");
-        this.password = "";
-      }).catch(applicationStore.axiosException).finally(() => { this.computeAction = false });
+      userApi
+        .updateUserMe({
+          email: this.email,
+          password: this.password,
+          proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
+        })
+        .then(() => {
+          applicationStore.sendNotification(
+            "info",
+            "notification.account-updated"
+          );
+          this.password = "";
+        })
+        .catch(applicationStore.axiosException)
+        .finally(() => {
+          this.computeAction = false;
+        });
     },
   },
 });

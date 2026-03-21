@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.OffsetDateTime
 
 @Service
 class UserService(
@@ -25,8 +26,11 @@ class UserService(
     private val refreshTokenService: RefreshTokenService,
     private val passwordService: PasswordService,
 ) {
-
-    fun create(email: String, password: String, proofOfWork: String): User {
+    fun create(
+        email: String,
+        password: String,
+        proofOfWork: String,
+    ): User {
         if (userRepository.existsByEmail(email)) {
             logger.info("User $email already exists")
             throw UserAlreadyExistsException(email)
@@ -34,14 +38,16 @@ class UserService(
 
         val salt = RandomUtil.randomString(PASSWORD_SALT_LENGTH)
 
-        val user = User(
-            email,
-            passwordService.hashPassword(password, salt),
-            proofOfWork,
-            salt,
-            UserRole.USER,
-            false,
-        )
+        val user =
+            User(
+                email,
+                passwordService.hashPassword(password, salt),
+                proofOfWork,
+                salt,
+                UserRole.USER,
+                false,
+                OffsetDateTime.now(),
+            )
 
         val savedUser = userRepository.save(user)
         logger.info("User $email has been created")
@@ -64,7 +70,11 @@ class UserService(
         forgotPasswordService.sendForgotPasswordToken(user)
     }
 
-    fun updatePassword(password: String, proofOfWork: String, token: String) {
+    fun updatePassword(
+        password: String,
+        proofOfWork: String,
+        token: String,
+    ) {
         val forgotPassword = forgotPasswordService.validate(token)
 
         val user = get(forgotPassword.userId)
@@ -86,11 +96,20 @@ class UserService(
         userRepository.save(user)
     }
 
-    fun update(userId: Long, userUpdate: UserUpdate) = update(get(userId), userUpdate)
+    fun update(
+        userId: Long,
+        userUpdate: UserUpdate,
+    ) = update(get(userId), userUpdate)
 
-    fun update(email: String, userUpdate: UserUpdate) = update(get(email), userUpdate)
+    fun update(
+        email: String,
+        userUpdate: UserUpdate,
+    ) = update(get(email), userUpdate)
 
-    private fun update(user: User, userUpdate: UserUpdate): User {
+    private fun update(
+        user: User,
+        userUpdate: UserUpdate,
+    ): User {
         if (userUpdate.email != null && user.email != userUpdate.email && userRepository.existsByEmail(userUpdate.email!!)) {
             logger.info("User ${userUpdate.email} already exists")
             throw UserAlreadyExistsException(userUpdate.email!!)
@@ -138,11 +157,12 @@ class UserService(
         sortColumn: String?,
         sortOrder: String?,
     ): Page<User> {
-        val pageable = PageRequest.of(
-            page ?: 0,
-            pageSize ?: 10,
-            Sort.by(Sort.Direction.fromString(sortOrder ?: "ASC"), sortColumn ?: "email"),
-        )
+        val pageable =
+            PageRequest.of(
+                page ?: 0,
+                pageSize ?: 10,
+                Sort.by(Sort.Direction.fromString(sortOrder ?: "ASC"), sortColumn ?: "email"),
+            )
 
         return userRepository.find(query ?: "", pageable)
     }

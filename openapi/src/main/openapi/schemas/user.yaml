@@ -1,0 +1,100 @@
+UserDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    role:
+      $ref: "common.yaml#/Role"
+    lastLogin:
+      type: string
+      format: date-time
+      description: The date and time of the last login.
+
+UserCreationDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+    - password
+    - proofOfWork
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"
+
+UserUpdateDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+    - password
+    - proofOfWork
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"
+
+UserUpdateAdminDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+    - password
+    - proofOfWork
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"
+    role:
+      $ref: "common.yaml#/Role"
+
+UserPageDto:
+  type: object
+  description: A page of user.
+  required:
+    - totalElements
+    - totalPages
+    - content
+  properties:
+    totalElements:
+      type: integer
+      description: Total elements.
+      minimum: 0
+      format: int64
+    totalPages:
+      type: integer
+      description: Total pages.
+      minimum: 0
+      format: int32
+    content:
+      type: array
+      description: Content.
+      items:
+        $ref: "../index.yaml#/components/schemas/UserDto"
+
+ChangePasswordDto:
+  type: object
+  description: Change password after forgetting it.
+  required:
+    - token
+    - password
+    - proofOfWork
+  properties:
+    token:
+      $ref: "common.yaml#/token"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"

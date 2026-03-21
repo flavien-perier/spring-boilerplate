@@ -5,9 +5,7 @@ import io.flavien.demo.domain.user.model.UserRole
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 
-
 object ContextUtil {
-
     private const val KEY_USER_ID = "FLAVIEN_IO_USER_ID"
     private const val KEY_USER_ROLE = "FLAVIEN_IO_USER_ROLE"
     private const val KEY_SESSION_ID = "FLAVIEN_IO_SESSION_ID"

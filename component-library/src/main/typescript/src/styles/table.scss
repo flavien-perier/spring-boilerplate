@@ -1,0 +1,56 @@
+@use "variables" as *;
+@use "colors" as *;
+
+$table-border: 1px solid $secondary-lighter-60;
+
+.fio-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: $border-radius-size;
+  overflow: hidden;
+  border: $table-border;
+
+  th, td {
+    padding: $margin-xs $margin-s;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead {
+    background-color: $primary-lighter-70;
+    color: $primary-darker-70;
+
+    th {
+      border-bottom: $table-border;
+      border-right: $table-border;
+
+      &:last-child {
+        border-right: none;
+      }
+
+      .sort-icon {
+        margin-left: $margin-xs;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: $table-border;
+
+      &:last-child td {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      border-bottom: $table-border;
+      border-right: $table-border;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+}

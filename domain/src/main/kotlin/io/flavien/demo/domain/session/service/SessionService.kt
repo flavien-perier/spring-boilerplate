@@ -5,19 +5,25 @@ import io.flavien.demo.domain.session.exception.BadRefreshTokenException
 import io.flavien.demo.domain.session.exception.UserIsDisabledException
 import io.flavien.demo.domain.session.model.Session
 import io.flavien.demo.domain.user.exception.UserNotFoundException
+import io.flavien.demo.domain.user.repository.UserRepository
 import io.flavien.demo.domain.user.service.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.OffsetDateTime
 
 @Service
 class SessionService(
     private val refreshTokenService: RefreshTokenService,
     private val accessTokenService: AccessTokenService,
     private val userService: UserService,
+    private val userRepository: UserRepository,
     private val passwordService: PasswordService,
 ) {
-
-    fun login(email: String, password: String, proofOfWork: String): Session {
+    fun login(
+        email: String,
+        password: String,
+        proofOfWork: String,
+    ): Session {
         val user = userService.get(email) ?: throw UserNotFoundException(email)
 
         if (!user.enabled) {
@@ -34,13 +40,17 @@ class SessionService(
             throw BadPasswordException()
         }
 
+        user.lastLogin = OffsetDateTime.now()
+        userRepository.save(user)
         val refreshToken = refreshTokenService.create(user.id!!, user.role)
         val accessToken = accessTokenService.create(refreshToken)
-
         return Session(refreshToken, accessToken)
     }
 
-    fun renew(userEmail: String, refreshToken: String): Session {
+    fun renew(
+        userEmail: String,
+        refreshToken: String,
+    ): Session {
         val refreshTokenObject = refreshTokenService.get(refreshToken)
         val user = userService.get(userEmail)
 

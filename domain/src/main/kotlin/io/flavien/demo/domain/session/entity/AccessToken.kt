@@ -12,13 +12,9 @@ data class AccessToken(
     @Id
     @Indexed
     val id: String,
-
     @Indexed
     val userId: Long,
-
     val role: UserRole,
-
     val refreshTokenId: String,
-
     val creationDate: OffsetDateTime,
 ) : Serializable

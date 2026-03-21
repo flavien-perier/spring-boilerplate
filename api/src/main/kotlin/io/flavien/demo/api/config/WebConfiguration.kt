@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException
 
 @Controller
 class WebConfiguration {
-
     @GetMapping("/", "/**/{path:[^\\.]*}")
     fun forward(request: HttpServletRequest): String {
         if (request.requestURI.startsWith("/api")) {

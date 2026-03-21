@@ -1,10 +1,15 @@
 package io.flavien.demo.api.user
 
 import io.flavien.demo.api.api.UserApi
-import io.flavien.demo.api.dto.*
-import io.flavien.demo.domain.session.util.ContextUtil
+import io.flavien.demo.api.dto.ChangePasswordDto
+import io.flavien.demo.api.dto.UserCreationDto
+import io.flavien.demo.api.dto.UserDto
+import io.flavien.demo.api.dto.UserPageDto
+import io.flavien.demo.api.dto.UserUpdateAdminDto
+import io.flavien.demo.api.dto.UserUpdateDto
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper
+import io.flavien.demo.domain.session.util.ContextUtil
 import io.flavien.demo.domain.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,7 +21,6 @@ class UserController(
     private val userMapper: UserMapper,
     private val userUpdateMapper: UserUpdateMapper,
 ) : UserApi {
-
     override fun createUser(userCreationDto: UserCreationDto): ResponseEntity<Unit> {
         userService.create(userCreationDto.email, userCreationDto.password, userCreationDto.proofOfWork)
 
@@ -58,7 +62,10 @@ class UserController(
         )
     }
 
-    override fun updateUser(userMail: String, userUpdateAdminDto: UserUpdateAdminDto): ResponseEntity<UserDto> {
+    override fun updateUser(
+        userMail: String,
+        userUpdateAdminDto: UserUpdateAdminDto,
+    ): ResponseEntity<UserDto> {
         val user = userService.update(userMail, userUpdateMapper.fromUserUpdateAdminDto(userUpdateAdminDto))
 
         return ResponseEntity(
@@ -105,11 +112,12 @@ class UserController(
     ): ResponseEntity<UserPageDto> {
         val users = userService.find(q, page, pageSize, sortColumn, sortOrder)
 
-        val userPageDto = UserPageDto(
-            users.totalElements,
-            users.totalPages,
-            users.content.map { userMapper.toUserDto(it) },
-        )
+        val userPageDto =
+            UserPageDto(
+                users.totalElements,
+                users.totalPages,
+                users.content.map { userMapper.toUserDto(it) },
+            )
 
         return ResponseEntity(
             userPageDto,

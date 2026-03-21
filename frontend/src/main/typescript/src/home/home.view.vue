@@ -1,36 +1,52 @@
 <template>
-  <section class="container">
-    <h1>{{ $t("home") }}</h1>
+  <section class="home-view">
+    <h1>{{ $t("menu.home") }}</h1>
 
-    <div class="mb-5">
-      <img src="../assets/img/undraw_hello.svg" class="img-fluid d-block mx-auto" alt="Hello">
-    </div>
+    <fio-image name="undraw_hello" class="home-view__logo" />
 
     <div class="technologies-list">
       <div class="img-container">
         <template v-for="i in [0, 1]">
-          <img src="../assets/img/logo.svg" alt="Logo">
-          <img src="../assets/img/spring.svg" alt="Spring">
-          <img src="../assets/img/kotlin.svg" alt="Kotlin">
-          <img src="../assets/img/java.svg" alt="Java">
-          <img src="../assets/img/vue.svg" alt="Vue">
-          <img src="../assets/img/typescript.svg" alt="Typescript">
-          <img src="../assets/img/openapi.svg" alt="OpenApi">
-          <img src="../assets/img/docker.svg" alt="Docker">
-          <img src="../assets/img/kubernetes.svg" alt="Kubernetes">
-          <img src="../assets/img/helm.svg" alt="Helm">
+          <fio-image name="logo" />
+          <fio-image name="spring" />
+          <fio-image name="kotlin" />
+          <fio-image name="java" />
+          <fio-image name="vue" />
+          <fio-image name="typescript" />
+          <fio-image name="openapi" />
+          <fio-image name="docker" />
+          <fio-image name="kubernetes" />
+          <fio-image name="helm" />
         </template>
       </div>
     </div>
   </section>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style scoped lang="scss">
+.home-view {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.home-view__logo {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto 3rem;
+
+  :deep(svg) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
 @keyframes transition {
   from {
+    /* 10 images × (10rem width + 2rem margin-right) = 120rem — must match fio-image dimensions below */
     margin-left: -120rem;
   }
   to {
@@ -43,10 +59,16 @@
     display: flex;
     animation: transition 40s linear infinite;
 
-    img {
+    :deep(.fio-image) {
       height: 10rem;
       width: 10rem;
+      flex-shrink: 0;
       margin-right: 2rem;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }

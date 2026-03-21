@@ -14,7 +14,6 @@ class AccessTokenService(
     private val accessTokenRepository: AccessTokenRepository,
     private val refreshTokenService: RefreshTokenService,
 ) {
-
     fun create(refreshToken: RefreshToken): AccessToken {
         var id = RandomUtil.randomString(64)
         while (accessTokenRepository.existsById(id)) {

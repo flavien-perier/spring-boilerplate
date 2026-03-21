@@ -12,30 +12,27 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
-
 @EnableWebSecurity
 @Configuration
 class SecurityConfiguration(
     private val sessionAuthenticationFilter: SessionAuthenticationFilter,
 ) {
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        return http
+    fun filterChain(http: HttpSecurity): SecurityFilterChain =
+        http
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/**").permitAll()
-                    .requestMatchers("/api/**").permitAll()
-            }
-            .cors { it.disable() }
+                    .requestMatchers("/**")
+                    .permitAll()
+                    .requestMatchers("/api/**")
+                    .permitAll()
+            }.cors { it.disable() }
             .csrf { it.disable() }
             .httpBasic(Customizer.withDefaults())
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(sessionAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
-    }
 
     @Bean
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager {
-        return authConfig.authenticationManager
-    }
+    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager = authConfig.authenticationManager
 }

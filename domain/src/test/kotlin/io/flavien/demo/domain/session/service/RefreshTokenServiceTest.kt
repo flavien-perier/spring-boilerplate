@@ -16,11 +16,11 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class RefreshTokenServiceTest {
-
     @InjectMocks
     var refreshTokenService: RefreshTokenService? = null
 
@@ -117,11 +117,12 @@ class RefreshTokenServiceTest {
         // Given
         val userId = 1L
         val refreshToken1 = SessionTestFactory.initRefreshToken()
-        val refreshToken2 = SessionTestFactory.initRefreshToken(
-            id = "test2",
-            userId = userId,
-            creationDate = OffsetDateTime.now().minusHours(1)
-        )
+        val refreshToken2 =
+            SessionTestFactory.initRefreshToken(
+                id = "test2",
+                userId = userId,
+                creationDate = OffsetDateTime.now().minusHours(1),
+            )
         val refreshTokens = listOf(refreshToken1, refreshToken2)
 
         `when`(refreshTokenRepository!!.findByUserId(userId)).thenReturn(refreshTokens)

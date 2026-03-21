@@ -1,0 +1,11 @@
+ConfigurationDto:
+  type: object
+  description: List of configurations shared between frontend and backend.
+  required:
+    - minPasswordLength
+  properties:
+    minPasswordLength:
+      type: integer
+      description: Minimum password length.
+      minimum: 5
+      maximum: 50

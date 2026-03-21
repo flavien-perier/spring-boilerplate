@@ -13,7 +13,6 @@ import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 import kotlin.jvm.optionals.getOrNull
 
-
 @Service
 class UserActivationService(
     private val userActivationRepository: UserActivationRepository,
@@ -21,7 +20,6 @@ class UserActivationService(
     private val emailSender: JavaMailSender,
     private val mailProperties: MailProperties,
 ) {
-
     fun sendActivationToken(user: User) {
         var activationToken = RandomUtil.randomString(64)
         while (userActivationRepository.existsById(activationToken)) {

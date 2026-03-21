@@ -7,14 +7,16 @@ import io.flavien.demo.domain.user.model.UserRole
 import io.flavien.demo.utils.RandomUtil
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 @Service
 class RefreshTokenService(
     private val refreshTokenRepository: RefreshTokenRepository,
 ) {
-
-    fun create(userId: Long, role: UserRole): RefreshToken {
+    fun create(
+        userId: Long,
+        role: UserRole,
+    ): RefreshToken {
         var id = RandomUtil.randomString(64)
         while (refreshTokenRepository.existsById(id)) {
             id = RandomUtil.randomString(64)

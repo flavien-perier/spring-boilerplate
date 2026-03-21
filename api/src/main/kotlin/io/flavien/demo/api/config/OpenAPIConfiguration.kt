@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class OpenAPIConfiguration {
-
     @Bean
-    fun openAPI() =  OpenAPIParser()
-        .readLocation("openapi.yaml", null, null)
-        .openAPI
+    fun openAPI() =
+        OpenAPIParser()
+            .readLocation("openapi.json", null, null)
+            .openAPI
 }
