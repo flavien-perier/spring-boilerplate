@@ -166,7 +166,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/uuid"
+            $ref: "schemas/common.yaml#/uuid"
       responses:
         "204":
           description: Session deleted.
@@ -202,7 +202,7 @@ paths:
           in: query
           required: true
           schema:
-            $ref: "#/components/schemas/token"
+            $ref: "schemas/common.yaml#/token"
       responses:
         "204":
           description: The user has been activated.
@@ -219,7 +219,7 @@ paths:
           in: query
           required: true
           schema:
-            $ref: "#/components/schemas/email"
+            $ref: "schemas/common.yaml#/email"
       responses:
         "204":
           description: The email has been sent.
@@ -301,7 +301,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/email"
+            $ref: "schemas/common.yaml#/email"
       responses:
         "200":
           description: The user.
@@ -323,7 +323,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/email"
+            $ref: "schemas/common.yaml#/email"
       requestBody:
         description: User account information.
         required: true
@@ -352,7 +352,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/email"
+            $ref: "schemas/common.yaml#/email"
       responses:
         "204":
           description: The user has been deleted.
@@ -415,143 +415,29 @@ paths:
         - bearer: [ admin ]
 
 components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
   schemas:
-    email:
-      type: string
-      description: Email of the user.
-      example: "perier@flavien.io"
-      maxLength: 100
-      format: email
-
-    password:
-      type: string
-      description: User password.
-      example: "password"
-      maxLength: 100
-      format: password
-
-    proofOfWork:
-      type: string
-      description: The scrypted password (N=4096, r=8, p=4, len=32).
-      example: "98361fa40e1c419c38794383924e99758ab786b2f7cf3dd5898e95167d088257"
-      maxLength: 64
-      pattern: ^[a-fA-F0-9]{64}$
-      format: password
-
-    token:
-      type: string
-      description: Random token format.
-      example: "RANDOMTOKEN"
-      maxLength: 64
-      pattern: ^[a-zA-Z1-9]{64}$
-
-    uuid:
-      type: string
-      description: Universally unique identifier
-      example: "1562e7b4-14dc-4891-8b6c-a791e7d7c293"
-      maxLength: 37
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-
-    refreshToken:
-      type: string
-      description: User refresh token.
-      example: "AZERTYUIOPQSDFGHJKLM"
-      maxLength: 64
-      pattern: ^[A-Za-z0-9]*$
-
-    accessToken:
-      type: string
-      description: User access token.
-      example: "AZERTYUIOPQSDFGHJKLM"
-      maxLength: 64
-      pattern: ^[A-Za-z0-9]*$
-
+    ConfigurationDto:
+      $ref: "schemas/application.yaml#/ConfigurationDto"
+    LoginDto:
+      $ref: "schemas/session.yaml#/LoginDto"
+    SessionDto:
+      $ref: "schemas/session.yaml#/SessionDto"
+    SessionWebDto:
+      $ref: "schemas/session.yaml#/SessionWebDto"
+    SessionRenewalDto:
+      $ref: "schemas/session.yaml#/SessionRenewalDto"
+    SessionRenewalWebDto:
+      $ref: "schemas/session.yaml#/SessionRenewalWebDto"
+    RefreshTokenPropertiesDto:
+      $ref: "schemas/session.yaml#/RefreshTokenPropertiesDto"
     Role:
       type: string
       description: The user's role.
-      enum: [USER, ADMIN]
-
-    ConfigurationDto:
-      type: object
-      description: List of configurations shared between frontend and backend.
-      required:
-        - minPasswordLength
-      properties:
-        minPasswordLength:
-          type: integer
-          description: Minimum password length.
-          minimum: 5
-          maximum: 50
-
-    LoginDto:
-      type: object
-      description: Authentication information.
-      required:
-        - email
-        - password
-        - proofOfWork
-      properties:
-        email:
-          $ref: "#/components/schemas/email"
-        password:
-          $ref: "#/components/schemas/password"
-        proofOfWork:
-          $ref: "#/components/schemas/proofOfWork"
-
-    SessionDto:
-      type: object
-      description: Authentication Session.
-      required:
-        - accessToken
-      properties:
-        refreshToken:
-          $ref: "#/components/schemas/refreshToken"
-        accessToken:
-          $ref: "#/components/schemas/accessToken"
-
-    SessionWebDto:
-      type: object
-      description: Authentication Session.
-      required:
-        - accessToken
-      properties:
-        accessToken:
-          $ref: "#/components/schemas/accessToken"
-
-    SessionRenewalDto:
-      type: object
-      description: Information required to renew a session.
-      required:
-        - email
-        - refreshToken
-      properties:
-        email:
-          $ref: "#/components/schemas/email"
-        refreshToken:
-          $ref: "#/components/schemas/refreshToken"
-
-    SessionRenewalWebDto:
-      type: object
-      description: Information required to renew a session with token.
-      required:
-        - email
-      properties:
-        email:
-          $ref: "#/components/schemas/email"
-
-    RefreshTokenPropertiesDto:
-      type: object
-      description: Information identifying a refresh token.
-      required:
-        - uuid
-        - creationDate
-      properties:
-        uuid:
-          $ref: "#/components/schemas/uuid"
-        creationDate:
-          type: string
-          format: date-time
-
+      enum: [ USER, ADMIN ]
     UserDto:
       type: object
       description: An account of an user or an organization.
@@ -559,44 +445,17 @@ components:
         - email
       properties:
         email:
-          $ref: "#/components/schemas/email"
+          $ref: "schemas/common.yaml#/email"
         role:
           $ref: "#/components/schemas/Role"
         lastLogin:
           type: string
           format: date-time
           description: The date and time of the last login.
-
     UserCreationDto:
-      type: object
-      description: An account of an user or an organization.
-      required:
-        - email
-        - password
-        - proofOfWork
-      properties:
-        email:
-          $ref: "#/components/schemas/email"
-        password:
-          $ref: "#/components/schemas/password"
-        proofOfWork:
-          $ref: "#/components/schemas/proofOfWork"
-
+      $ref: "schemas/user.yaml#/UserCreationDto"
     UserUpdateDto:
-      type: object
-      description: An account of an user or an organization.
-      required:
-        - email
-        - password
-        - proofOfWork
-      properties:
-        email:
-          $ref: "#/components/schemas/email"
-        password:
-          $ref: "#/components/schemas/password"
-        proofOfWork:
-          $ref: "#/components/schemas/proofOfWork"
-
+      $ref: "schemas/user.yaml#/UserUpdateDto"
     UserUpdateAdminDto:
       type: object
       description: An account of an user or an organization.
@@ -606,14 +465,13 @@ components:
         - proofOfWork
       properties:
         email:
-          $ref: "#/components/schemas/email"
+          $ref: "schemas/common.yaml#/email"
         password:
-          $ref: "#/components/schemas/password"
+          $ref: "schemas/common.yaml#/password"
         proofOfWork:
-          $ref: "#/components/schemas/proofOfWork"
+          $ref: "schemas/common.yaml#/proofOfWork"
         role:
           $ref: "#/components/schemas/Role"
-
     UserPageDto:
       type: object
       description: A page of user.
@@ -637,23 +495,5 @@ components:
           description: Content.
           items:
             $ref: "#/components/schemas/UserDto"
-
     ChangePasswordDto:
-      type: object
-      description: Change password after forgetting it.
-      required:
-        - token
-        - password
-        - proofOfWork
-      properties:
-        token:
-          $ref: "#/components/schemas/token"
-        password:
-          $ref: "#/components/schemas/password"
-        proofOfWork:
-          $ref: "#/components/schemas/proofOfWork"
-
-  securitySchemes:
-    bearer:
-      type: http
-      scheme: bearer
+      $ref: "schemas/user.yaml#/ChangePasswordDto"

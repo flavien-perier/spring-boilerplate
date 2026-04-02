@@ -9,6 +9,6 @@ class OpenAPIConfiguration {
 
     @Bean
     fun openAPI() =  OpenAPIParser()
-        .readLocation("openapi.yaml", null, null)
+        .readLocation("openapi.json", null, null)
         .openAPI
 }

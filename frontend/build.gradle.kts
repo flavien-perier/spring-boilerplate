@@ -6,7 +6,7 @@ plugins {
 
 openApiGenerate {
     generatorName.set("typescript-axios")
-    inputSpec.set("${projectDir}/../api/src/main/resources/openapi.yaml")
+    inputSpec.set("${rootProject.projectDir}/openapi/src/main/openapi/index.yaml")
     outputDir.set("${projectDir}/src/main/typescript/generated/api-source")
 
     configOptions.set(mapOf(
@@ -14,6 +14,10 @@ openApiGenerate {
         "withNodeImports" to "false",
         "enumPropertyNaming" to "UPPERCASE",
     ))
+}
+
+tasks.named("openApiGenerate") {
+    dependsOn(":openapi:openApiGenerate")
 }
 
 node {

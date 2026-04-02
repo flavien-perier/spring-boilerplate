@@ -1,0 +1,13 @@
+/api/conf:
+  get:
+    tags:
+      - Application
+    summary: List of configurations shared between frontend and backend.
+    operationId: getConf
+    responses:
+      "200":
+        description: Configuration list.
+        content:
+          application/json:
+            schema:
+              $ref: "../index.yaml#/components/schemas/ConfigurationDto"

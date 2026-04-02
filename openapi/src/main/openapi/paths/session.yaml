@@ -1,0 +1,121 @@
+/api/session/login:
+  post:
+    tags:
+      - Session
+    summary: User authentication with tokens.
+    operationId: login
+    requestBody:
+      description: Authentication information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../index.yaml#/components/schemas/LoginDto"
+    responses:
+      "200":
+        description: Session values.
+        content:
+          application/json:
+            schema:
+              $ref: "../index.yaml#/components/schemas/SessionDto"
+
+/api/session/login/web:
+  post:
+    tags:
+      - Session
+    summary: User authentication with cookies for web applications.
+    operationId: loginWeb
+    requestBody:
+      description: Authentication information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../index.yaml#/components/schemas/LoginDto"
+    responses:
+      "200":
+        description: Session values.
+        content:
+          application/json:
+            schema:
+              $ref: "../index.yaml#/components/schemas/SessionWebDto"
+
+/api/session/logout:
+  delete:
+    tags:
+      - Session
+    summary: Delete current session.
+    operationId: logout
+    responses:
+      "204":
+        description: Session deleted.
+    security:
+      - bearer: [ user, admin ]
+
+/api/session/renew:
+  post:
+    tags:
+      - Session
+    summary: Renewing a session with token.
+    operationId: renewSession
+    requestBody:
+      description: Session information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../index.yaml#/components/schemas/SessionRenewalDto"
+    responses:
+      "200":
+        description: Session values.
+        content:
+          application/json:
+            schema:
+              $ref: "../index.yaml#/components/schemas/SessionDto"
+
+/api/session/renew/web:
+  post:
+    tags:
+      - Session
+    summary: Renewing a session with cookie.
+    operationId: renewSessionWeb
+    parameters:
+      - name: refresh_token
+        in: cookie
+        description: The cookie with refresh token.
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: Session information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../index.yaml#/components/schemas/SessionRenewalWebDto"
+    responses:
+      "200":
+        description: Session values.
+        content:
+          application/json:
+            schema:
+              $ref: "../index.yaml#/components/schemas/SessionWebDto"
+
+/api/session:
+  get:
+    tags:
+      - Session
+    summary: Lists the user's active sessions.
+    operationId: findSessions
+    responses:
+      "200":
+        description: Session list.
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of active refresh tokens.
+              items:
+                $ref: "../index.yaml#/components/schemas/RefreshTokenPropertiesDto"
+    security:
+      - bearer: [ user, admin ]

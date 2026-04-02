@@ -41,7 +41,7 @@ dependencies {
 
 openApiGenerate {
     generatorName.set("kotlin-spring")
-    inputSpec.set("$projectDir/src/main/resources/openapi.yaml")
+    inputSpec.set("${rootProject.projectDir}/openapi/src/main/openapi/index.yaml")
     outputDir.set(layout.buildDirectory.dir("generated/openapi").get().asFile.path)
     apiPackage.set("io.flavien.demo.api.api")
     modelPackage.set("io.flavien.demo.api.dto")
@@ -64,6 +64,12 @@ openApiGenerate {
     ))
 }
 
+val copyOpenApiYaml = tasks.register<Copy>("copyOpenApiYaml") {
+    dependsOn(":openapi:openApiGenerate")
+    from("${rootProject.projectDir}/openapi/build/generated/openapi/openapi.yaml")
+    into(layout.buildDirectory.dir("resources/main"))
+}
+
 sourceSets {
     main {
         kotlin {
@@ -72,8 +78,16 @@ sourceSets {
     }
 }
 
+tasks.named("openApiGenerate") {
+    dependsOn(":openapi:openApiGenerate")
+}
+
 tasks.withType<KotlinCompile> {
     dependsOn("openApiGenerate")
+}
+
+tasks.named("processResources") {
+    dependsOn(copyOpenApiYaml)
 }
 
 springBoot {
