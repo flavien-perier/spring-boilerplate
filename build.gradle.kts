@@ -39,7 +39,7 @@ subprojects {
         useJUnitPlatform()
     }
 
-    if (project.name != "utils" && project.name != "frontend" && project.name != "openapi") {
+    if (project.name != "utils" && project.name != "frontend" && project.name != "openapi" && project.name != "component-library") {
         apply(plugin = "io.spring.dependency-management")
         apply(plugin = "org.jetbrains.kotlin.jvm")
 

@@ -4,14 +4,16 @@ plugins {
 }
 
 node {
-    version.set("24.14.0")
+    version.set(libs.versions.node.version.get())
     download.set(true)
     workDir.set(layout.buildDirectory.dir("nodejs"))
     npmWorkDir.set(layout.buildDirectory.dir("npm"))
     nodeProjectDir.set(file("${projectDir}/src/main/typescript"))
 }
 
-val npmInstall = tasks.named<com.github.gradle.node.npm.task.NpmInstallTask>("npmInstall")
+val npmInstall = tasks.named<com.github.gradle.node.npm.task.NpmInstallTask>("npmInstall") {
+    args.set(listOf("--legacy-peer-deps"))
+}
 
 val npmBuild = tasks.register<com.github.gradle.node.npm.task.NpmTask>("npmBuild") {
     dependsOn(npmInstall)

@@ -1,11 +1,8 @@
 ---
+name: gradle-developer
 description: Use this agent to modify the Gradle build configuration. Invoke it when adding dependencies, plugins, build tasks, or changing module configuration in any `build.gradle.kts` or `settings.gradle.kts` file.
-mode: subagent
-model: ollama/devstral-small-2
-tools:
-  write: true
-  edit: true
-  bash: true
+model: claude-sonnet-4-6
+tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
 You are a Gradle build engineer working on a Kotlin DSL multi-module project.
@@ -106,9 +103,6 @@ Applies shared configuration to all subprojects:
 
 # Native image
 ./gradlew :api:nativeCompile -Pnative --no-daemon
-
-# Refresh dependencies
-./gradlew :api:dependencies
 ```
 
 ## Rules

@@ -26,9 +26,6 @@ dependencies {
     implementation(libs.mapstruct)
     kapt(libs.mapstruct.processor)
 
-    implementation(libs.kotlin.reflect)
-    implementation(libs.kotlin.stdlib)
-
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.boot.starter.webflux)
     testImplementation(libs.mockk)

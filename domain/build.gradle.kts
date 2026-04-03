@@ -1,8 +1,6 @@
 plugins {
     `java-library`
     alias(libs.plugins.spring.boot)
-    alias(libs.plugins.dependency.management)
-    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.jpa)
 }
@@ -15,17 +13,17 @@ dependencies {
     api(project(":utils"))
 
     api(libs.spring.boot.starter.data.jpa)
-    api(libs.spring.boot.starter.data.redis)
-    api(libs.spring.boot.starter.mail)
-    api(libs.spring.boot.starter.web)
-    api(libs.spring.boot.starter.thymeleaf)
-    api(libs.spring.boot.starter.liquibase)
+    implementation(libs.spring.boot.starter.data.redis)
+    implementation(libs.spring.boot.starter.mail)
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.thymeleaf)
+    implementation(libs.spring.boot.starter.liquibase)
 
-    api(libs.kotlin.reflect)
-    api(libs.kotlin.stdlib)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.kotlin.stdlib)
 
     runtimeOnly(libs.postgresql)
-    api(libs.jedis)
+    implementation(libs.jedis)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.mockk)

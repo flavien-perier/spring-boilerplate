@@ -5,6 +5,8 @@
 .gradle
 .claude
 .opencode
+CLAUDE.md
+AGENTS.md
 .env
 helm
 **/target/

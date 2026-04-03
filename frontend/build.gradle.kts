@@ -21,7 +21,7 @@ tasks.named("openApiGenerate") {
 }
 
 node {
-    version.set("24.14.0")
+    version.set(libs.versions.node.version.get())
     download.set(true)
     workDir.set(layout.buildDirectory.dir("nodejs"))
     npmWorkDir.set(layout.buildDirectory.dir("npm"))
@@ -40,8 +40,11 @@ val apiDistDir = layout.projectDirectory.dir("src/main/typescript/generated/api"
 val patchApiSource = tasks.register("patchApiSource") {
     dependsOn("openApiGenerate")
     val tsConfigFile = file("${projectDir}/src/main/typescript/generated/api-source/tsconfig.json")
-        val commonFile = file("${projectDir}/src/main/typescript/generated/api-source/common.ts")
-        val apiFile = file("${projectDir}/src/main/typescript/generated/api-source/api.ts")
+    val commonFile = file("${projectDir}/src/main/typescript/generated/api-source/common.ts")
+    val apiFile = file("${projectDir}/src/main/typescript/generated/api-source/api.ts")
+    val packageJsonFileForInputs = file("${projectDir}/src/main/typescript/generated/api-source/package.json")
+    inputs.files(tsConfigFile, commonFile, apiFile, packageJsonFileForInputs)
+    outputs.files(tsConfigFile, commonFile, apiFile, packageJsonFileForInputs)
     doLast {
         val tsConfig = tsConfigFile.readText()
         val typeRootsPattern = Regex(""""typeRoots":\s*\[[^\]]*\]""", RegexOption.DOT_MATCHES_ALL)
