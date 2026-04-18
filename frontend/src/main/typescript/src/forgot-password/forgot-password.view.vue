@@ -1,7 +1,8 @@
 <template>
-  <fio-auth-layout name="undraw_forgot_password">
-    <h1 class="auth-subtitle">{{ $t("action.forgot-password") }}</h1>
-
+  <fio-auth-layout
+    name="undraw_forgot_password"
+    :title="$t('action.forgot-password')"
+  >
     <fio-input-email
       class="mb-xl"
       v-model="email"
@@ -29,10 +30,3 @@ forgotPasswordStore.init();
 
 onBeforeRouteLeave(forgotPasswordStore.close);
 </script>
-
-<style scoped lang="scss">
-.auth-subtitle {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-</style>

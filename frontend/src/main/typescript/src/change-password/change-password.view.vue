@@ -1,7 +1,8 @@
 <template>
-  <fio-auth-layout name="undraw_authentication">
-    <h1 class="auth-subtitle">{{ $t("action.change-password") }}</h1>
-
+  <fio-auth-layout
+    name="undraw_authentication"
+    :title="$t('action.change-password')"
+  >
     <fio-input-create-password
       class="mb-xl"
       v-model="password"
@@ -37,10 +38,3 @@ changePasswordStore.init(
 
 onBeforeRouteLeave(changePasswordStore.close);
 </script>
-
-<style scoped lang="scss">
-.auth-subtitle {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-</style>

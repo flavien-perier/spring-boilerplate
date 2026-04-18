@@ -12,6 +12,20 @@ password:
   maxLength: 100
   format: password
 
+otp:
+  type: string
+  description: One Time Password.
+  example: "123456"
+  maxLength: 6
+  pattern: ^[0-9]{6}$
+
+otpSecret:
+  type: string
+  description: OTP token format.
+  example: "RANDOMTOKEN"
+  maxLength: 64
+  pattern: ^[a-zA-Z0-9]{64}$
+
 proofOfWork:
   type: string
   description: The scrypted password (N=4096, r=8, p=4, len=32).
@@ -20,19 +34,19 @@ proofOfWork:
   pattern: ^[a-fA-F0-9]+$
   format: password
 
-token:
-  type: string
-  description: Random token format.
-  example: "RANDOMTOKEN"
-  maxLength: 64
-  pattern: ^[a-zA-Z0-9]{64}$
-
 uuid:
   type: string
   description: Universally unique identifier
   example: "1562e7b4-14dc-4891-8b6c-a791e7d7c293"
   maxLength: 37
   pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+
+token:
+  type: string
+  description: Random token format.
+  example: "RANDOMTOKEN"
+  maxLength: 64
+  pattern: ^[a-zA-Z0-9]{64}$
 
 refreshToken:
   type: string
@@ -52,3 +66,8 @@ Role:
   type: string
   description: The user's role.
   enum: [USER, ADMIN]
+
+otpUri:
+  type: string
+  description: OTP provisioning URI (otpauth://totp/...).
+  example: "otpauth://totp/Demo:user@demo.io?secret=BASE32SECRET&issuer=Demo"

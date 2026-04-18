@@ -47,7 +47,7 @@ domain/src/main/kotlin/io/flavien/demo/domain/
 
 ### Domain Exceptions
 - [ ] Extend `RuntimeException`
-- [ ] Annotated with `@ResponseStatus(value = HttpStatus.XXX, reason = "...")`
+- [ ] Annotated with `@ResponseStatus(value = HttpStatus.XXX)`
 - [ ] Naming: `XxxException` suffix
 - [ ] Constructor accepts contextual info (e.g., email, id) used in the message
 

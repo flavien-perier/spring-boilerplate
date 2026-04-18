@@ -11,13 +11,16 @@ export const useLoginStore = defineStore("login", {
     password: "",
     computeAction: false,
     isEmailValid: false,
+    otp: "",
+    otpRequired: false,
   }),
   getters: {
     buttonEnabled: (state) =>
       state.email !== "" &&
       state.isEmailValid &&
       state.password !== "" &&
-      !state.computeAction,
+      !state.computeAction &&
+      (!state.otpRequired || state.otp.length === 6),
   },
   actions: {
     init(activationToken?: string) {
@@ -54,18 +57,32 @@ export const useLoginStore = defineStore("login", {
           email: this.email,
           password: this.password,
           proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
+          otp: this.otpRequired ? this.otp : undefined,
         })
         .then((response) => {
           const { accessToken } = response.data;
           applicationStore.login(accessToken);
           this.$router.push({ name: "home" });
         })
-        .catch(() => {
-          this.password = "";
-          applicationStore.sendNotification(
-            "danger",
-            "notification.authentication-failed"
-          );
+        .catch((error: any) => {
+          if (error.response?.data?.detail === "OTP required") {
+            this.otpRequired = true;
+          } else if (
+            error.response?.data?.detail === "Invalid OTP" ||
+            this.otpRequired
+          ) {
+            this.otp = "";
+            applicationStore.sendNotification(
+              "danger",
+              "notification.error.invalid-otp"
+            );
+          } else {
+            this.password = "";
+            applicationStore.sendNotification(
+              "danger",
+              "notification.authentication-failed"
+            );
+          }
         })
         .finally(() => {
           this.computeAction = false;

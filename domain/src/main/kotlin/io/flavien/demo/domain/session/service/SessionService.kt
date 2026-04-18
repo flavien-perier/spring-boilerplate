@@ -2,9 +2,10 @@ package io.flavien.demo.domain.session.service
 
 import io.flavien.demo.domain.session.exception.BadPasswordException
 import io.flavien.demo.domain.session.exception.BadRefreshTokenException
+import io.flavien.demo.domain.session.exception.InvalidOtpException
+import io.flavien.demo.domain.session.exception.OtpRequiredException
 import io.flavien.demo.domain.session.exception.UserIsDisabledException
 import io.flavien.demo.domain.session.model.Session
-import io.flavien.demo.domain.user.exception.UserNotFoundException
 import io.flavien.demo.domain.user.repository.UserRepository
 import io.flavien.demo.domain.user.service.UserService
 import org.slf4j.LoggerFactory
@@ -18,13 +19,15 @@ class SessionService(
     private val userService: UserService,
     private val userRepository: UserRepository,
     private val passwordService: PasswordService,
+    private val otpService: OtpService,
 ) {
     fun login(
         email: String,
         password: String,
         proofOfWork: String,
+        otp: String? = null,
     ): Session {
-        val user = userService.get(email) ?: throw UserNotFoundException(email)
+        val user = userService.get(email)
 
         if (!user.enabled) {
             throw UserIsDisabledException(email)
@@ -38,6 +41,16 @@ class SessionService(
         if (user.proofOfWork != proofOfWork) {
             logger.warn("Bad proofOfWork for user $email")
             throw BadPasswordException()
+        }
+
+        val otpSecret = user.otpSecret
+        if (otpSecret != null) {
+            if (otp.isNullOrBlank()) {
+                throw OtpRequiredException()
+            }
+            if (!otpService.validateTOTP(otpSecret, otp)) {
+                throw InvalidOtpException()
+            }
         }
 
         user.lastLogin = OffsetDateTime.now()

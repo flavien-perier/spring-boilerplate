@@ -8,10 +8,14 @@ const applicationStore = useApplicationStore();
 export const useAccountSecurityStore = defineStore("account-security", {
   state: () => ({
     sessions: [] as RefreshTokenPropertiesDto[],
+    otpEnabled: false,
+    otpSetupUri: null as string | null,
+    otpCode: "",
   }),
   getters: {},
   actions: {
     init() {
+      this.otpEnabled = applicationStore.user?.otpEnabled ?? false;
       this.loadSessions();
     },
 
@@ -52,6 +56,53 @@ export const useAccountSecurityStore = defineStore("account-security", {
         .deleteSession(sessionUuid)
         .then(() => {
           this.loadSessions();
+        })
+        .catch(applicationStore.axiosException);
+    },
+
+    setupOtp() {
+      userApi
+        .setupOtp()
+        .then((response) => {
+          this.otpSetupUri = response.data.uri;
+        })
+        .catch(applicationStore.axiosException);
+    },
+
+    async confirmOtp() {
+      await userApi
+        .confirmOtp({ otp: this.otpCode })
+        .then(() => {
+          this.otpSetupUri = null;
+          this.otpEnabled = true;
+          this.otpCode = "";
+          applicationStore.sendNotification(
+            "info",
+            "notification.otp-confirmed"
+          );
+          return applicationStore.login(applicationStore.accessToken);
+        })
+        .catch((error: any) => {
+          if (error.response?.data?.message === "Invalid OTP") {
+            applicationStore.sendNotification(
+              "danger",
+              "notification.error.invalid-otp"
+            );
+          } else {
+            applicationStore.axiosException(error);
+          }
+        });
+    },
+
+    disableOtp() {
+      userApi
+        .disableOtp()
+        .then(() => {
+          this.otpEnabled = false;
+          applicationStore.sendNotification(
+            "info",
+            "notification.otp-disabled"
+          );
         })
         .catch(applicationStore.axiosException);
     },

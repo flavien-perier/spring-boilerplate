@@ -52,8 +52,12 @@ const props = defineProps<{
 
 const isCollapsed = ref(false);
 
-const startElements = computed(() => props.elements.filter((el) => el.direction === "start"));
-const endElements = computed(() => props.elements.filter((el) => el.direction === "end"));
+const startElements = computed(() =>
+  props.elements.filter((el) => el.direction === "start")
+);
+const endElements = computed(() =>
+  props.elements.filter((el) => el.direction === "end")
+);
 </script>
 
 <style scoped lang="scss">

@@ -57,3 +57,21 @@ ChangePasswordDto:
       $ref: "common.yaml#/password"
     proofOfWork:
       $ref: "common.yaml#/proofOfWork"
+
+OtpSetupDto:
+  type: object
+  description: OTP setup response containing the provisioning URI.
+  required:
+    - uri
+  properties:
+    uri:
+      $ref: "common.yaml#/otpUri"
+
+OtpConfirmDto:
+  type: object
+  description: OTP confirmation request.
+  required:
+    - otp
+  properties:
+    otp:
+      $ref: "common.yaml#/otp"

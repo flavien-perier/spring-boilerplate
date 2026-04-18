@@ -2,6 +2,8 @@ package io.flavien.demo.api.user
 
 import io.flavien.demo.api.api.UserApi
 import io.flavien.demo.api.dto.ChangePasswordDto
+import io.flavien.demo.api.dto.OtpConfirmDto
+import io.flavien.demo.api.dto.OtpSetupDto
 import io.flavien.demo.api.dto.UserCreationDto
 import io.flavien.demo.api.dto.UserDto
 import io.flavien.demo.api.dto.UserPageDto
@@ -100,6 +102,21 @@ class UserController(
 
     override fun deleteUserMe(): ResponseEntity<Unit> {
         userService.delete(ContextUtil.userId)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
+    }
+
+    override fun setupOtp(): ResponseEntity<OtpSetupDto> {
+        val uri = userService.setupOtp(ContextUtil.userId)
+        return ResponseEntity(OtpSetupDto(uri), HttpStatus.OK)
+    }
+
+    override fun confirmOtp(otpConfirmDto: OtpConfirmDto): ResponseEntity<Unit> {
+        userService.confirmOtp(ContextUtil.userId, otpConfirmDto.otp)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
+    }
+
+    override fun disableOtp(): ResponseEntity<Unit> {
+        userService.disableOtp(ContextUtil.userId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 

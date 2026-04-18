@@ -1,6 +1,12 @@
 package io.flavien.demo.domain.user.service
 
+import io.flavien.demo.domain.session.entity.OtpPending
+import io.flavien.demo.domain.session.exception.InvalidOtpException
+import io.flavien.demo.domain.session.exception.OtpAlreadyConfiguredException
+import io.flavien.demo.domain.session.exception.OtpNotPendingException
+import io.flavien.demo.domain.session.repository.OtpPendingRepository
 import io.flavien.demo.domain.session.service.AccessTokenService
+import io.flavien.demo.domain.session.service.OtpService
 import io.flavien.demo.domain.session.service.PasswordService
 import io.flavien.demo.domain.session.service.RefreshTokenService
 import io.flavien.demo.domain.user.entity.User
@@ -25,6 +31,8 @@ class UserService(
     private val accessTokenService: AccessTokenService,
     private val refreshTokenService: RefreshTokenService,
     private val passwordService: PasswordService,
+    private val otpService: OtpService,
+    private val otpPendingRepository: OtpPendingRepository,
 ) {
     fun create(
         email: String,
@@ -40,13 +48,13 @@ class UserService(
 
         val user =
             User(
-                email,
-                passwordService.hashPassword(password, salt),
-                proofOfWork,
-                salt,
-                UserRole.USER,
-                false,
-                OffsetDateTime.now(),
+                email = email,
+                password = passwordService.hashPassword(password, salt),
+                proofOfWork = proofOfWork,
+                passwordSalt = salt,
+                role = UserRole.USER,
+                enabled = false,
+                lastLogin = OffsetDateTime.now(),
             )
 
         val savedUser = userRepository.save(user)
@@ -165,6 +173,48 @@ class UserService(
             )
 
         return userRepository.find(query ?: "", pageable)
+    }
+
+    fun setupOtp(userId: Long): String {
+        val user = get(userId)
+
+        if (user.otpSecret != null) {
+            throw OtpAlreadyConfiguredException()
+        }
+
+        if (otpPendingRepository.existsById(userId.toString())) {
+            throw OtpAlreadyConfiguredException()
+        }
+
+        val secret = otpService.generateSecret()
+        otpPendingRepository.save(OtpPending(userId.toString(), secret))
+
+        return "otpauth://totp/Demo:${user.email}?secret=$secret&issuer=Demo&algorithm=SHA1&digits=6&period=30"
+    }
+
+    fun confirmOtp(
+        userId: Long,
+        otp: String,
+    ) {
+        val pending = otpPendingRepository.findById(userId.toString()).orElseThrow { OtpNotPendingException() }
+
+        if (!otpService.validateTOTP(pending.secret, otp)) {
+            throw InvalidOtpException()
+        }
+
+        val user = get(userId)
+        user.otpSecret = pending.secret
+        userRepository.save(user)
+        otpPendingRepository.deleteById(userId.toString())
+    }
+
+    fun disableOtp(userId: Long) {
+        val user = get(userId)
+        if (user.otpSecret != null) {
+            user.otpSecret = null
+            userRepository.save(user)
+        }
+        otpPendingRepository.deleteById(userId.toString())
     }
 
     private fun delete(user: User) {

@@ -3,5 +3,5 @@ package io.flavien.demo.domain.session.exception
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "Bad password")
+@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 class BadPasswordException : RuntimeException("Bad password")

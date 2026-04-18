@@ -4,6 +4,7 @@
       <fio-image :name="name" />
     </div>
     <div class="auth-layout__content">
+      <h1 v-if="title" class="auth-layout__title">{{ title }}</h1>
       <slot />
     </div>
   </div>
@@ -17,6 +18,7 @@ defineOptions({ name: "FioAuthLayout" });
 
 defineProps<{
   name: ImageName;
+  title?: string;
 }>();
 </script>
 
@@ -61,5 +63,11 @@ defineProps<{
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.auth-layout__title {
+  text-align: center;
+  margin-bottom: $margin-xl;
+  font-size: $h1-size;
 }
 </style>

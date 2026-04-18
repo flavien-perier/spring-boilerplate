@@ -22,6 +22,8 @@ data class User(
     var proofOfWork: String,
     @Column(name = "password_salt", nullable = false)
     var passwordSalt: String,
+    @Column(name = "otp_secret", nullable = true)
+    var otpSecret: String? = null,
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     var role: UserRole,

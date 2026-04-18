@@ -1,6 +1,6 @@
 package io.flavien.demo.api.config
 
-import io.flavien.demo.api.session.filter.SessionAuthenticationFilter
+import io.flavien.demo.api.config.filter.OpenApiAuthorizationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @Configuration
 class SecurityConfiguration(
-    private val sessionAuthenticationFilter: SessionAuthenticationFilter,
+    private val openApiAuthorizationFilter: OpenApiAuthorizationFilter,
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain =
@@ -30,7 +30,7 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .httpBasic(Customizer.withDefaults())
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .addFilterBefore(sessionAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(openApiAuthorizationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
 
     @Bean

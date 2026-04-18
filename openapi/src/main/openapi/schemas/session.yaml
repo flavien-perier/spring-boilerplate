@@ -12,6 +12,8 @@ LoginDto:
       $ref: "common.yaml#/password"
     proofOfWork:
       $ref: "common.yaml#/proofOfWork"
+    otp:
+      $ref: "common.yaml#/otp"
 
 SessionDto:
   type: object

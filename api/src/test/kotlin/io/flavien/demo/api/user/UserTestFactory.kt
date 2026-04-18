@@ -18,7 +18,16 @@ object UserTestFactory {
         lastLogin: OffsetDateTime = OffsetDateTime.now(),
         id: Long? = null,
     ): User {
-        val user = User(email, password, proofOfWork, passwordSalt, role, enabled, lastLogin)
+        val user =
+            User(
+                email = email,
+                password = password,
+                proofOfWork = proofOfWork,
+                passwordSalt = passwordSalt,
+                role = role,
+                enabled = enabled,
+                lastLogin = lastLogin,
+            )
         if (id != null) {
             user.id = id
         }

@@ -1,7 +1,8 @@
 <template>
-  <fio-auth-layout name="undraw_create_account">
-    <h1 class="auth-subtitle">{{ $t("menu.create-account") }}</h1>
-
+  <fio-auth-layout
+    name="undraw_create_account"
+    :title="$t('menu.create-account')"
+  >
     <fio-input-email
       class="mb-xl"
       v-model="email"
@@ -38,10 +39,3 @@ createAccountStore.init();
 
 onBeforeRouteLeave(createAccountStore.close);
 </script>
-
-<style scoped lang="scss">
-.auth-subtitle {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-</style>

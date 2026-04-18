@@ -41,9 +41,17 @@ export const useApplicationStore = defineStore("application", {
     async init() {
       const email = cookieUtil.get(EMAIL_LOCAL_STORAGE_KEY) || "";
 
-      await applicationApi.getConf().then((response) => {
-        this.configuration = response.data;
-      });
+      await applicationApi
+        .getConf()
+        .then((response) => {
+          this.configuration = response.data;
+        })
+        .catch(() => {
+          this.sendNotification(
+            "danger",
+            "notification.error.service-unavailable"
+          );
+        });
 
       await this.renew(email);
       this.initOk = true;
@@ -104,16 +112,32 @@ export const useApplicationStore = defineStore("application", {
     },
 
     axiosException(exception: any) {
-      if (exception.isAxiosError) {
-        if (
-          exception.response.status === 401 ||
-          exception.response.status === 403
-        ) {
-          this.disconnected();
-        } else {
-          this.sendNotification("danger", exception.response.statusText);
-        }
+      if (!exception.isAxiosError) {
+        return;
       }
+
+      if (!exception.response) {
+        this.sendNotification("danger", "notification.error.network");
+        return;
+      }
+
+      const status: number = exception.response.status;
+
+      if (status === 401 || status === 403) {
+        this.disconnected();
+        return;
+      }
+
+      const key = (() => {
+        if (status === 400 || status === 422)
+          return "notification.error.bad-request";
+        if (status === 404) return "notification.error.not-found";
+        if (status === 409) return "notification.error.conflict";
+        if (status >= 500) return "notification.error.server";
+        return "notification.error.unknown";
+      })();
+
+      this.sendNotification("danger", key);
     },
 
     async login(accessToken: string = "") {

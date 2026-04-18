@@ -8,7 +8,7 @@ import io.flavien.demo.api.dto.UserUpdateAdminDto
 import io.flavien.demo.api.dto.UserUpdateDto
 
 object UserDtoTestFactory {
-    fun initUserDto() = UserDto("perier@flavien.io")
+    fun initUserDto() = UserDto("perier@flavien.io", otpEnabled = false)
 
     fun initUserCreationDto(
         email: String = "perier@flavien.io",

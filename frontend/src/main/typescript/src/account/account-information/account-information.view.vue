@@ -4,7 +4,9 @@
       <fio-image name="undraw_updates" alt="Update image" />
     </div>
     <div class="account-layout__content">
-      <h2 class="account-layout__title">{{ $t("action.update-account") }}</h2>
+      <h2 class="account-layout__title mb-xl">
+        {{ $t("action.update-account") }}
+      </h2>
 
       <fio-input-email
         class="mb-xl"
@@ -92,6 +94,5 @@ onBeforeRouteLeave(accountInformationStore.close);
 
 .account-layout__title {
   text-align: center;
-  margin-bottom: 1.5rem;
 }
 </style>

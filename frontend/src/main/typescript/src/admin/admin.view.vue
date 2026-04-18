@@ -22,4 +22,3 @@ const adminTabs = computed<TabElement[]>(() => [
   },
 ]);
 </script>
-

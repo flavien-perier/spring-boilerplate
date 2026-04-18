@@ -6,14 +6,23 @@ kotlin {
     jvm()
 
     js {
-        browser()
+        browser {
+            testTask {
+                enabled = false
+            }
+        }
         generateTypeScriptDefinitions()
         binaries.library()
     }
 
     sourceSets {
         commonMain {
-            kotlin.srcDirs("src/main/kotlin")
+            kotlin.srcDirs("src/commonMain/kotlin")
+        }
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+            }
         }
     }
 }

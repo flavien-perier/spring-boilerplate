@@ -2,7 +2,7 @@
   <fio-input-text
     v-model="query"
     :placeholder="$t('field.query')"
-    class="admin-users-view__actions"
+    class="mb-xs"
     @input="adminUsersStore.findUsers()"
   />
 
@@ -43,9 +43,3 @@ const { query, users } = storeToRefs(adminUsersStore);
 
 adminUsersStore.init();
 </script>
-
-<style scoped lang="scss">
-.admin-users-view__actions {
-  margin-bottom: 0.5rem;
-}
-</style>

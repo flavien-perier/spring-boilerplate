@@ -1,7 +1,5 @@
 <template>
-  <fio-auth-layout name="undraw_login">
-    <h1 class="auth-subtitle">{{ $t("menu.login") }}</h1>
-
+  <fio-auth-layout name="undraw_login" :title="$t('menu.login')">
     <fio-input-email
       class="mb-xl"
       v-model="email"
@@ -14,6 +12,18 @@
       :label="$t('field.password')"
       @keyup.enter="loginStore.login"
     />
+
+    <fio-input-text
+      v-if="otpRequired"
+      class="mb-xl"
+      v-model="otp"
+      :label="$t('field.otp')"
+      :placeholder="$t('field.otp')"
+      :max-length="6"
+      :allowed-characters="/\d/"
+      @keyup.enter="loginStore.login"
+    />
+
     <router-link :to="{ name: 'forgot-password' }">{{
       $t("action.forgot-password")
     }}</router-link>
@@ -36,7 +46,7 @@ import { storeToRefs } from "pinia";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
 
 const loginStore = useLoginStore();
-const { email, password, isEmailValid, buttonEnabled } =
+const { email, password, isEmailValid, buttonEnabled, otp, otpRequired } =
   storeToRefs(loginStore);
 
 const route = useRoute();
@@ -44,10 +54,3 @@ loginStore.init(route.query?.activationToken as string | undefined);
 
 onBeforeRouteLeave(loginStore.close);
 </script>
-
-<style scoped lang="scss">
-.auth-subtitle {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-</style>

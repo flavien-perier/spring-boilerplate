@@ -1,4 +1,4 @@
-package io.flavien.demo.api.session.filter
+package io.flavien.demo.api.config.filter
 
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.domain.session.exception.AuthenticationFailedException
@@ -15,7 +15,7 @@ import java.io.IOException
 import java.time.Instant
 
 @Component
-class SessionAuthenticationFilter(
+class OpenApiAuthorizationFilter(
     private val openAPI: OpenAPI,
     private val accessTokenService: AccessTokenService,
 ) : OncePerRequestFilter() {
@@ -35,17 +35,16 @@ class SessionAuthenticationFilter(
             if (requestURI.startsWith("/api/")) {
                 testApiSession(requestURI, method, httpServletRequest)
             }
-            filterChain.doFilter(httpServletRequest, httpServletResponse)
-        } catch (e: Exception) {
-            logger.warn("Authentication failed : ${e.message}")
+        } catch (exception: Exception) {
+            logger.warn("Authentication failed : ${exception.message}")
 
             // Waits a certain amount of time to avoid time-based discovery attacks
             val now = Instant.now().toEpochMilli()
             val wait = now - ((now / 100) * 100)
             Thread.sleep(wait)
-            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
-            return
+            throw exception
         }
+        filterChain.doFilter(httpServletRequest, httpServletResponse)
     }
 
     private fun testApiSession(

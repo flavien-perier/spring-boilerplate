@@ -28,7 +28,7 @@ class SessionController(
     private val refreshTokenMapper: RefreshTokenMapper,
 ) : SessionApi {
     override fun login(loginDto: LoginDto): ResponseEntity<SessionDto> {
-        val session = sessionService.login(loginDto.email, loginDto.password, loginDto.proofOfWork)
+        val session = sessionService.login(loginDto.email, loginDto.password, loginDto.proofOfWork, loginDto.otp)
         return ResponseEntity(
             sessionMapper.toSessionDto(session),
             HttpStatus.OK,
@@ -36,7 +36,7 @@ class SessionController(
     }
 
     override fun loginWeb(loginDto: LoginDto): ResponseEntity<SessionWebDto> {
-        val session = sessionService.login(loginDto.email, loginDto.password, loginDto.proofOfWork)
+        val session = sessionService.login(loginDto.email, loginDto.password, loginDto.proofOfWork, loginDto.otp)
 
         val refreshToken = session.refreshToken?.id ?: ""
 

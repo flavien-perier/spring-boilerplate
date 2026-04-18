@@ -71,7 +71,7 @@ class UserService(
 ### Exception
 
 ```kotlin
-@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "User not found")
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
 class UserNotFoundException(email: String) : RuntimeException("User ($email) not found")
 ```
 
@@ -110,7 +110,7 @@ Use string templates: `"User $email has been created"` (not SLF4J parameterized 
 
 ### Domain exceptions (preferred)
 ```kotlin
-@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "User not found")
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
 class UserNotFoundException(email: String) : RuntimeException("User ($email) not found")
 ```
 

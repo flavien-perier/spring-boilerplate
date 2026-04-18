@@ -28,6 +28,9 @@
       <column name="password_salt" type="VARCHAR(10)">
         <constraints nullable="false"/>
       </column>
+      <column name="otp_secret" type="VARCHAR(50)">
+        <constraints nullable="true"/>
+      </column>
       <column name="role" type="VARCHAR(10)">
         <constraints nullable="false"/>
       </column>

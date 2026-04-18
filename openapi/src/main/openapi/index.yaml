@@ -352,6 +352,67 @@ paths:
       security:
         - bearer: [ user ]
 
+  /api/user/me/otp:
+    post:
+      tags:
+        - User
+      summary: Initiate OTP 2FA setup. Returns a QR code URI valid for 10 minutes.
+      operationId: setupOtp
+      responses:
+        "200":
+          description: OTP provisioning URI.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtpSetupDto"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user, admin ]
+    delete:
+      tags:
+        - User
+      summary: Disable OTP 2FA for the current user.
+      operationId: disableOtp
+      responses:
+        "204":
+          description: OTP disabled.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user, admin ]
+
+  /api/user/me/otp/confirm:
+    post:
+      tags:
+        - User
+      summary: Confirm OTP 2FA setup by providing a valid TOTP code.
+      operationId: confirmOtp
+      requestBody:
+        description: OTP confirmation code.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpConfirmDto"
+      responses:
+        "204":
+          description: OTP confirmed and activated.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - bearer: [ user, admin ]
+
   /api/user/{userMail}:
     get:
       tags:
@@ -486,6 +547,7 @@ components:
       description: An account of an user or an organization.
       required:
         - email
+        - otpEnabled
       properties:
         email:
           $ref: "schemas/common.yaml#/email"
@@ -495,6 +557,9 @@ components:
           type: string
           format: date-time
           description: The date and time of the last login.
+        otpEnabled:
+          type: boolean
+          description: Whether OTP 2FA is active for this user.
     UserCreationDto:
       $ref: "schemas/user.yaml#/UserCreationDto"
     UserUpdateDto:
@@ -540,6 +605,10 @@ components:
             $ref: "#/components/schemas/UserDto"
     ChangePasswordDto:
       $ref: "schemas/user.yaml#/ChangePasswordDto"
+    OtpSetupDto:
+      $ref: "schemas/user.yaml#/OtpSetupDto"
+    OtpConfirmDto:
+      $ref: "schemas/user.yaml#/OtpConfirmDto"
     ErrorDto:
       $ref: "components/errors.yaml#/ErrorDto"
   parameters:

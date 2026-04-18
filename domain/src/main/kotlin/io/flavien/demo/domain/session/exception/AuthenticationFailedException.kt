@@ -3,5 +3,5 @@ package io.flavien.demo.domain.session.exception
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "Authentication failed")
+@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 class AuthenticationFailedException : RuntimeException("Authentication failed")

@@ -3,6 +3,7 @@ package io.flavien.demo.domain.session.service
 import io.flavien.demo.domain.session.SessionTestFactory
 import io.flavien.demo.domain.session.exception.BadPasswordException
 import io.flavien.demo.domain.session.exception.BadRefreshTokenException
+import io.flavien.demo.domain.session.exception.OtpRequiredException
 import io.flavien.demo.domain.session.exception.UserIsDisabledException
 import io.flavien.demo.domain.user.UserTestFactory
 import io.flavien.demo.domain.user.repository.UserRepository
@@ -36,6 +37,9 @@ class SessionServiceTest {
 
     @Mock
     var passwordService: PasswordService? = null
+
+    @Mock
+    var otpService: OtpService? = null
 
     @Test
     fun `Should login`() {
@@ -108,6 +112,64 @@ class SessionServiceTest {
 
         verify(userService!!).get(email)
         verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
+    }
+
+    @Test
+    fun `Should throw OtpRequiredException when OTP is active and no code provided`() {
+        // Given
+        val email = "perier@flavien.io"
+        val password = "Password123!"
+        val proofOfWork = "proofOfWork"
+        val user = UserTestFactory.initUser().copy(otpSecret = "JBSWY3DPEHPK3PXP")
+
+        `when`(userService!!.get(email)).thenReturn(user)
+        `when`(passwordService!!.testPassword(password, user.passwordSalt, user.password)).thenReturn(true)
+
+        // When/Then
+        assertThrows(OtpRequiredException::class.java) {
+            sessionService!!.login(email, password, proofOfWork, null)
+        }
+
+        verify(userService!!).get(email)
+        verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
+    }
+
+    @Test
+    fun `Should login successfully when OTP is active and valid code is provided`() {
+        // Given
+        val email = "perier@flavien.io"
+        val password = "Password123!"
+        val proofOfWork = "proofOfWork"
+        val otpCode = "123456"
+        val user = UserTestFactory.initUser().copy(id = 1L, otpSecret = "JBSWY3DPEHPK3PXP")
+        val refreshToken = SessionTestFactory.initRefreshToken()
+        val accessToken =
+            SessionTestFactory.initAccessToken(
+                userId = user.id!!,
+                role = user.role,
+                refreshTokenId = refreshToken.id,
+            )
+
+        `when`(userService!!.get(email)).thenReturn(user)
+        `when`(passwordService!!.testPassword(password, user.passwordSalt, user.password)).thenReturn(true)
+        `when`(otpService!!.validateTOTP("JBSWY3DPEHPK3PXP", otpCode)).thenReturn(true)
+        `when`(userRepository!!.save(user)).thenReturn(user)
+        `when`(refreshTokenService!!.create(user.id!!, user.role)).thenReturn(refreshToken)
+        `when`(accessTokenService!!.create(refreshToken)).thenReturn(accessToken)
+
+        // When
+        val result = sessionService!!.login(email, password, proofOfWork, otpCode)
+
+        // Then
+        verify(userService!!).get(email)
+        verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
+        verify(otpService!!).validateTOTP("JBSWY3DPEHPK3PXP", otpCode)
+        verify(userRepository!!).save(user)
+        verify(refreshTokenService!!).create(user.id!!, user.role)
+        verify(accessTokenService!!).create(refreshToken)
+
+        assertEquals(refreshToken, result.refreshToken)
+        assertEquals(accessToken, result.accessToken)
     }
 
     @Test

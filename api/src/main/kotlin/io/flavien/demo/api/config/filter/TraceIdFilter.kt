@@ -1,4 +1,4 @@
-package io.flavien.demo.api.filter
+package io.flavien.demo.api.config.filter
 
 import io.micrometer.tracing.Tracer
 import jakarta.servlet.FilterChain
