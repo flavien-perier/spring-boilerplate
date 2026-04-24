@@ -1,8 +1,8 @@
 package io.flavien.demo.api.session
 
-import io.flavien.demo.api.dto.LoginDto
-import io.flavien.demo.api.dto.SessionDto
-import io.flavien.demo.api.dto.SessionRenewalDto
+import io.flavien.demo.api.generated.dto.LoginDto
+import io.flavien.demo.api.generated.dto.SessionDto
+import io.flavien.demo.api.generated.dto.SessionRenewalDto
 
 object SessionDtoTestFactory {
     fun initSessionDto(

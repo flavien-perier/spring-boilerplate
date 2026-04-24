@@ -11,6 +11,10 @@ export const useAccountSecurityStore = defineStore("account-security", {
     otpEnabled: false,
     otpSetupUri: null as string | null,
     otpCode: "",
+    computeActionSetupOtp: false,
+    computeActionConfirmOtp: false,
+    computeActionDisableOtp: false,
+    computeActionDeleteAccount: false,
   }),
   getters: {},
   actions: {
@@ -37,6 +41,7 @@ export const useAccountSecurityStore = defineStore("account-security", {
           "modal.no"
         )
         .then(() => {
+          this.computeActionDeleteAccount = true;
           userApi
             .deleteUserMe()
             .then(() => {
@@ -46,7 +51,10 @@ export const useAccountSecurityStore = defineStore("account-security", {
               );
               applicationStore.disconnected();
             })
-            .catch(applicationStore.axiosException);
+            .catch(applicationStore.axiosException)
+            .finally(() => {
+              this.computeActionDeleteAccount = false;
+            });
         })
         .catch();
     },
@@ -61,15 +69,20 @@ export const useAccountSecurityStore = defineStore("account-security", {
     },
 
     setupOtp() {
+      this.computeActionSetupOtp = true;
       userApi
         .setupOtp()
         .then((response) => {
           this.otpSetupUri = response.data.uri;
         })
-        .catch(applicationStore.axiosException);
+        .catch(applicationStore.axiosException)
+        .finally(() => {
+          this.computeActionSetupOtp = false;
+        });
     },
 
     async confirmOtp() {
+      this.computeActionConfirmOtp = true;
       await userApi
         .confirmOtp({ otp: this.otpCode })
         .then(() => {
@@ -91,10 +104,14 @@ export const useAccountSecurityStore = defineStore("account-security", {
           } else {
             applicationStore.axiosException(error);
           }
+        })
+        .finally(() => {
+          this.computeActionConfirmOtp = false;
         });
     },
 
     disableOtp() {
+      this.computeActionDisableOtp = true;
       userApi
         .disableOtp()
         .then(() => {
@@ -104,7 +121,10 @@ export const useAccountSecurityStore = defineStore("account-security", {
             "notification.otp-disabled"
           );
         })
-        .catch(applicationStore.axiosException);
+        .catch(applicationStore.axiosException)
+        .finally(() => {
+          this.computeActionDisableOtp = false;
+        });
     },
   },
 });

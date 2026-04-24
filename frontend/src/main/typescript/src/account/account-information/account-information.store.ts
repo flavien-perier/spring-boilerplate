@@ -26,7 +26,7 @@ export const useAccountInformationStore = defineStore("account-information", {
       this.$reset();
     },
 
-    update() {
+    async update() {
       if (!this.buttonEnabled) {
         return;
       }
@@ -36,7 +36,7 @@ export const useAccountInformationStore = defineStore("account-information", {
         .updateUserMe({
           email: this.email,
           password: this.password,
-          proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
+          proofOfWork: await passwordUtil.proofOfWork(this.password, this.email),
         })
         .then(() => {
           applicationStore.sendNotification(

@@ -1,6 +1,6 @@
 package io.flavien.demo.api.user
 
-import io.flavien.demo.api.dto.UserPageDto
+import io.flavien.demo.api.generated.dto.UserPageDto
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper

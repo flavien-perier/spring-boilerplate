@@ -26,7 +26,7 @@ From `openapi.yaml`, two targets are generated automatically during build:
 1. **Backend** (Kotlin Spring):
    - Controller interfaces → `api/build/generated/openapi/src/main/kotlin/io/flavien/demo/api/api/`
    - DTO classes → `api/build/generated/openapi/src/main/kotlin/io/flavien/demo/api/dto/`
-   - Config: `apiPackage = "io.flavien.demo.api.api"`, `modelPackage = "io.flavien.demo.api.dto"`
+   - Config: `apiPackage = "io.flavien.demo.api.generated.api"`, `modelPackage = "io.flavien.demo.api.generated.dto"`
    - Generator: `kotlin-spring`
 
 2. **Frontend** (TypeScript Axios):

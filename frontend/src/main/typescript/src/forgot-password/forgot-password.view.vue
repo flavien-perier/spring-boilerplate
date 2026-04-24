@@ -13,6 +13,7 @@
     <fio-input-button
       :label="$t('action.send')"
       :disabled="!buttonEnabled"
+      :waiting="computeAction"
       @click="forgotPasswordStore.send"
     />
   </fio-auth-layout>
@@ -24,7 +25,7 @@ import { storeToRefs } from "pinia";
 import { onBeforeRouteLeave } from "vue-router";
 
 const forgotPasswordStore = useForgotPasswordStore();
-const { email, buttonEnabled, isEmailValid } = storeToRefs(forgotPasswordStore);
+const { email, buttonEnabled, isEmailValid, computeAction } = storeToRefs(forgotPasswordStore);
 
 forgotPasswordStore.init();
 

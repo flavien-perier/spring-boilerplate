@@ -24,7 +24,7 @@ export const useCreateAccountStore = defineStore("create-account", {
       this.$reset();
     },
 
-    createAccount() {
+    async createAccount() {
       if (!this.buttonEnabled) {
         return;
       }
@@ -34,7 +34,7 @@ export const useCreateAccountStore = defineStore("create-account", {
         .createUser({
           email: this.email,
           password: this.password,
-          proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
+          proofOfWork: await passwordUtil.proofOfWork(this.password, this.email),
         })
         .then(() => {
           applicationStore.sendNotification(

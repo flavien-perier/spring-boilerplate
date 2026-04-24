@@ -31,6 +31,7 @@
     <fio-input-button
       :label="$t('action.connect')"
       :disabled="!buttonEnabled"
+      :waiting="computeAction"
       @click="loginStore.login"
     />
 
@@ -46,7 +47,7 @@ import { storeToRefs } from "pinia";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
 
 const loginStore = useLoginStore();
-const { email, password, isEmailValid, buttonEnabled, otp, otpRequired } =
+const { email, password, isEmailValid, buttonEnabled, otp, otpRequired, computeAction } =
   storeToRefs(loginStore);
 
 const route = useRoute();

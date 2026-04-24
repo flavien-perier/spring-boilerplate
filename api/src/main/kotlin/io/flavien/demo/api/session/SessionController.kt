@@ -1,12 +1,12 @@
 package io.flavien.demo.api.session
 
-import io.flavien.demo.api.api.SessionApi
-import io.flavien.demo.api.dto.LoginDto
-import io.flavien.demo.api.dto.RefreshTokenPropertiesDto
-import io.flavien.demo.api.dto.SessionDto
-import io.flavien.demo.api.dto.SessionRenewalDto
-import io.flavien.demo.api.dto.SessionRenewalWebDto
-import io.flavien.demo.api.dto.SessionWebDto
+import io.flavien.demo.api.generated.api.SessionApi
+import io.flavien.demo.api.generated.dto.LoginDto
+import io.flavien.demo.api.generated.dto.RefreshTokenPropertiesDto
+import io.flavien.demo.api.generated.dto.SessionDto
+import io.flavien.demo.api.generated.dto.SessionRenewalDto
+import io.flavien.demo.api.generated.dto.SessionRenewalWebDto
+import io.flavien.demo.api.generated.dto.SessionWebDto
 import io.flavien.demo.api.session.mapper.RefreshTokenMapper
 import io.flavien.demo.api.session.mapper.SessionMapper
 import io.flavien.demo.api.session.util.ContextUtil

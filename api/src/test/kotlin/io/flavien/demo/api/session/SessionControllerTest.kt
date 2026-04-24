@@ -1,6 +1,6 @@
 package io.flavien.demo.api.session
 
-import io.flavien.demo.api.dto.RefreshTokenPropertiesDto
+import io.flavien.demo.api.generated.dto.RefreshTokenPropertiesDto
 import io.flavien.demo.api.session.mapper.RefreshTokenMapper
 import io.flavien.demo.api.session.mapper.SessionMapper
 import io.flavien.demo.api.session.util.ContextUtil

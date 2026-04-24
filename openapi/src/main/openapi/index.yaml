@@ -609,8 +609,8 @@ components:
       $ref: "schemas/user.yaml#/OtpSetupDto"
     OtpConfirmDto:
       $ref: "schemas/user.yaml#/OtpConfirmDto"
-    ErrorDto:
-      $ref: "components/errors.yaml#/ErrorDto"
+    ProblemDetail:
+      $ref: "components/errors.yaml#/ProblemDetail"
   parameters:
     userMail:
       $ref: "components/parameters.yaml#/userMail"

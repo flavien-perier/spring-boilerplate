@@ -26,7 +26,7 @@ export const useChangePasswordStore = defineStore("change-password", {
       this.$reset();
     },
 
-    update() {
+    async update() {
       if (!this.buttonEnabled) {
         return;
       }
@@ -36,7 +36,7 @@ export const useChangePasswordStore = defineStore("change-password", {
         .updatePassword({
           token: this.token,
           password: this.password,
-          proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
+          proofOfWork: await passwordUtil.proofOfWork(this.password, this.email),
         })
         .then(() => {
           applicationStore.sendNotification(

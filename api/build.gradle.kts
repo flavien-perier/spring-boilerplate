@@ -51,8 +51,8 @@ openApiGenerate {
             .get()
             .asFile.path,
     )
-    apiPackage.set("io.flavien.demo.api.api")
-    modelPackage.set("io.flavien.demo.api.dto")
+    apiPackage.set("io.flavien.demo.api.generated.api")
+    modelPackage.set("io.flavien.demo.api.generated.dto")
 
     additionalProperties.set(
         mapOf(

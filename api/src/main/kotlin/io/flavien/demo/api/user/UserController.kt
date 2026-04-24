@@ -1,14 +1,14 @@
 package io.flavien.demo.api.user
 
-import io.flavien.demo.api.api.UserApi
-import io.flavien.demo.api.dto.ChangePasswordDto
-import io.flavien.demo.api.dto.OtpConfirmDto
-import io.flavien.demo.api.dto.OtpSetupDto
-import io.flavien.demo.api.dto.UserCreationDto
-import io.flavien.demo.api.dto.UserDto
-import io.flavien.demo.api.dto.UserPageDto
-import io.flavien.demo.api.dto.UserUpdateAdminDto
-import io.flavien.demo.api.dto.UserUpdateDto
+import io.flavien.demo.api.generated.api.UserApi
+import io.flavien.demo.api.generated.dto.ChangePasswordDto
+import io.flavien.demo.api.generated.dto.OtpConfirmDto
+import io.flavien.demo.api.generated.dto.OtpSetupDto
+import io.flavien.demo.api.generated.dto.UserCreationDto
+import io.flavien.demo.api.generated.dto.UserDto
+import io.flavien.demo.api.generated.dto.UserPageDto
+import io.flavien.demo.api.generated.dto.UserUpdateAdminDto
+import io.flavien.demo.api.generated.dto.UserUpdateDto
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper

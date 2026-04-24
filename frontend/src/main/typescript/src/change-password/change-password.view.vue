@@ -14,6 +14,7 @@
     <fio-input-button
       :label="$t('action.update')"
       :disabled="!buttonEnabled"
+      :waiting="computeAction"
       @click="changePasswordStore.update"
     />
   </fio-auth-layout>
@@ -27,7 +28,7 @@ import { useApplicationStore } from "@/core/application.store";
 
 const changePasswordStore = useChangePasswordStore();
 const applicationStore = useApplicationStore();
-const { password, buttonEnabled, isPasswordValid } =
+const { password, buttonEnabled, isPasswordValid, computeAction } =
   storeToRefs(changePasswordStore);
 
 const route = useRoute();

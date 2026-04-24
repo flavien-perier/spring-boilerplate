@@ -15,6 +15,7 @@ import SideNavLayout from "./layouts/side-nav.layout.vue";
 import AuthLayout from "./layouts/auth.layout.vue";
 import TabLayout from "./layouts/tab.layout.vue";
 import PageView from "./layouts/page-view.layout.vue";
+import SplitLayout from "./layouts/split.layout.vue";
 
 import { passwordUtil } from "@/utils/password-util";
 
@@ -38,6 +39,7 @@ export default {
     app.component("fio-auth-layout", AuthLayout);
     app.component("fio-tab-layout", TabLayout);
     app.component("fio-page-view", PageView);
+    app.component("fio-split-layout", SplitLayout);
   },
 };
 
@@ -60,6 +62,7 @@ export type {
   AuthLayout,
   TabLayout,
   PageView,
+  SplitLayout,
 };
 
 export type { TabElement } from "./model/tab-element";

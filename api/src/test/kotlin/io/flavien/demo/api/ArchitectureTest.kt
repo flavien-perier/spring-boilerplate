@@ -152,7 +152,7 @@ class ArchitectureTest {
             .and()
             .resideInAPackage("io.flavien.demo.api..")
             .and()
-            .resideOutsideOfPackage("io.flavien.demo.api.api..")
+            .resideOutsideOfPackage("io.flavien.demo.api.generated.api..")
             .should()
             .resideInAPackage("..config..")
             .because("@Configuration beans in the api module must be organized in the config sub-package")

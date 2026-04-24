@@ -72,7 +72,7 @@ class UserService(
 
 ```kotlin
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-class UserNotFoundException(email: String) : RuntimeException("User ($email) not found")
+class UserNotFoundException(email: String): FioException("User ($email) not found")
 ```
 
 ## Code Style
@@ -111,7 +111,7 @@ Use string templates: `"User $email has been created"` (not SLF4J parameterized 
 ### Domain exceptions (preferred)
 ```kotlin
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-class UserNotFoundException(email: String) : RuntimeException("User ($email) not found")
+class UserNotFoundException(email: String): FioException("User ($email) not found")
 ```
 
 ### Null / Optional unwrapping

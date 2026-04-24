@@ -1,34 +1,42 @@
 <template>
-  <div class="account-layout">
-    <div class="account-layout__image">
-      <fio-image name="undraw_updates" alt="Update image" />
-    </div>
-    <div class="account-layout__content">
-      <h2 class="account-layout__title mb-xl">
-        {{ $t("action.update-account") }}
-      </h2>
+  <fio-split-layout class="account-layout">
+    <template #left>
+      <div class="account-layout__image">
+        <fio-image name="undraw_updates" alt="Update image" />
+      </div>
+    </template>
 
-      <fio-input-email
-        class="mb-xl"
-        v-model="email"
-        @update:isValid="(value) => (isEmailValid = value)"
-      />
+    <template #right>
+      <div class="account-layout__content">
+        <h2 class="account-layout__title mb-xl">
+          {{ $t("action.update-account") }}
+        </h2>
 
-      <fio-input-create-password
-        class="mb-xl"
-        v-model="password"
-        :min-password-length="applicationStore.configuration.minPasswordLength"
-        @update:isValid="(value) => (isPasswordValid = value)"
-        @keyup.enter="accountInformationStore.update"
-      />
+        <fio-input-email
+          class="mb-xl"
+          v-model="email"
+          @update:isValid="(value) => (isEmailValid = value)"
+        />
 
-      <fio-input-button
-        :label="$t('action.update')"
-        :disabled="!buttonEnabled"
-        @click="accountInformationStore.update"
-      />
-    </div>
-  </div>
+        <fio-input-create-password
+          class="mb-xl"
+          v-model="password"
+          :min-password-length="
+            applicationStore.configuration.minPasswordLength
+          "
+          @update:isValid="(value) => (isPasswordValid = value)"
+          @keyup.enter="accountInformationStore.update"
+        />
+
+        <fio-input-button
+          :label="$t('action.update')"
+          :disabled="!buttonEnabled"
+          :waiting="computeAction"
+          @click="accountInformationStore.update"
+        />
+      </div>
+    </template>
+  </fio-split-layout>
 </template>
 
 <script setup lang="ts">
@@ -39,7 +47,7 @@ import { onBeforeRouteLeave } from "vue-router";
 
 const accountInformationStore = useAccountInformationStore();
 const applicationStore = useApplicationStore();
-const { email, password, buttonEnabled, isEmailValid, isPasswordValid } =
+const { email, password, buttonEnabled, isEmailValid, isPasswordValid, computeAction } =
   storeToRefs(accountInformationStore);
 
 accountInformationStore.init();
@@ -49,26 +57,10 @@ onBeforeRouteLeave(accountInformationStore.close);
 
 <style scoped lang="scss">
 .account-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
   max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
   min-height: 100%;
-  align-items: center;
-
-  @media (min-width: 768px) {
-    grid-template-columns: 8fr 7fr;
-  }
-
-  @media (min-width: 992px) {
-    grid-template-columns: 7fr 5fr;
-  }
-
-  @media (min-width: 1200px) {
-    grid-template-columns: 6fr 5fr;
-  }
 }
 
 .account-layout__image {

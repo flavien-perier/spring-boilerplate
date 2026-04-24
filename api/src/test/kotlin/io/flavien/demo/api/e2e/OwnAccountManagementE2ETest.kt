@@ -1,8 +1,8 @@
 package io.flavien.demo.api.e2e
 
-import io.flavien.demo.api.dto.LoginDto
-import io.flavien.demo.api.dto.UserCreationDto
-import io.flavien.demo.api.dto.UserUpdateDto
+import io.flavien.demo.api.generated.dto.LoginDto
+import io.flavien.demo.api.generated.dto.UserCreationDto
+import io.flavien.demo.api.generated.dto.UserUpdateDto
 import io.flavien.demo.api.testCore.util.MailServerUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll

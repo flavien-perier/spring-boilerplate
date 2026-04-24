@@ -1,11 +1,11 @@
 package io.flavien.demo.api.user
 
-import io.flavien.demo.api.dto.ChangePasswordDto
-import io.flavien.demo.api.dto.Role
-import io.flavien.demo.api.dto.UserCreationDto
-import io.flavien.demo.api.dto.UserDto
-import io.flavien.demo.api.dto.UserUpdateAdminDto
-import io.flavien.demo.api.dto.UserUpdateDto
+import io.flavien.demo.api.generated.dto.ChangePasswordDto
+import io.flavien.demo.api.generated.dto.Role
+import io.flavien.demo.api.generated.dto.UserCreationDto
+import io.flavien.demo.api.generated.dto.UserDto
+import io.flavien.demo.api.generated.dto.UserUpdateAdminDto
+import io.flavien.demo.api.generated.dto.UserUpdateDto
 
 object UserDtoTestFactory {
     fun initUserDto() = UserDto("perier@flavien.io", otpEnabled = false)

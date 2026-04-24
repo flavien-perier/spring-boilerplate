@@ -46,7 +46,7 @@ export const useLoginStore = defineStore("login", {
       this.$reset();
     },
 
-    login() {
+    async login() {
       if (!this.buttonEnabled) {
         return;
       }
@@ -56,7 +56,7 @@ export const useLoginStore = defineStore("login", {
         .loginWeb({
           email: this.email,
           password: this.password,
-          proofOfWork: passwordUtil.proofOfWork(this.password, this.email),
+          proofOfWork: await passwordUtil.proofOfWork(this.password, this.email),
           otp: this.otpRequired ? this.otp : undefined,
         })
         .then((response) => {

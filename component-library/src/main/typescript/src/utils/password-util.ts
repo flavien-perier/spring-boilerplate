@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 import * as scrypt from "scrypt-js";
 class PasswordUtil {
-  public proofOfWork(password: string, salt: string): string {
+  public async proofOfWork(password: string, salt: string): Promise<string> {
     const passwordBuffer = new Buffer(password);
     const saltBuffer = new Buffer(salt);
 
@@ -10,8 +10,7 @@ class PasswordUtil {
     const p = 4;
     const dkLen = 32;
 
-    return scrypt
-      .syncScrypt(passwordBuffer, saltBuffer, N, r, p, dkLen)
+    return (await scrypt.scrypt(passwordBuffer, saltBuffer, N, r, p, dkLen))
       .join("");
   }
 

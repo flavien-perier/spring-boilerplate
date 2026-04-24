@@ -1,7 +1,7 @@
 package io.flavien.demo.api.user.mapper
 
-import io.flavien.demo.api.dto.UserDto
-import io.flavien.demo.api.dto.UserUpdateAdminDto
+import io.flavien.demo.api.generated.dto.UserDto
+import io.flavien.demo.api.generated.dto.UserUpdateAdminDto
 import io.flavien.demo.domain.user.entity.User
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping

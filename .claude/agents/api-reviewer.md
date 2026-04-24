@@ -25,7 +25,7 @@ Generated code in `api/build/generated/openapi/` — never reviewed, never edite
 ## Review Checklist
 
 ### Controllers
-- [ ] Implements the generated `{Feature}Api` interface from `io.flavien.demo.api.api`
+- [ ] Implements the generated `{Feature}Api` interface from `io.flavien.demo.api.generated.api`
 - [ ] Annotated with `@Controller` (not `@RestController` — the interface handles `@RequestMapping`)
 - [ ] Delegates entirely to a `@Service` — no business logic in the controller body
 - [ ] Uses a mapper to convert between domain model and DTOs
@@ -34,7 +34,7 @@ Generated code in `api/build/generated/openapi/` — never reviewed, never edite
 
 ### Mappers
 - [ ] Interface annotated with `@Mapper(componentModel = "spring")`
-- [ ] Maps between domain model (from `domain/`) and DTO (from generated `io.flavien.demo.api.dto`)
+- [ ] Maps between domain model (from `domain/`) and DTO (from generated `io.flavien.demo.api.generated.dto`)
 - [ ] No business logic inside mappers — pure structural conversion
 - [ ] Named `{Feature}Mapper` in package `io.flavien.demo.api.{feature}.mapper`
 

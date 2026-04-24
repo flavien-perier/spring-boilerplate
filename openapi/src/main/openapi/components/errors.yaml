@@ -1,59 +1,63 @@
-ErrorDto:
+ProblemDetail:
   type: object
-  description: Error response body.
+  description: RFC 9457 problem detail error response body.
   required:
     - status
-    - message
+    - title
+    - detail
+    - instance
   properties:
     status:
       type: integer
       description: HTTP status code.
-    message:
+    title:
+      type: string
+      description: HTTP status reason phrase (e.g. "Unauthorized").
+    detail:
       type: string
       description: Human-readable error message.
-    timestamp:
+    instance:
       type: string
-      format: date-time
-      description: Time of the error.
+      description: The request URI path that produced the error.
 
 BadRequest:
   description: Validation failure.
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: "#/ErrorDto"
+        $ref: "#/ProblemDetail"
 
 Unauthorized:
   description: Missing or expired token.
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: "#/ErrorDto"
+        $ref: "#/ProblemDetail"
 
 Forbidden:
   description: Insufficient role.
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: "#/ErrorDto"
+        $ref: "#/ProblemDetail"
 
 NotFound:
   description: Resource not found.
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: "#/ErrorDto"
+        $ref: "#/ProblemDetail"
 
 Conflict:
   description: Resource conflict (e.g. duplicate email or already-used token).
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: "#/ErrorDto"
+        $ref: "#/ProblemDetail"
 
 InternalServerError:
   description: Generic server error.
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: "#/ErrorDto"
+        $ref: "#/ProblemDetail"
