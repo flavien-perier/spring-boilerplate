@@ -36,6 +36,18 @@ class OwnAccountManagementE2ETest {
     }
 
     @Test
+    @Order(0)
+    fun `Seed CSRF token`() {
+        val result = webTestClient
+            .get()
+            .uri("/api/conf")
+            .exchange()
+            .returnResult(Void::class.java)
+        csrfToken = result.responseCookies.getFirst("XSRF-TOKEN")?.value
+            ?: throw IllegalStateException("XSRF-TOKEN cookie not found")
+    }
+
+    @Test
     @Order(1)
     fun `Creating a new user`() {
         val requestContent = UserCreationDto(userEmail, userPassword, userProofOfWork)
@@ -44,6 +56,8 @@ class OwnAccountManagementE2ETest {
             .uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
             .exchange()
             .expectStatus()
@@ -59,6 +73,8 @@ class OwnAccountManagementE2ETest {
             .uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
             .exchange()
             .expectStatus()
@@ -84,6 +100,8 @@ class OwnAccountManagementE2ETest {
                     .build()
             }.contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
             .expectStatus()
             .isUnauthorized
@@ -107,6 +125,8 @@ class OwnAccountManagementE2ETest {
                     .build()
             }.contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
             .expectStatus()
             .isNoContent
@@ -121,6 +141,8 @@ class OwnAccountManagementE2ETest {
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectStatus()
@@ -198,6 +220,8 @@ class OwnAccountManagementE2ETest {
             .uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
             .exchange()
             .expectStatus()
@@ -270,6 +294,8 @@ class OwnAccountManagementE2ETest {
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectStatus()
@@ -284,6 +310,7 @@ class OwnAccountManagementE2ETest {
     }
 
     companion object {
+        private var csrfToken: String? = null
         private var refreshToken: String? = null
         private var accessToken: String? = null
 

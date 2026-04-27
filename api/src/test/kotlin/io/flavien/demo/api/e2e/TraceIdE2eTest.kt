@@ -31,11 +31,21 @@ class TraceIdE2eTest {
 
     @Test
     fun `Every API response includes a X-Trace-Id header with a 32-char hex value`() {
+        val csrfResult = webTestClient
+            .get()
+            .uri("/api/conf")
+            .exchange()
+            .returnResult(Void::class.java)
+        val csrfToken = csrfResult.responseCookies.getFirst("XSRF-TOKEN")?.value
+            ?: throw IllegalStateException("XSRF-TOKEN cookie not found")
+
         val requestContent = LoginDto("nonexistent@test.com", "Password123!", "pow")
         webTestClient
             .post()
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken)
+            .header("X-XSRF-TOKEN", csrfToken)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectHeader()

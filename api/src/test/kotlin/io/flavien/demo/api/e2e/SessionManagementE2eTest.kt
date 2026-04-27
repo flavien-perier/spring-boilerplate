@@ -36,6 +36,18 @@ class SessionManagementE2eTest {
     }
 
     @Test
+    @Order(0)
+    fun `Seed CSRF token`() {
+        val result = webTestClient
+            .get()
+            .uri("/api/conf")
+            .exchange()
+            .returnResult(Void::class.java)
+        csrfToken = result.responseCookies.getFirst("XSRF-TOKEN")?.value
+            ?: throw IllegalStateException("XSRF-TOKEN cookie not found")
+    }
+
+    @Test
     @Order(1)
     fun `Creating a first user`() {
         val requestContent = UserCreationDto(userEmail1, userPassword1, userProofOfWork1)
@@ -44,6 +56,8 @@ class SessionManagementE2eTest {
             .uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
             .exchange()
             .expectStatus()
@@ -68,6 +82,8 @@ class SessionManagementE2eTest {
                     .build()
             }.contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
             .expectStatus()
             .isNoContent
@@ -82,6 +98,8 @@ class SessionManagementE2eTest {
             .uri("/api/user")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
             .exchange()
             .expectStatus()
@@ -106,6 +124,8 @@ class SessionManagementE2eTest {
                     .build()
             }.contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
             .expectStatus()
             .isNoContent
@@ -120,6 +140,8 @@ class SessionManagementE2eTest {
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectStatus()
@@ -142,6 +164,8 @@ class SessionManagementE2eTest {
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectStatus()
@@ -164,6 +188,8 @@ class SessionManagementE2eTest {
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectStatus()
@@ -186,6 +212,8 @@ class SessionManagementE2eTest {
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectStatus()
@@ -212,6 +240,8 @@ class SessionManagementE2eTest {
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectStatus()
@@ -238,6 +268,8 @@ class SessionManagementE2eTest {
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
             .exchange()
             .expectStatus()
@@ -285,6 +317,8 @@ class SessionManagementE2eTest {
             .uri("/api/session/renew")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .cookie("XSRF-TOKEN", csrfToken!!)
+            .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestRenew), SessionRenewalDto::class.java)
             .exchange()
             .expectStatus()
@@ -301,17 +335,16 @@ class SessionManagementE2eTest {
     }
 
     companion object {
+        private var csrfToken: String? = null
+
         private var refreshTokenSessionUser11: String? = null
         private var accessTokenSessionUser11: String? = null
-        private var refreshTokenSessionUser11Uuid: String? = null
 
         private var refreshTokenSessionUser12: String? = null
         private var accessTokenSessionUser12: String? = null
-        private var refreshTokenSessionUser12Uuid: String? = null
 
         private var refreshTokenSessionUser21: String? = null
         private var accessTokenSessionUser21: String? = null
-        private var refreshTokenSessionUser21Uuid: String? = null
 
         private val userEmail1 = "test1@flavien.cc"
         private val userPassword1 = "Password123!"
