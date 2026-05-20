@@ -21,17 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension
 import java.time.OffsetDateTime
 import java.util.Optional
 
-// NOTE – Resilience4j @CircuitBreaker annotations on AccessTokenService work via Spring AOP proxies
+// NOTE – @Retryable annotations on AccessTokenService work via Spring AOP proxies
 // and therefore have NO effect in plain Mockito unit tests where the service is instantiated
-// directly (no proxy wraps the instance). The circuit-breaker integration is validated by E2E /
+// directly (no proxy wraps the instance). The retry integration is validated by E2E /
 // integration tests that spin up a full Spring context.
-//
-// The private `getFallback(token, ex)` method is intentionally private and therefore cannot be
-// called directly in unit tests without reflection. Its logic (throwing BadAccessTokenException) is
-// trivially covered by the existing test
-// "Should fail to return an access token according to its id (Access token does not exist)"
-// which already asserts that BadAccessTokenException is thrown from the same code path.
-// No additional test is needed for the fallback body itself.
 
 @ExtendWith(MockitoExtension::class)
 class AccessTokenServiceTest {

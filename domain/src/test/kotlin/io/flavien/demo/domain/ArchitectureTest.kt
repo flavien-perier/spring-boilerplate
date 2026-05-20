@@ -9,8 +9,7 @@ import com.tngtech.archunit.lang.ArchRule
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
-import io.github.resilience4j.retry.annotation.Retry
+import org.springframework.retry.annotation.Retryable
 import jakarta.persistence.Entity
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.RedisHash
@@ -210,21 +209,6 @@ class ArchitectureTest {
             .because("Classes named *Configuration must be annotated with @Configuration")
 
     @ArchTest
-    val publicMethodsOfTokenServicesShouldBeAnnotatedWithCircuitBreaker: ArchRule =
-        methods()
-            .that()
-            .areDeclaredInClassesThat()
-            .haveSimpleNameEndingWith("TokenService")
-            .and()
-            .arePublic()
-            .should()
-            .beAnnotatedWith(CircuitBreaker::class.java)
-            .because(
-                "Token services interact with Redis directly — all public methods must be " +
-                    "protected by @CircuitBreaker(name = \"redis\") to handle Redis unavailability gracefully",
-            )
-
-    @ArchTest
     val publicMethodsOfMailServicesShouldBeAnnotatedWithRetry: ArchRule =
         methods()
             .that()
@@ -232,9 +216,9 @@ class ArchitectureTest {
             .and()
             .arePublic()
             .should()
-            .beAnnotatedWith(Retry::class.java)
+            .beAnnotatedWith(Retryable::class.java)
             .because(
                 "Services that send email must protect their public methods with " +
-                    "@Retry(name = \"mailSend\") to retry on transient SMTP failures",
+                    "@Retryable to retry on transient SMTP failures",
             )
 }

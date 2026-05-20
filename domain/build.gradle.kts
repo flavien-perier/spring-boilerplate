@@ -34,8 +34,8 @@ dependencies {
     runtimeOnly(libs.postgresql)
     implementation(libs.jedis)
 
-    implementation(libs.resilience4j.spring.boot3)
     implementation(libs.spring.boot.starter.aspectj)
+    implementation(libs.spring.retry)
     runtimeOnly(libs.logstash.logback.encoder)
 
     testImplementation(libs.spring.boot.starter.test)

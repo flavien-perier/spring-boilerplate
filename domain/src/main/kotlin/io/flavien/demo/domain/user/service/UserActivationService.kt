@@ -6,10 +6,11 @@ import io.flavien.demo.domain.user.entity.UserActivation
 import io.flavien.demo.domain.user.exception.ActivationFailedException
 import io.flavien.demo.domain.user.repository.UserActivationRepository
 import io.flavien.demo.utils.RandomUtil
-import io.github.resilience4j.retry.annotation.Retry
 import org.slf4j.LoggerFactory
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
@@ -22,7 +23,7 @@ class UserActivationService(
     private val emailSender: JavaMailSender,
     private val mailProperties: MailProperties,
 ) {
-    @Retry(name = "mailSend")
+    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun sendActivationToken(user: User) {
         var activationToken = RandomUtil.randomString(64)
         while (userActivationRepository.existsById(activationToken)) {
@@ -45,7 +46,7 @@ class UserActivationService(
         logger.info("Sent activation email to ${user.email}")
     }
 
-    @Retry(name = "mailSend")
+    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun validate(token: String): UserActivation {
         val userActivation = userActivationRepository.findById(token).getOrNull() ?: throw ActivationFailedException()
 
@@ -54,7 +55,7 @@ class UserActivationService(
         return userActivation
     }
 
-    @Retry(name = "mailSend")
+    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun deleteByUserId(userId: Long) {
         userActivationRepository.deleteByUserId(userId)
     }

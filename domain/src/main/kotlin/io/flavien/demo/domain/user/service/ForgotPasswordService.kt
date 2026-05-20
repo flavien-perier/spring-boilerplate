@@ -6,10 +6,11 @@ import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.exception.ChangePasswordFailedException
 import io.flavien.demo.domain.user.repository.ForgotPasswordRepository
 import io.flavien.demo.utils.RandomUtil
-import io.github.resilience4j.retry.annotation.Retry
 import org.slf4j.LoggerFactory
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
@@ -22,7 +23,7 @@ class ForgotPasswordService(
     private val emailSender: JavaMailSender,
     private val mailProperties: MailProperties,
 ) {
-    @Retry(name = "mailSend")
+    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun sendForgotPasswordToken(user: User) {
         var forgotPasswordToken = RandomUtil.randomString(64)
         while (forgotPasswordRepository.existsById(forgotPasswordToken)) {
@@ -46,7 +47,7 @@ class ForgotPasswordService(
         logger.info("Sent forgot password email to ${user.email}")
     }
 
-    @Retry(name = "mailSend")
+    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun validate(token: String): ForgotPassword {
         val forgotPassword = forgotPasswordRepository.findById(token).getOrNull() ?: throw ChangePasswordFailedException()
 
@@ -55,7 +56,7 @@ class ForgotPasswordService(
         return forgotPassword
     }
 
-    @Retry(name = "mailSend")
+    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun deleteByUserId(userId: Long) {
         forgotPasswordRepository.deleteByUserId(userId)
     }

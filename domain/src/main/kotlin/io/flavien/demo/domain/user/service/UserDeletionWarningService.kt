@@ -3,10 +3,11 @@ package io.flavien.demo.domain.user.service
 import io.flavien.demo.domain.config.MailProperties
 import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.repository.UserRepository
-import io.github.resilience4j.retry.annotation.Retry
 import org.slf4j.LoggerFactory
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
@@ -19,7 +20,7 @@ class UserDeletionWarningService(
     private val emailSender: JavaMailSender,
     private val mailProperties: MailProperties,
 ) {
-    @Retry(name = "mailSend")
+    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun sendWarningEmail(user: User) {
         val context = Context()
         context.setVariable("domainLinks", mailProperties.domainLinks)
