@@ -3,12 +3,13 @@
     <label for="password" class="input-label">{{ label }}</label>
     <div class="input-wrapper">
       <input
-        :type="!showPassword ? 'password' : 'text'"
+        :type="!showPassword || disabled ? 'password' : 'text'"
         id="password"
         class="input-control"
         :class="{ 'input-control--invalid': !isValid && password.length > 0 }"
         :placeholder="label"
         v-model="password"
+        :disabled="disabled"
         @input="emitInput($event)"
         @focus="emitFocus($event)"
         @blur="emitBlur($event)"
@@ -17,10 +18,16 @@
         type="button"
         class="input-toggle"
         tabindex="-1"
+        :disabled="disabled"
         @click="showPassword = !showPassword"
       >
-        <fio-icon v-if="!showPassword" icon="eye" />
-        <fio-icon v-else icon="eye-slash" />
+        <fio-icon
+          v-if="!showPassword || disabled"
+          icon="eye"
+          :disabled="disabled"
+          :clickable="!disabled"
+        />
+        <fio-icon v-else icon="eye-slash" :disabled="disabled" :clickable="!disabled" />
       </button>
     </div>
   </div>
@@ -28,7 +35,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import FioIcon from "../fio-icon.vue";
+import FioIcon from "../icon.vue";
 
 defineOptions({
   name: "FioInputPassword",
@@ -38,10 +45,12 @@ const {
   modelValue = "",
   label = "",
   isValid = true,
+  disabled = false,
 } = defineProps<{
   modelValue?: string;
   label?: string;
   isValid?: boolean;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -75,40 +84,12 @@ function emitBlur(event: Event) {
 @use "../../styles/variables" as *;
 @use "../../styles/variables-colors" as *;
 
-.input-label {
-  display: block;
-  margin-bottom: $margin-xxs;
-  color: $secondary-darker-60;
-  font-size: $font-size;
-}
-
 .input-wrapper {
   position: relative;
 }
 
 .input-control {
-  width: 100%;
-  padding: $margin-s $margin;
   padding-right: 2.75rem;
-  font-size: $font-l-size;
-  border: 1px solid $secondary-lighter-20;
-  border-radius: $border-radius-size;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-  &:focus {
-    border-color: $primary;
-    box-shadow: 0 0 0 3px $primary-lighter-20;
-  }
-
-  &--invalid {
-    border-color: $danger;
-
-    &:focus {
-      box-shadow: 0 0 0 3px $danger-lighter-20;
-    }
-  }
 }
 
 .input-toggle {
@@ -124,10 +105,9 @@ function emitBlur(event: Event) {
   border-radius: $border-radius-size;
   display: flex;
   align-items: center;
-  transition: color 0.2s ease;
 
-  &:hover {
-    color: $secondary-darker-40;
+  &:disabled {
+    cursor: not-allowed;
   }
 }
 </style>

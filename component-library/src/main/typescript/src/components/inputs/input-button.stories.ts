@@ -1,10 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
+import { fn } from "storybook/test";
 import FioInputButton from "./input-button.vue";
 
 const meta: Meta<typeof FioInputButton> = {
   title: "Components/Inputs/FioInputButton",
   component: FioInputButton,
   tags: ["autodocs"],
+  args: {
+    onClick: fn(),
+  },
   argTypes: {
     label: {
       control: "text",
@@ -47,7 +51,6 @@ const meta: Meta<typeof FioInputButton> = {
       description:
         "When true, disables the button and replaces the icon with a spinner",
     },
-    onClick: { action: "clicked" },
   },
 };
 

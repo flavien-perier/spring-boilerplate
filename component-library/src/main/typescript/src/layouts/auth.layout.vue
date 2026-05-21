@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import FioImage from "@/components/fio-image.vue";
+import FioImage from "@/components/image.vue";
 import FioSplitLayout from "@/layouts/split.layout.vue";
 import type { ImageName } from "@/model/images";
 

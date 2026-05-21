@@ -20,6 +20,10 @@ const meta: Meta<typeof FioInputPassword> = {
       description:
         "Controls whether the invalid CSS class is applied (validation is driven externally)",
     },
+    disabled: {
+      control: "boolean",
+      description: "Disables the input when true",
+    },
     "onUpdate:modelValue": { action: "update:modelValue" },
     onInput: { action: "input" },
     onFocus: { action: "focus" },
@@ -31,63 +35,73 @@ export default meta;
 type Story = StoryObj<typeof FioInputPassword>;
 
 export const Default: Story = {
-  args: {
-    modelValue: "",
-    label: "Password",
-    isValid: true,
-  },
-};
-
-export const WithValue: Story = {
-  name: "With Value",
-  args: {
-    modelValue: "mySecretPassword123!",
-    label: "Password",
-    isValid: true,
-  },
-};
-
-export const Invalid: Story = {
-  name: "Invalid State",
-  args: {
-    modelValue: "weak",
-    label: "Password",
-    isValid: false,
-  },
-};
-
-export const CustomLabel: Story = {
-  name: "Custom Label",
-  args: {
-    modelValue: "",
-    label: "Confirm Password",
-    isValid: true,
-  },
-};
-
-export const Interactive: Story = {
-  name: "Interactive (toggle visibility)",
+  name: "Default",
   render: () => ({
     setup() {
       const password = ref("");
       const isValid = ref(true);
-      return { password, isValid };
+      const disabled = ref(false);
+      return { password, isValid, disabled };
     },
     template: `
-            <div style="width: 320px;">
-                <fio-input-password
-                    v-model="password"
-                    label="Password"
-                    :is-valid="isValid"
-                />
-                <div style="margin-top: 8px; font-size: 0.85rem; color: #666;">
-                    Value: <code>{{ password || "(empty)" }}</code>
-                </div>
-                <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
-                    <input type="checkbox" id="validCheck" v-model="isValid" />
-                    <label for="validCheck">Is valid</label>
-                </div>
-            </div>
-        `,
+      <div style="width: 320px;">
+        <fio-input-password v-model="password" label="Password" :is-valid="isValid" :disabled="disabled" />
+        <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6c757d;">
+          Value: <code>{{ password || "(empty)" }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const Invalid: Story = {
+  name: "Invalid State",
+  render: () => ({
+    setup() {
+      const password = ref("weak");
+      const isValid = ref(false);
+      const disabled = ref(false);
+      return { password, isValid, disabled };
+    },
+    template: `
+      <div style="width: 320px;">
+        <fio-input-password v-model="password" label="Password" :is-valid="isValid" :disabled="disabled" />
+        <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6c757d;">
+          Value: <code>{{ password || "(empty)" }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const CustomLabel: Story = {
+  name: "Custom Label",
+  render: () => ({
+    setup() {
+      const password = ref("");
+      const isValid = ref(true);
+      const disabled = ref(false);
+      return { password, isValid, disabled };
+    },
+    template: `
+      <div style="width: 320px;">
+        <fio-input-password v-model="password" label="Confirm Password" :is-valid="isValid" :disabled="disabled" />
+        <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6c757d;">
+          Value: <code>{{ password || "(empty)" }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
   }),
 };

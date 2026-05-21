@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
-import FioQrCode from "./fio-qr-code.vue";
+import FioQrCode from "./qr-code.vue";
 
 const meta: Meta<typeof FioQrCode> = {
   title: "Components/FioQrCode",

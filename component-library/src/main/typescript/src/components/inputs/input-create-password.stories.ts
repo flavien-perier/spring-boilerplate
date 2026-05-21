@@ -24,41 +24,52 @@ export default meta;
 type Story = StoryObj<typeof FioInputCreatePassword>;
 
 export const Default: Story = {
-  args: {
-    modelValue: "",
-    minPasswordLength: 8,
-  },
-};
-
-export const LongerMinLength: Story = {
-  name: "Longer Min Length (12 chars)",
-  args: {
-    modelValue: "",
-    minPasswordLength: 12,
-  },
-};
-
-export const Interactive: Story = {
-  name: "Interactive (v-model + validity)",
+  name: "Default",
   render: () => ({
     setup() {
       const password = ref("");
       const isValid = ref(false);
-      return { password, isValid };
+      const disabled = ref(false);
+      return { password, isValid, disabled };
     },
     template: `
-            <div style="width: 360px;">
-                <fio-input-create-password
-                    v-model="password"
-                    v-model:isValid="isValid"
-                    :min-password-length="8"
-                />
-                <div style="margin-top: 16px; font-size: 0.85rem; color: #666; border-top: 1px solid #eee; padding-top: 8px;">
-                    Password: <code>{{ password || "(empty)" }}</code><br />
-                    Valid: <code :style="{ color: isValid ? 'green' : 'red' }">{{ isValid }}</code>
-                </div>
-            </div>
-        `,
+      <div style="width: 360px;">
+        <fio-input-create-password v-model="password" v-model:isValid="isValid" :min-password-length="8" :disabled="disabled" />
+        <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6c757d;">
+          Password: <code>{{ password || "(empty)" }}</code><br />
+          Valid: <code :style="{ color: isValid ? 'green' : 'red' }">{{ isValid }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const LongerMinLength: Story = {
+  name: "Longer Min Length (12 chars)",
+  render: () => ({
+    setup() {
+      const password = ref("");
+      const isValid = ref(false);
+      const disabled = ref(false);
+      return { password, isValid, disabled };
+    },
+    template: `
+      <div style="width: 360px;">
+        <fio-input-create-password v-model="password" v-model:isValid="isValid" :min-password-length="12" :disabled="disabled" />
+        <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6c757d;">
+          Password: <code>{{ password || "(empty)" }}</code><br />
+          Valid: <code :style="{ color: isValid ? 'green' : 'red' }">{{ isValid }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
   }),
 };
 
@@ -68,22 +79,22 @@ export const WithValidPassword: Story = {
     setup() {
       const password = ref("Str0ng!Pass");
       const isValid = ref(false);
-      return { password, isValid };
+      const disabled = ref(false);
+      return { password, isValid, disabled };
     },
     template: `
-            <div style="width: 360px;">
-                <fio-input-create-password
-                    v-model="password"
-                    v-model:isValid="isValid"
-                    :min-password-length="8"
-                />
-                <div style="margin-top: 16px; font-size: 0.85rem; color: #666; border-top: 1px solid #eee; padding-top: 8px;">
-                    Password: <code>{{ password }}</code><br />
-                    Valid: <code :style="{ color: isValid ? 'green' : 'red' }">{{ isValid }}</code>
-                    <br />
-                    <small>(Enter the same password in the confirm field to mark as valid)</small>
-                </div>
-            </div>
-        `,
+      <div style="width: 360px;">
+        <fio-input-create-password v-model="password" v-model:isValid="isValid" :min-password-length="8" :disabled="disabled" />
+        <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6c757d;">
+          Password: <code>{{ password }}</code><br />
+          Valid: <code :style="{ color: isValid ? 'green' : 'red' }">{{ isValid }}</code><br />
+          <small>(Enter the same password in the confirm field to mark as valid)</small>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
   }),
 };

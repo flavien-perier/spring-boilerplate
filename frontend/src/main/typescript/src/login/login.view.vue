@@ -3,6 +3,7 @@
     <fio-input-email
       class="mb-xl"
       v-model="email"
+      :disabled="otpRequired"
       @update:isValid="(value) => (isEmailValid = value)"
     />
 
@@ -10,6 +11,7 @@
       class="mb-xl"
       v-model="password"
       :label="$t('field.password')"
+      :disabled="otpRequired"
       @keyup.enter="loginStore.login"
     />
 
@@ -47,8 +49,15 @@ import { storeToRefs } from "pinia";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
 
 const loginStore = useLoginStore();
-const { email, password, isEmailValid, buttonEnabled, otp, otpRequired, computeAction } =
-  storeToRefs(loginStore);
+const {
+  email,
+  password,
+  isEmailValid,
+  buttonEnabled,
+  otp,
+  otpRequired,
+  computeAction,
+} = storeToRefs(loginStore);
 
 const route = useRoute();
 loginStore.init(route.query?.activationToken as string | undefined);

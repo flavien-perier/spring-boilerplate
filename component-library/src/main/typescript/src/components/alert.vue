@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import FioIcon from "./fio-icon.vue";
+import FioIcon from "./icon.vue";
 
 defineOptions({
   name: "FioAlert",

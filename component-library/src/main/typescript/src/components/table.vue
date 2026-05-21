@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { TableHeader } from "../model/table-header";
-import FioIcon from "./fio-icon.vue";
+import FioIcon from "./icon.vue";
 
 defineOptions({
   name: "FioTable",

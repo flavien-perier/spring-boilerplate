@@ -25,6 +25,10 @@ const meta: Meta<typeof FioInputText> = {
       description:
         "RegExp — filters keystrokes so the value always matches. Also shows --invalid class when current value does not match.",
     },
+    disabled: {
+      control: "boolean",
+      description: "Disables the input when true",
+    },
     "onUpdate:modelValue": { action: "update:modelValue" },
     "onUpdate:isValid": { action: "update:isValid" },
     onInput: { action: "input" },
@@ -36,42 +40,90 @@ type Story = StoryObj<typeof FioInputText>;
 
 export const WithoutLabel: Story = {
   name: "Without Label",
-  args: {
-    modelValue: "",
-    placeholder: "Search...",
-  },
+  render: () => ({
+    setup() {
+      const text = ref("");
+      const disabled = ref(false);
+      return { text, disabled };
+    },
+    template: `
+      <div style="width: 100%;">
+        <fio-input-text v-model="text" placeholder="Search..." :disabled="disabled" />
+        <div style="margin-top: 0.5rem; color: #6c757d; font-size: 0.875rem;">
+          Value: <code>{{ text || "(empty)" }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
+  }),
 };
 
 export const WithLabel: Story = {
   name: "With Label",
-  args: {
-    modelValue: "",
-    label: "Code OTP (6 chiffres)",
-    placeholder: "Code OTP (6 chiffres)",
-  },
+  render: () => ({
+    setup() {
+      const text = ref("");
+      const disabled = ref(false);
+      return { text, disabled };
+    },
+    template: `
+      <div style="width: 100%;">
+        <fio-input-text v-model="text" label="Code OTP (6 chiffres)" placeholder="Code OTP (6 chiffres)" :disabled="disabled" />
+        <div style="margin-top: 0.5rem; color: #6c757d; font-size: 0.875rem;">
+          Value: <code>{{ text || "(empty)" }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
+  }),
 };
 
 export const PreFilled: Story = {
   name: "Pre-filled",
-  args: {
-    modelValue: "Hello world",
-    label: "Text field",
-  },
-};
-
-export const Interactive: Story = {
-  name: "Interactive (v-model)",
   render: () => ({
-    components: { FioInputText },
     setup() {
-      const text = ref("");
-      return { text };
+      const text = ref("Hello world");
+      const disabled = ref(false);
+      return { text, disabled };
     },
     template: `
       <div style="width: 100%;">
-        <fio-input-text v-model="text" label="Your text" placeholder="Type something..." />
+        <fio-input-text v-model="text" label="Text field" :disabled="disabled" />
         <div style="margin-top: 0.5rem; color: #6c757d; font-size: 0.875rem;">
           Value: <code>{{ text || "(empty)" }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const Disabled: Story = {
+  name: "Disabled",
+  render: () => ({
+    setup() {
+      const text = ref("123456");
+      const disabled = ref(true);
+      return { text, disabled };
+    },
+    template: `
+      <div style="width: 100%;">
+        <fio-input-text v-model="text" label="Code OTP" placeholder="Code OTP" :disabled="disabled" />
+        <div style="margin-top: 0.5rem; color: #6c757d; font-size: 0.875rem;">
+          Value: <code>{{ text || "(empty)" }}</code>
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
         </div>
       </div>
     `,
@@ -81,11 +133,11 @@ export const Interactive: Story = {
 export const OtpPattern: Story = {
   name: "OTP Pattern (digits only, max 6)",
   render: () => ({
-    components: { FioInputText },
     setup() {
       const code = ref("");
       const isValid = ref(true);
-      return { code, isValid, pattern: /^\d{0,6}$/ };
+      const disabled = ref(false);
+      return { code, isValid, disabled, pattern: /^\d{0,6}$/ };
     },
     template: `
       <div style="width: 100%;">
@@ -95,9 +147,14 @@ export const OtpPattern: Story = {
           :pattern="pattern"
           label="Code OTP (6 chiffres)"
           placeholder="Enter 6-digit code"
+          :disabled="disabled"
         />
         <div style="margin-top: 0.5rem; color: #6c757d; font-size: 0.875rem;">
           Value: <code>{{ code || "(empty)" }}</code> — Length: {{ code.length }}/6 — Valid: {{ isValid }}
+        </div>
+        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <input type="checkbox" id="disabledCheck" v-model="disabled" />
+          <label for="disabledCheck">Disabled</label>
         </div>
       </div>
     `,

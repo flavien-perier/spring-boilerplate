@@ -8,6 +8,7 @@
       :class="{ 'input-control--invalid': !isValid && email.length > 0 }"
       :placeholder="$t('fio.email')"
       v-model="email"
+      :disabled="disabled"
       @input="emitInput($event)"
       @focus="emitFocus($event)"
       @blur="emitBlur($event)"
@@ -24,8 +25,9 @@ defineOptions({
 
 const isValid = ref(true);
 
-const { modelValue } = defineProps({
+const { modelValue, disabled } = defineProps({
   modelValue: { type: String, default: "" },
+  disabled: { type: Boolean, default: false },
 });
 
 const emit = defineEmits([
@@ -61,39 +63,3 @@ function emitBlur(event: Event) {
   emit("blur", event);
 }
 </script>
-
-<style scoped lang="scss">
-@use "../../styles/variables" as *;
-@use "../../styles/variables-colors" as *;
-
-.input-label {
-  display: block;
-  margin-bottom: $margin-xxs;
-  color: $secondary-darker-60;
-  font-size: $font-size;
-}
-
-.input-control {
-  width: 100%;
-  padding: $margin-s $margin;
-  font-size: $font-l-size;
-  border: 1px solid $secondary-lighter-20;
-  border-radius: $border-radius-size;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-  &:focus {
-    border-color: $primary;
-    box-shadow: 0 0 0 3px $primary-lighter-20;
-  }
-
-  &--invalid {
-    border-color: $danger;
-
-    &:focus {
-      box-shadow: 0 0 0 3px $danger-lighter-20;
-    }
-  }
-}
-</style>

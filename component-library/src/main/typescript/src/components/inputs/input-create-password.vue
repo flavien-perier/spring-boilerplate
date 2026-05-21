@@ -11,6 +11,7 @@
           numberValid &&
           specialCharValid
         "
+        :disabled="disabled"
         @focus="showPasswordInfo = true"
         @blur="showPasswordInfo = false"
       />
@@ -86,6 +87,7 @@
       :label="$t('fio.repeat-password')"
       v-model="confirmPassword"
       :is-valid="passwordMatch"
+      :disabled="disabled"
       @input="validatePassword"
     />
   </div>
@@ -95,7 +97,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { passwordUtil } from "../../utils/password-util";
 import InputPassword from "./input-password.vue";
-import FioIcon from "../fio-icon.vue";
+import FioIcon from "../icon.vue";
 
 defineOptions({
   name: "FioInputCreatePassword",
@@ -104,6 +106,7 @@ defineOptions({
 const props = defineProps({
   modelValue: { type: String, default: "" },
   minPasswordLength: { type: Number, default: 8 },
+  disabled: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["update:modelValue", "update:isValid"]);
@@ -180,12 +183,13 @@ watch(
 
 .password-constraints {
   position: absolute;
+  top: 100%;
   background-color: $secondary-lighter-90;
   border: $border-size solid $secondary-lighter-80;
   border-radius: $border-radius-size;
   box-shadow: 0 4px 12px rgba($secondary-darker-90, 0.1);
   z-index: 3;
-  margin-top: calc(-#{$margin-xl} + #{$margin-xxs});
+  margin-top: $margin-xxs;
   padding: $margin-s $margin;
   min-width: 16rem;
 }

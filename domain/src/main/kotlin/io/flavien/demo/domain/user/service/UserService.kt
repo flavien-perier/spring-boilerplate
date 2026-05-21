@@ -91,6 +91,8 @@ class UserService(
         user.password = passwordService.hashPassword(password, salt)
         user.proofOfWork = proofOfWork
         user.enabled = true
+        user.otpSecret = null
+        otpPendingRepository.deleteById(user.id.toString())
         userRepository.save(user)
     }
 

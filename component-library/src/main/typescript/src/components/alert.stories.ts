@@ -41,7 +41,6 @@ export const Danger: Story = {
 
 export const Interactive: Story = {
   render: () => ({
-    components: { FioAlert },
     setup() {
       const showInfo = ref(true);
       const showDanger = ref(true);
@@ -72,7 +71,6 @@ export const Interactive: Story = {
 export const AllTypes: Story = {
   name: "All Types",
   render: () => ({
-    components: { FioAlert },
     template: `
             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                 <fio-alert type="info" message="This is an informational message." @close="() => {}" />

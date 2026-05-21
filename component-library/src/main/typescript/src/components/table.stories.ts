@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
 import FioTable from "./table.vue";
-import FioIcon from "./fio-icon.vue";
 import type { TableHeader } from "../model/table-header";
 
 const meta: Meta<typeof FioTable> = {
@@ -22,7 +21,6 @@ export const Default: Story = {
     headers: dateActionsHeaders,
   },
   render: (args) => ({
-    components: { FioTable },
     setup() {
       return { args };
     },
@@ -48,7 +46,6 @@ export const EmptyBody: Story = {
     headers: dateActionsHeaders,
   },
   render: (args) => ({
-    components: { FioTable },
     setup() {
       return { args };
     },
@@ -75,7 +72,6 @@ export const WithActions: Story = {
     headers: userActionsHeaders,
   },
   render: (args) => ({
-    components: { FioTable, FioIcon },
     setup() {
       return { args };
     },
@@ -118,7 +114,6 @@ export const WithHiddenColumns: Story = {
     headers: hiddenColumnHeaders,
   },
   render: (args) => ({
-    components: { FioTable },
     setup() {
       return { args };
     },

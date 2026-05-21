@@ -79,7 +79,6 @@ export const Hidden: Story = {
 
 export const Interactive: Story = {
   render: () => ({
-    components: { FioModal },
     setup() {
       const show = ref(true);
       return { show };

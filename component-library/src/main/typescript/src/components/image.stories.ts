@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
-import FioImage from "./fio-image.vue";
+import FioImage from "./image.vue";
 import { IMAGES } from "@/model/images";
 
 const meta: Meta<typeof FioImage> = {
@@ -38,6 +38,9 @@ export const UndrawHello: Story = {
 export const AllImages: Story = {
   name: "All Available Images",
   render: () => ({
+    setup() {
+      return { images: Object.keys(IMAGES) };
+    },
     template: `
             <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start;">
                 <div v-for="name in images" :key="name" style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; width: 80px;">
@@ -46,13 +49,5 @@ export const AllImages: Story = {
                 </div>
             </div>
         `,
-    data() {
-      return {
-        images: Object.keys(IMAGES),
-      };
-    },
-    setup() {
-      return { IMAGES };
-    },
   }),
 };

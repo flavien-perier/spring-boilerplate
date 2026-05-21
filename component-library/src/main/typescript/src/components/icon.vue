@@ -4,6 +4,8 @@
       'fio-icon',
       color && `fio-icon--${color}`,
       size && `fio-icon--${size}`,
+      disabled && 'fio-icon--disabled',
+      clickable && 'fio-icon--clickable',
     ]"
     :icon="icon"
     :spin="spin"
@@ -61,6 +63,8 @@ const { icon } = defineProps<{
   icon: string;
   color?: IconColor;
   size?: IconSize;
+  disabled?: boolean;
+  clickable?: boolean;
 }>();
 
 const spin = computed(() => icon === "spinner");
@@ -98,6 +102,19 @@ const spin = computed(() => icon === "spinner");
 
 .fio-icon--danger {
   color: $danger;
+}
+
+.fio-icon--disabled {
+  cursor: not-allowed;
+}
+
+.fio-icon--clickable {
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:not(.fio-icon--disabled):hover {
+    color: color-mix(in srgb, currentColor 70%, white);
+  }
 }
 
 .fio-icon--s {

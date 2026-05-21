@@ -1,7 +1,7 @@
 import "./styles/index.scss";
-import FioIcon from "./components/fio-icon.vue";
-import FioImage from "./components/fio-image.vue";
-import FioQrCode from "./components/fio-qr-code.vue";
+import Icon from "./components/icon.vue";
+import Image from "./components/image.vue";
+import QrCode from "./components/qr-code.vue";
 import InputCreatePassword from "./components/inputs/input-create-password.vue";
 import InputPassword from "./components/inputs/input-password.vue";
 import InputEmail from "./components/inputs/input-email.vue";
@@ -23,9 +23,9 @@ import type { App } from "vue";
 
 export default {
   install: (app: App) => {
-    app.component("fio-icon", FioIcon);
-    app.component("fio-image", FioImage);
-    app.component("fio-qr-code", FioQrCode);
+    app.component("fio-icon", Icon);
+    app.component("fio-image", Image);
+    app.component("fio-qr-code", QrCode);
     app.component("fio-input-create-password", InputCreatePassword);
     app.component("fio-input-password", InputPassword);
     app.component("fio-input-email", InputEmail);
@@ -46,9 +46,9 @@ export default {
 export { passwordUtil };
 
 export type {
-  FioIcon,
-  FioImage,
-  FioQrCode,
+  Icon,
+  Image,
+  QrCode,
   InputCreatePassword,
   InputPassword,
   InputEmail,

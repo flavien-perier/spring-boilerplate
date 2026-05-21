@@ -9,6 +9,7 @@
       :placeholder="placeholder"
       :maxlength="maxLength"
       :value="value"
+      :disabled="disabled"
       @input="handleInput"
     />
   </div>
@@ -29,6 +30,7 @@ const props = defineProps<{
   label?: string;
   maxLength?: number;
   allowedCharacters?: RegExp;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -95,39 +97,3 @@ function handleInput(event: Event) {
   }
 }
 </script>
-
-<style scoped lang="scss">
-@use "../../styles/variables" as *;
-@use "../../styles/variables-colors" as *;
-
-.input-label {
-  display: block;
-  margin-bottom: $margin-xxs;
-  color: $secondary-darker-60;
-  font-size: $font-size;
-}
-
-.input-control {
-  width: 100%;
-  padding: $margin-s $margin;
-  font-size: $font-l-size;
-  border: 1px solid $secondary-lighter-20;
-  border-radius: $border-radius-size;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-  &:focus {
-    border-color: $primary;
-    box-shadow: 0 0 0 3px $primary-lighter-20;
-  }
-
-  &--invalid {
-    border-color: $danger;
-
-    &:focus {
-      box-shadow: 0 0 0 3px $danger-lighter-20;
-    }
-  }
-}
-</style>

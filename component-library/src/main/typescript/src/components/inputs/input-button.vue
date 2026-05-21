@@ -6,13 +6,17 @@
     :disabled="disabled || waiting"
     @click="emit('click')"
   >
-    <fio-icon :icon="waiting ? 'spinner' : icon" class="fio-btn__icon" v-if="waiting || icon" />
+    <fio-icon
+      :icon="waiting ? 'spinner' : icon"
+      class="fio-btn__icon"
+      v-if="waiting || icon"
+    />
     {{ label }}
   </button>
 </template>
 
 <script setup lang="ts">
-import FioIcon from "../fio-icon.vue";
+import FioIcon from "../icon.vue";
 
 defineOptions({
   name: "FioInputButton",
@@ -66,6 +70,10 @@ button.fio-btn {
     &:hover:not(:disabled) {
       background-color: $primary-darker-20;
     }
+
+    &:active:not(:disabled) {
+      background-color: $primary-darker-40;
+    }
   }
 
   &.danger {
@@ -73,6 +81,10 @@ button.fio-btn {
 
     &:hover:not(:disabled) {
       background-color: $danger-darker-20;
+    }
+
+    &:active:not(:disabled) {
+      background-color: $danger-darker-40;
     }
   }
 }
