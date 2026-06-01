@@ -49,6 +49,7 @@
   "notification.email-sent": "Email envoyé",
   "notification.authentication-failed": "Échec de l'authentification",
   "notification.password-updated": "Mot de passe mis à jour",
+  "notification.change-password-failed": "Échec de la mise à jour du mot de passe, le lien est peut-être invalide ou expiré",
   "notification.otp-confirmed": "2FA confirmé",
   "notification.otp-disabled": "2FA désactivé",
   "notification.error.bad-request": "Requête invalide",

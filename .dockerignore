@@ -13,6 +13,7 @@ helm/
 **/build/
 **/node_modules/
 **/*.old
+**/.attach*
 **/README.md
 CLAUDE.md
 AGENTS.md

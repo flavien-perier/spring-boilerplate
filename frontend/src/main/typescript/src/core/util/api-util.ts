@@ -14,6 +14,8 @@ const axiosInstance = axios.create({
   baseURL: BASE_PATH,
   timeout: 2000,
   withCredentials: true,
+  xsrfCookieName: "XSRF-TOKEN",
+  xsrfHeaderName: "X-XSRF-TOKEN",
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",

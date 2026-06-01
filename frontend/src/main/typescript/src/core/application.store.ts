@@ -122,8 +122,16 @@ export const useApplicationStore = defineStore("application", {
       }
 
       const status: number = exception.response.status;
+      const detail: string = exception.response.data?.detail || "";
 
       if (status === 401 || status === 403) {
+        if (detail === "Change password failed") {
+          this.sendNotification(
+            "danger",
+            "notification.change-password-failed"
+          );
+          return;
+        }
         this.disconnected();
         return;
       }

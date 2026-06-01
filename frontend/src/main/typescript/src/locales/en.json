@@ -49,6 +49,7 @@
   "notification.email-sent": "Email sent",
   "notification.authentication-failed": "Authentication failed",
   "notification.password-updated": "Password updated",
+  "notification.change-password-failed": "Failed to update password, the link may be invalid or expired",
   "notification.otp-confirmed": "2FA confirmed",
   "notification.otp-disabled": "2FA disabled",
   "notification.error.bad-request": "Invalid request",
