@@ -10,11 +10,11 @@ import com.tngtech.archunit.lang.ArchRule
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
-import org.springframework.retry.annotation.Retryable
 import jakarta.persistence.Entity
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service

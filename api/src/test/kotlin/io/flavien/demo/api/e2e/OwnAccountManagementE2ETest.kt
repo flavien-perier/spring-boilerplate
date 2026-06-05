@@ -38,11 +38,12 @@ class OwnAccountManagementE2ETest {
     @Test
     @Order(0)
     fun `Seed CSRF token`() {
-        val result = webTestClient
-            .get()
-            .uri("/api/conf")
-            .exchange()
-            .returnResult(Void::class.java)
+        val result =
+            webTestClient
+                .get()
+                .uri("/api/conf")
+                .exchange()
+                .returnResult(Void::class.java)
         csrfToken = result.responseCookies.getFirst("XSRF-TOKEN")?.value
             ?: throw IllegalStateException("XSRF-TOKEN cookie not found")
     }

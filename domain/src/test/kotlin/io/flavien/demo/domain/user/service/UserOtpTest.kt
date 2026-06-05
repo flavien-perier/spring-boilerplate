@@ -1,10 +1,9 @@
 package io.flavien.demo.domain.user.service
 
 import io.flavien.demo.domain.session.entity.OtpPending
+import io.flavien.demo.domain.session.exception.InvalidOtpException
 import io.flavien.demo.domain.session.exception.OtpAlreadyConfiguredException
 import io.flavien.demo.domain.session.exception.OtpNotPendingException
-import io.flavien.demo.domain.session.exception.InvalidOtpException
-import io.flavien.demo.domain.session.exception.OtpRequiredException
 import io.flavien.demo.domain.session.repository.OtpPendingRepository
 import io.flavien.demo.domain.session.service.AccessTokenService
 import io.flavien.demo.domain.session.service.OtpService
