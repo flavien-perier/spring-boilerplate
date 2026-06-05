@@ -53,9 +53,8 @@ class OwnAccountManagementE2ETest {
         val requestContent = UserCreationDto(userEmail, userPassword, userProofOfWork)
         webTestClient
             .post()
-            .uri("/api/user")
+            .uri("/api/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
@@ -70,9 +69,8 @@ class OwnAccountManagementE2ETest {
         val requestContent = UserCreationDto(userEmail, userPassword, userProofOfWork)
         webTestClient
             .post()
-            .uri("/api/user")
+            .uri("/api/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
@@ -80,7 +78,7 @@ class OwnAccountManagementE2ETest {
             .expectStatus()
             .is4xxClientError()
             .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/problem+json")
             .expectBody()
             .jsonPath("$.status")
             .isNotEmpty()
@@ -95,11 +93,10 @@ class OwnAccountManagementE2ETest {
             .post()
             .uri {
                 it
-                    .path("/api/user/activate")
+                    .path("/api/users/activate")
                     .queryParam("token", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                     .build()
             }.contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
@@ -120,11 +117,10 @@ class OwnAccountManagementE2ETest {
             .post()
             .uri {
                 it
-                    .path("/api/user/activate")
+                    .path("/api/users/activate")
                     .queryParam("token", activationToken)
                     .build()
             }.contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
@@ -165,7 +161,7 @@ class OwnAccountManagementE2ETest {
     fun `The user displays his information`() {
         webTestClient
             .get()
-            .uri("/api/user/me")
+            .uri("/api/users/me")
             .accept(MediaType.APPLICATION_JSON)
             .header("Authorization", "Bearer $accessToken")
             .exchange()
@@ -190,7 +186,7 @@ class OwnAccountManagementE2ETest {
         val requestContent = UserUpdateDto(userUpdatedEmail, userUpdatedPassword, userProofOfWork)
         webTestClient
             .put()
-            .uri("/api/user/me")
+            .uri("/api/users/me")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .header("Authorization", "Bearer $accessToken")
@@ -217,9 +213,8 @@ class OwnAccountManagementE2ETest {
         val requestContent = UserCreationDto(userEmail, userPassword, userProofOfWork)
         webTestClient
             .post()
-            .uri("/api/user")
+            .uri("/api/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
@@ -233,7 +228,7 @@ class OwnAccountManagementE2ETest {
     fun `User re-displays information after modification`() {
         webTestClient
             .get()
-            .uri("/api/user/me")
+            .uri("/api/users/me")
             .accept(MediaType.APPLICATION_JSON)
             .header("Authorization", "Bearer $accessToken")
             .exchange()
@@ -257,8 +252,7 @@ class OwnAccountManagementE2ETest {
     fun `User deletes his account`() {
         webTestClient
             .delete()
-            .uri("/api/user/me")
-            .accept(MediaType.APPLICATION_JSON)
+            .uri("/api/users/me")
             .header("Authorization", "Bearer $accessToken")
             .exchange()
             .expectStatus()
@@ -270,14 +264,13 @@ class OwnAccountManagementE2ETest {
     fun `User tries to redisplay information after account deletion`() {
         webTestClient
             .get()
-            .uri("/api/user/me")
-            .accept(MediaType.APPLICATION_JSON)
+            .uri("/api/users/me")
             .header("Authorization", "Bearer $accessToken")
             .exchange()
             .expectStatus()
             .is4xxClientError()
             .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/problem+json")
             .expectBody()
             .jsonPath("$.status")
             .isNotEmpty()
@@ -293,7 +286,6 @@ class OwnAccountManagementE2ETest {
             .post()
             .uri("/api/session/login")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), LoginDto::class.java)
@@ -301,7 +293,7 @@ class OwnAccountManagementE2ETest {
             .expectStatus()
             .is4xxClientError()
             .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/problem+json")
             .expectBody()
             .jsonPath("$.status")
             .isNotEmpty()

@@ -1,5 +1,6 @@
 package io.flavien.demo.api.user
 
+import io.flavien.demo.api.generated.dto.ForgotPasswordDto
 import io.flavien.demo.api.generated.dto.UserPageDto
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
@@ -71,7 +72,7 @@ class UserControllerTest {
         val email = "perier@flavien.io"
 
         // When
-        val response = userController!!.forgotPassword(email)
+        val response = userController!!.forgotPassword(ForgotPasswordDto(email))
 
         // Then
         assertThat(response)
@@ -159,7 +160,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `Test getUserMe`() {
+    fun `Test getCurrentUser`() {
         // Given
         val userId = 1L
         val user = UserTestFactory.initUser()
@@ -172,7 +173,7 @@ class UserControllerTest {
         Mockito.`when`(userMapper!!.toUserDto(user)).thenReturn(userDto)
 
         // When
-        val response = userController!!.getUserMe()
+        val response = userController!!.getCurrentUser()
 
         // Then
         assertThat(response)
@@ -181,7 +182,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `Test updateUserMe`() {
+    fun `Test updateCurrentUser`() {
         // Given
         val userId = 1L
         val userUpdateDto = UserDtoTestFactory.initUserUpdateDto()
@@ -197,7 +198,7 @@ class UserControllerTest {
         Mockito.`when`(userMapper!!.toUserDto(user)).thenReturn(userDto)
 
         // When
-        val response = userController!!.updateUserMe(userUpdateDto)
+        val response = userController!!.updateCurrentUser(userUpdateDto)
 
         // Then
         assertThat(response)
@@ -206,7 +207,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `Test deleteUserMe`() {
+    fun `Test deleteCurrentUser`() {
         // Given
         val userId = 1L
 
@@ -214,7 +215,7 @@ class UserControllerTest {
         every { ContextUtil.userId } returns userId
 
         // When
-        val response = userController!!.deleteUserMe()
+        val response = userController!!.deleteCurrentUser()
 
         // Then
         assertThat(response)

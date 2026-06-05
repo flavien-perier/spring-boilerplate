@@ -43,7 +43,7 @@ export const useAccountSecurityStore = defineStore("account-security", {
         .then(() => {
           this.computeActionDeleteAccount = true;
           userApi
-            .deleteUserMe()
+            .deleteCurrentUser()
             .then(() => {
               applicationStore.sendNotification(
                 "info",
@@ -71,7 +71,7 @@ export const useAccountSecurityStore = defineStore("account-security", {
     setupOtp() {
       this.computeActionSetupOtp = true;
       userApi
-        .setupOtp()
+        .setupCurrentUserOtp()
         .then((response) => {
           this.otpSetupUri = response.data.uri;
         })
@@ -84,7 +84,7 @@ export const useAccountSecurityStore = defineStore("account-security", {
     async confirmOtp() {
       this.computeActionConfirmOtp = true;
       await userApi
-        .confirmOtp({ otp: this.otpCode })
+        .confirmCurrentUserOtp({ otp: this.otpCode })
         .then(() => {
           this.otpSetupUri = null;
           this.otpEnabled = true;
@@ -113,7 +113,7 @@ export const useAccountSecurityStore = defineStore("account-security", {
     disableOtp() {
       this.computeActionDisableOtp = true;
       userApi
-        .disableOtp()
+        .disableCurrentUserOtp()
         .then(() => {
           this.otpEnabled = false;
           applicationStore.sendNotification(

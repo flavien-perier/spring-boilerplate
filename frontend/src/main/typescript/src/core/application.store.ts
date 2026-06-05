@@ -152,7 +152,7 @@ export const useApplicationStore = defineStore("application", {
       setAccessToken(accessToken);
 
       await userApi
-        .getUserMe()
+        .getCurrentUser()
         .then((response) => {
           this.user = response.data;
           this.accessToken = accessToken;

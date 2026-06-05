@@ -4,7 +4,6 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.web.csrf.CsrfToken
-import org.springframework.security.web.csrf.DeferredCsrfToken
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -15,9 +14,10 @@ class CsrfCookieFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         chain: FilterChain,
     ) {
-        val deferredCsrfToken = request.getAttribute(CsrfToken::class.java.name)
-        if (deferredCsrfToken is DeferredCsrfToken) {
-            deferredCsrfToken.get()
+        val csrfToken = request.getAttribute(CsrfToken::class.java.name)
+        if (csrfToken is CsrfToken) {
+            // Accessing the token triggers lazy generation and writes the XSRF-TOKEN cookie
+            csrfToken.token
         }
         chain.doFilter(request, response)
     }

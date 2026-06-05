@@ -53,9 +53,8 @@ class SessionManagementE2eTest {
         val requestContent = UserCreationDto(userEmail1, userPassword1, userProofOfWork1)
         webTestClient
             .post()
-            .uri("/api/user")
+            .uri("/api/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
@@ -77,11 +76,10 @@ class SessionManagementE2eTest {
             .post()
             .uri {
                 it
-                    .path("/api/user/activate")
+                    .path("/api/users/activate")
                     .queryParam("token", activationToken)
                     .build()
             }.contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
@@ -95,9 +93,8 @@ class SessionManagementE2eTest {
         val requestContent = UserCreationDto(userEmail2, userPassword2, userProofOfWork2)
         webTestClient
             .post()
-            .uri("/api/user")
+            .uri("/api/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .body(Mono.just(requestContent), UserCreationDto::class.java)
@@ -119,11 +116,10 @@ class SessionManagementE2eTest {
             .post()
             .uri {
                 it
-                    .path("/api/user/activate")
+                    .path("/api/users/activate")
                     .queryParam("token", activationToken)
                     .build()
             }.contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
@@ -147,7 +143,7 @@ class SessionManagementE2eTest {
             .expectStatus()
             .is4xxClientError()
             .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/problem+json")
             .expectBody()
             .jsonPath("$.status")
             .isNotEmpty()
@@ -171,7 +167,7 @@ class SessionManagementE2eTest {
             .expectStatus()
             .is4xxClientError()
             .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/problem+json")
             .expectBody()
             .jsonPath("$.status")
             .isNotEmpty()
@@ -195,7 +191,7 @@ class SessionManagementE2eTest {
             .expectStatus()
             .is4xxClientError()
             .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/problem+json")
             .expectBody()
             .jsonPath("$.status")
             .isNotEmpty()
@@ -292,7 +288,7 @@ class SessionManagementE2eTest {
     fun `The first user displays his sessions`() {
         webTestClient
             .get()
-            .uri("/api/session")
+            .uri("/api/sessions")
             .accept(MediaType.APPLICATION_JSON)
             .header("Authorization", "Bearer $accessTokenSessionUser11")
             .exchange()

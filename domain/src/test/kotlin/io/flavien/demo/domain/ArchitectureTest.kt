@@ -2,6 +2,7 @@ package io.flavien.demo.domain
 
 import com.tngtech.archunit.base.DescribedPredicate
 import com.tngtech.archunit.core.domain.JavaClass
+import com.tngtech.archunit.core.domain.JavaModifier
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
@@ -95,6 +96,8 @@ class ArchitectureTest {
             .resideInAPackage("..exception..")
             .and()
             .areNotInterfaces()
+            .and()
+            .doNotHaveModifier(JavaModifier.ABSTRACT)
             .should()
             .beAnnotatedWith(ResponseStatus::class.java)
             .because(

@@ -2,6 +2,7 @@ package io.flavien.demo.api.user
 
 import io.flavien.demo.api.generated.api.UserApi
 import io.flavien.demo.api.generated.dto.ChangePasswordDto
+import io.flavien.demo.api.generated.dto.ForgotPasswordDto
 import io.flavien.demo.api.generated.dto.OtpConfirmDto
 import io.flavien.demo.api.generated.dto.OtpSetupDto
 import io.flavien.demo.api.generated.dto.UserCreationDto
@@ -39,8 +40,8 @@ class UserController(
         )
     }
 
-    override fun forgotPassword(email: String): ResponseEntity<Unit> {
-        userService.sendForgotPassword(email)
+    override fun forgotPassword(forgotPasswordDto: ForgotPasswordDto): ResponseEntity<Unit> {
+        userService.sendForgotPassword(forgotPasswordDto.email)
 
         return ResponseEntity(
             HttpStatus.NO_CONTENT,
@@ -82,7 +83,7 @@ class UserController(
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    override fun getUserMe(): ResponseEntity<UserDto> {
+    override fun getCurrentUser(): ResponseEntity<UserDto> {
         val user = userService.get(ContextUtil.userId)
 
         return ResponseEntity(
@@ -91,7 +92,7 @@ class UserController(
         )
     }
 
-    override fun updateUserMe(userUpdateDto: UserUpdateDto): ResponseEntity<UserDto> {
+    override fun updateCurrentUser(userUpdateDto: UserUpdateDto): ResponseEntity<UserDto> {
         val user = userService.update(ContextUtil.userId, userUpdateMapper.fromUserUpdateDto(userUpdateDto))
 
         return ResponseEntity(
@@ -100,22 +101,22 @@ class UserController(
         )
     }
 
-    override fun deleteUserMe(): ResponseEntity<Unit> {
+    override fun deleteCurrentUser(): ResponseEntity<Unit> {
         userService.delete(ContextUtil.userId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    override fun setupOtp(): ResponseEntity<OtpSetupDto> {
+    override fun setupCurrentUserOtp(): ResponseEntity<OtpSetupDto> {
         val uri = userService.setupOtp(ContextUtil.userId)
         return ResponseEntity(OtpSetupDto(uri), HttpStatus.OK)
     }
 
-    override fun confirmOtp(otpConfirmDto: OtpConfirmDto): ResponseEntity<Unit> {
+    override fun confirmCurrentUserOtp(otpConfirmDto: OtpConfirmDto): ResponseEntity<Unit> {
         userService.confirmOtp(ContextUtil.userId, otpConfirmDto.otp)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    override fun disableOtp(): ResponseEntity<Unit> {
+    override fun disableCurrentUserOtp(): ResponseEntity<Unit> {
         userService.disableOtp(ContextUtil.userId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }

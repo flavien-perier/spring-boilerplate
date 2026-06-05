@@ -27,7 +27,7 @@ export const useForgotPasswordStore = defineStore("forgot-password", {
       this.computeAction = true;
 
       userApi
-        .forgotPassword(this.email)
+        .forgotPassword({ email: this.email })
         .then(() => {
           applicationStore.sendNotification("info", "notification.email-sent");
           this.$router.push({ name: "login" });

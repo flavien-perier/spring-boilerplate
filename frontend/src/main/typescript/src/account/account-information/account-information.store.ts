@@ -33,10 +33,13 @@ export const useAccountInformationStore = defineStore("account-information", {
       this.computeAction = true;
 
       userApi
-        .updateUserMe({
+        .updateCurrentUser({
           email: this.email,
           password: this.password,
-          proofOfWork: await passwordUtil.proofOfWork(this.password, this.email),
+          proofOfWork: await passwordUtil.proofOfWork(
+            this.password,
+            this.email
+          ),
         })
         .then(() => {
           applicationStore.sendNotification(

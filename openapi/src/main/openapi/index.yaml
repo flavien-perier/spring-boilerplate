@@ -165,7 +165,7 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /api/session:
+  /api/sessions:
     get:
       tags:
         - Session
@@ -188,7 +188,7 @@ paths:
       security:
         - bearer: [ user, admin ]
 
-  /api/session/{sessionUuid}:
+  /api/sessions/{sessionUuid}:
     delete:
       tags:
         - Session
@@ -208,30 +208,7 @@ paths:
       security:
         - bearer: [ user, admin ]
 
-  /api/user:
-    post:
-      tags:
-        - User
-      summary: Creation of a new account for an user.
-      operationId: createUser
-      requestBody:
-        description: User account information.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserCreationDto"
-      responses:
-        "204":
-          description: User created.
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "409":
-          $ref: "#/components/responses/Conflict"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  /api/user/activate:
+  /api/users/activate:
     post:
       tags:
         - User
@@ -249,19 +226,19 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /api/user/password:
-    get:
+  /api/users/forgot-password:
+    post:
       tags:
         - User
       summary: Send a token by email to change password.
       operationId: forgotPassword
-      parameters:
-        - name: email
-          description: Email address to which to send the token.
-          in: query
-          required: true
-          schema:
-            $ref: "schemas/common.yaml#/email"
+      requestBody:
+        description: Email address to send the reset token to.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordDto"
       responses:
         "204":
           description: The email has been sent.
@@ -271,6 +248,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+
+  /api/users/password:
     post:
       tags:
         - User
@@ -293,12 +272,12 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /api/user/me:
+  /api/users/me:
     get:
       tags:
         - User
       summary: Returns the user sending the request.
-      operationId: getUserMe
+      operationId: getCurrentUser
       responses:
         "200":
           description: The user.
@@ -316,7 +295,7 @@ paths:
       tags:
         - User
       summary: Modifies the user sending the request.
-      operationId: updateUserMe
+      operationId: updateCurrentUser
       requestBody:
         description: User account information.
         required: true
@@ -341,7 +320,7 @@ paths:
       tags:
         - User
       summary: Deletes the user sending the request.
-      operationId: deleteUserMe
+      operationId: deleteCurrentUser
       responses:
         "204":
           description: The user has been deleted.
@@ -352,12 +331,12 @@ paths:
       security:
         - bearer: [ user ]
 
-  /api/user/me/otp:
+  /api/users/me/otp:
     post:
       tags:
         - User
       summary: Initiate OTP 2FA setup. Returns a QR code URI valid for 10 minutes.
-      operationId: setupOtp
+      operationId: setupCurrentUserOtp
       responses:
         "200":
           description: OTP provisioning URI.
@@ -377,7 +356,7 @@ paths:
       tags:
         - User
       summary: Disable OTP 2FA for the current user.
-      operationId: disableOtp
+      operationId: disableCurrentUserOtp
       responses:
         "204":
           description: OTP disabled.
@@ -388,12 +367,12 @@ paths:
       security:
         - bearer: [ user, admin ]
 
-  /api/user/me/otp/confirm:
+  /api/users/me/otp/confirm:
     post:
       tags:
         - User
       summary: Confirm OTP 2FA setup by providing a valid TOTP code.
-      operationId: confirmOtp
+      operationId: confirmCurrentUserOtp
       requestBody:
         description: OTP confirmation code.
         required: true
@@ -413,7 +392,7 @@ paths:
       security:
         - bearer: [ user, admin ]
 
-  /api/user/{userMail}:
+  /api/users/{userMail}:
     get:
       tags:
         - User
@@ -491,6 +470,27 @@ paths:
         - bearer: [ admin ]
 
   /api/users:
+    post:
+      tags:
+        - User
+      summary: Creation of a new account for an user.
+      operationId: createUser
+      requestBody:
+        description: User account information.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreationDto"
+      responses:
+        "204":
+          description: User created.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     get:
       tags:
         - User
@@ -609,6 +609,14 @@ components:
       $ref: "schemas/user.yaml#/OtpSetupDto"
     OtpConfirmDto:
       $ref: "schemas/user.yaml#/OtpConfirmDto"
+    ForgotPasswordDto:
+      type: object
+      description: Request to send a password reset email.
+      required:
+        - email
+      properties:
+        email:
+          $ref: "schemas/common.yaml#/email"
     ProblemDetail:
       $ref: "components/errors.yaml#/ProblemDetail"
   parameters:
