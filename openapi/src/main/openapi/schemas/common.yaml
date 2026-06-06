@@ -62,11 +62,6 @@ accessToken:
   maxLength: 64
   pattern: ^[A-Za-z0-9]*$
 
-Role:
-  type: string
-  description: The user's role.
-  enum: [USER, ADMIN]
-
 otpUri:
   type: string
   description: OTP provisioning URI (otpauth://totp/...).

@@ -44,7 +44,7 @@ dependencies {
 
 openApiGenerate {
     generatorName.set("kotlin-spring")
-    inputSpec.set("${rootProject.projectDir}/openapi/src/main/openapi/index.yaml")
+    inputSpec.set("${rootProject.projectDir}/openapi/build/bundled/openapi.json")
     outputDir.set(
         layout.buildDirectory
             .dir("generated/openapi")
@@ -78,8 +78,8 @@ openApiGenerate {
 
 val copyOpenApiYaml =
     tasks.register<Copy>("copyOpenApiYaml") {
-        dependsOn(":openapi:openApiGenerate")
-        from("${rootProject.projectDir}/openapi/build/generated/openapi/openapi.json")
+        dependsOn(":openapi:bundleSpec")
+        from("${rootProject.projectDir}/openapi/build/bundled/openapi.json")
         into(layout.buildDirectory.dir("resources/main"))
     }
 
@@ -92,7 +92,7 @@ sourceSets {
 }
 
 tasks.named("openApiGenerate") {
-    dependsOn(":openapi:openApiGenerate")
+    dependsOn(":openapi:bundleSpec")
 }
 
 tasks.withType<KotlinCompile> {

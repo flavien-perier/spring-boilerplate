@@ -28,21 +28,6 @@ UserUpdateDto:
     proofOfWork:
       $ref: "common.yaml#/proofOfWork"
 
-UserUpdateAdminDto:
-  type: object
-  description: An account of an user or an organization.
-  required:
-    - email
-    - password
-    - proofOfWork
-  properties:
-    email:
-      $ref: "common.yaml#/email"
-    password:
-      $ref: "common.yaml#/password"
-    proofOfWork:
-      $ref: "common.yaml#/proofOfWork"
-
 ChangePasswordDto:
   type: object
   description: Change password after forgetting it.
@@ -75,3 +60,77 @@ OtpConfirmDto:
   properties:
     otp:
       $ref: "common.yaml#/otp"
+
+RoleDto:
+  type: string
+  description: The user's role.
+  enum: [ USER, ADMIN ]
+
+UserDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+    - otpEnabled
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    role:
+      $ref: "#/RoleDto"
+    lastLogin:
+      type: string
+      format: date-time
+      description: The date and time of the last login.
+    otpEnabled:
+      type: boolean
+      description: Whether OTP 2FA is active for this user.
+
+UserUpdateAdminDto:
+  type: object
+  description: An account of an user or an organization.
+  required:
+    - email
+    - password
+    - proofOfWork
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    password:
+      $ref: "common.yaml#/password"
+    proofOfWork:
+      $ref: "common.yaml#/proofOfWork"
+    role:
+      $ref: "#/RoleDto"
+
+UserPageDto:
+  type: object
+  description: A page of user.
+  required:
+    - totalElements
+    - totalPages
+    - content
+  properties:
+    totalElements:
+      type: integer
+      description: Total elements.
+      minimum: 0
+      format: int64
+    totalPages:
+      type: integer
+      description: Total pages.
+      minimum: 0
+      format: int32
+    content:
+      type: array
+      description: Content.
+      items:
+        $ref: "#/UserDto"
+
+ForgotPasswordDto:
+  type: object
+  description: Request to send a password reset email.
+  required:
+    - email
+  properties:
+    email:
+      $ref: "common.yaml#/email"

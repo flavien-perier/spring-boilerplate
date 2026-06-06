@@ -27,7 +27,7 @@ import { RouterView, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useApplicationStore } from "@/core/application.store";
-import { Role } from "@generated/api/api";
+import { RoleDto } from "@generated/api/api";
 import Modal from "@/core/component/modal.component.vue";
 import Notification from "@/core/component/notification.component.vue";
 import type { NavbarElement } from "@generated/component-library";
@@ -46,7 +46,7 @@ const navbarElements = computed<NavbarElement[]>(() => [
     faIcon: "home",
     action: () => router.push({ name: "home" }),
   },
-  ...(applicationStore.user?.role === Role.ADMIN
+  ...(applicationStore.user?.role === RoleDto.ADMIN
     ? [
         {
           i18nKey: "menu.administration",

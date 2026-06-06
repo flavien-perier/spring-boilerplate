@@ -1,0 +1,309 @@
+/api/users/activate:
+  post:
+    tags:
+      - User
+    summary: Activate a user after creation using the token sent by email.
+    operationId: activateUser
+    parameters:
+      - $ref: "../components/parameters.yaml#/activationToken"
+    responses:
+      "204":
+        description: The user has been activated.
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+
+/api/users/forgot-password:
+  post:
+    tags:
+      - User
+    summary: Send a token by email to change password.
+    operationId: forgotPassword
+    requestBody:
+      description: Email address to send the reset token to.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/user.yaml#/ForgotPasswordDto"
+    responses:
+      "204":
+        description: The email has been sent.
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+
+/api/users/password:
+  post:
+    tags:
+      - User
+    summary: Use the token sent by email to change password.
+    operationId: updatePassword
+    requestBody:
+      description: The new password and token.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/user.yaml#/ChangePasswordDto"
+    responses:
+      "204":
+        description: Password updated.
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+
+/api/users/me:
+  get:
+    tags:
+      - User
+    summary: Returns the user sending the request.
+    operationId: getCurrentUser
+    responses:
+      "200":
+        description: The user.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user.yaml#/UserDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ user, admin ]
+  put:
+    tags:
+      - User
+    summary: Modifies the user sending the request.
+    operationId: updateCurrentUser
+    requestBody:
+      description: User account information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/user.yaml#/UserUpdateDto"
+    responses:
+      "200":
+        description: The user.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user.yaml#/UserDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ user, admin ]
+  delete:
+    tags:
+      - User
+    summary: Deletes the user sending the request.
+    operationId: deleteCurrentUser
+    responses:
+      "204":
+        description: The user has been deleted.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ user ]
+
+/api/users/me/otp:
+  post:
+    tags:
+      - User
+    summary: Initiate OTP 2FA setup. Returns a QR code URI valid for 10 minutes.
+    operationId: setupCurrentUserOtp
+    responses:
+      "200":
+        description: OTP provisioning URI.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user.yaml#/OtpSetupDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "409":
+        $ref: "../components/errors.yaml#/Conflict"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ user, admin ]
+  delete:
+    tags:
+      - User
+    summary: Disable OTP 2FA for the current user.
+    operationId: disableCurrentUserOtp
+    responses:
+      "204":
+        description: OTP disabled.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ user, admin ]
+
+/api/users/me/otp/confirm:
+  post:
+    tags:
+      - User
+    summary: Confirm OTP 2FA setup by providing a valid TOTP code.
+    operationId: confirmCurrentUserOtp
+    requestBody:
+      description: OTP confirmation code.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/user.yaml#/OtpConfirmDto"
+    responses:
+      "204":
+        description: OTP confirmed and activated.
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ user, admin ]
+
+/api/users/{userMail}:
+  get:
+    tags:
+      - User
+    summary: Returns information about an user.
+    operationId: getUser
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+    responses:
+      "200":
+        description: The user.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user.yaml#/UserDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ admin ]
+  put:
+    tags:
+      - User
+    summary: Updating information about an user.
+    operationId: updateUser
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+    requestBody:
+      description: User account information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/user.yaml#/UserUpdateAdminDto"
+    responses:
+      "200":
+        description: The user.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user.yaml#/UserDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ admin ]
+  delete:
+    tags:
+      - User
+    summary: Deleting a user.
+    operationId: deleteUser
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+    responses:
+      "204":
+        description: The user has been deleted.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ admin ]
+
+/api/users:
+  post:
+    tags:
+      - User
+    summary: Creation of a new account for an user.
+    operationId: createUser
+    requestBody:
+      description: User account information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/user.yaml#/UserCreationDto"
+    responses:
+      "204":
+        description: User created.
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "409":
+        $ref: "../components/errors.yaml#/Conflict"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+  get:
+    tags:
+      - User
+    summary: Returns a list of users.
+    operationId: findUsers
+    parameters:
+      - $ref: "../components/parameters.yaml#/q"
+      - $ref: "../components/parameters.yaml#/page"
+      - $ref: "../components/parameters.yaml#/pageSize"
+      - $ref: "../components/parameters.yaml#/sortColumn"
+      - $ref: "../components/parameters.yaml#/sortOrder"
+    responses:
+      "200":
+        description: Paginated list of users.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user.yaml#/UserPageDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ admin ]

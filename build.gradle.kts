@@ -51,7 +51,7 @@ allprojects {
     version = "1.0.0"
 }
 
-val kotlinProjects = setOf("api", "batch", "domain", "utils", "openapi")
+val kotlinProjects = setOf("api", "batch", "domain", "utils")
 val frontendProjects = setOf("frontend", "component-library")
 
 subprojects {

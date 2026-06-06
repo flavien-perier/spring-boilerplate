@@ -1,4 +1,4 @@
-ProblemDetail:
+ProblemDetailDto:
   type: object
   description: RFC 9457 problem detail error response body.
   required:
@@ -25,39 +25,39 @@ BadRequest:
   content:
     application/problem+json:
       schema:
-        $ref: "#/ProblemDetail"
+        $ref: "#/ProblemDetailDto"
 
 Unauthorized:
   description: Missing or expired token.
   content:
     application/problem+json:
       schema:
-        $ref: "#/ProblemDetail"
+        $ref: "#/ProblemDetailDto"
 
 Forbidden:
   description: Insufficient role.
   content:
     application/problem+json:
       schema:
-        $ref: "#/ProblemDetail"
+        $ref: "#/ProblemDetailDto"
 
 NotFound:
   description: Resource not found.
   content:
     application/problem+json:
       schema:
-        $ref: "#/ProblemDetail"
+        $ref: "#/ProblemDetailDto"
 
 Conflict:
   description: Resource conflict (e.g. duplicate email or already-used token).
   content:
     application/problem+json:
       schema:
-        $ref: "#/ProblemDetail"
+        $ref: "#/ProblemDetailDto"
 
 InternalServerError:
   description: Generic server error.
   content:
     application/problem+json:
       schema:
-        $ref: "#/ProblemDetail"
+        $ref: "#/ProblemDetailDto"
