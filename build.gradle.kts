@@ -46,10 +46,6 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     }
 }
 
-tasks.named("check") {
-    dependsOn("dependencyUpdates")
-}
-
 allprojects {
     group = "io.flavien"
     version = "1.0.0"

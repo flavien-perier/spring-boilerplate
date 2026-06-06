@@ -12,6 +12,7 @@ helm/
 **/target/
 **/build/
 **/node_modules/
+**/package-lock.json
 **/*.old
 **/.attach*
 **/README.md
