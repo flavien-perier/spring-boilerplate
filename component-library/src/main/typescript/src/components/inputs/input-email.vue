@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 defineOptions({
   name: "FioInputEmail",
@@ -45,6 +45,11 @@ const email = computed({
     emit("update:isValid", isValid.value);
     emit("update:modelValue", value);
   },
+});
+
+onMounted(() => {
+  isValid.value = checkEmail(modelValue);
+  emit("update:isValid", isValid.value);
 });
 
 function checkEmail(email: string) {

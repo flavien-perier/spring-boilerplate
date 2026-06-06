@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useId } from "vue";
+import { computed, useId, watch } from "vue";
 
 defineOptions({
   name: "FioInputText",
@@ -62,6 +62,18 @@ const isInvalid = computed(
     value.value.length > 0 &&
     !!safePattern.value &&
     !testPattern(safePattern.value, value.value)
+);
+
+watch(
+  value,
+  (newValue) => {
+    if (!safePattern.value) return;
+    emit(
+      "update:isValid",
+      newValue.length === 0 || testPattern(safePattern.value, newValue)
+    );
+  },
+  { immediate: true }
 );
 
 function handleInput(event: Event) {
