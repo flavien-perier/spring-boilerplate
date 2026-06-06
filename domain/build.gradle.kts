@@ -29,7 +29,6 @@ dependencies {
     implementation(libs.spring.boot.starter.liquibase)
 
     implementation(libs.kotlin.reflect)
-    implementation(libs.kotlin.stdlib)
 
     runtimeOnly(libs.postgresql)
     implementation(libs.jedis)

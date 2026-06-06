@@ -28,6 +28,17 @@ spotless {
     }
 }
 
+gradle.projectsEvaluated {
+    val yarnTasks = listOf(":component-library:yarn", ":openapi:yarn", ":frontend:yarn")
+    listOf("spotlessKotlinGradle", "spotlessKotlinGradleApply").forEach { taskName ->
+        tasks.findByName(taskName)?.let { spotlessTask ->
+            yarnTasks.forEach { yarnTask ->
+                rootProject.tasks.findByPath(yarnTask)?.let { spotlessTask.mustRunAfter(it) }
+            }
+        }
+    }
+}
+
 fun isNonStable(version: String): Boolean {
     val stableKeywords = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
     val stablePattern = "^[0-9,.v-]+(-r)?$".toRegex()
