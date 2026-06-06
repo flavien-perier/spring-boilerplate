@@ -21,7 +21,7 @@ plugins {
 
 // Lint gradle
 spotless {
-    ratchetFrom("origin/main")
+    if (File(rootDir, ".git").exists()) ratchetFrom("origin/main")
     kotlinGradle {
         target("**/*.gradle.kts")
         ktlint()
@@ -97,7 +97,7 @@ subprojects {
     if (project.name in kotlinProjects) {
         apply(plugin = "com.diffplug.spotless")
         configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-            ratchetFrom("origin/main")
+            if (File(rootDir, ".git").exists()) ratchetFrom("origin/main")
             kotlin {
                 target("**/*.kt")
                 targetExclude("**/build/**", "**/dist/**")
@@ -118,7 +118,7 @@ subprojects {
     if (project.name in frontendProjects) {
         apply(plugin = "com.diffplug.spotless")
         configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-            ratchetFrom("origin/main")
+            if (File(rootDir, ".git").exists()) ratchetFrom("origin/main")
             format("web") {
                 target(
                     "**/*.ts",
