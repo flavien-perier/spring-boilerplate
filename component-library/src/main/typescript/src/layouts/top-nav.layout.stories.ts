@@ -48,7 +48,7 @@ export const Default: Story = {
                 footer-label="example.com"
             >
                 <template #brand>
-                    <a href="#"><fio-icon icon="flag" /> MyApp</a>
+                    <a href="#"><fio-image name="logo" /> MyApp</a>
                 </template>
                 <div style="padding: 2rem;">
                     <h1>Page content</h1>
@@ -97,7 +97,7 @@ export const Authenticated: Story = {
                 footer-label="example.com"
             >
                 <template #brand>
-                    <a href="#"><fio-icon icon="flag" /> MyApp</a>
+                    <a href="#"><fio-image name="logo" /> MyApp</a>
                 </template>
                 <div style="padding: 2rem;">
                     <h1>Dashboard</h1>
@@ -147,7 +147,7 @@ export const Interactive: Story = {
                 footer-label="example.com"
             >
                 <template #brand>
-                    <a href="#"><fio-icon icon="flag" /> MyApp</a>
+                    <a href="#"><fio-image name="logo" /> MyApp</a>
                 </template>
                 <div style="padding: 2rem;">
                     <p v-if="clicked">Last clicked: <strong>{{ clicked }}</strong></p>

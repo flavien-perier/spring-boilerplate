@@ -102,11 +102,17 @@ const endElements = computed(() =>
           &:hover {
             color: $primary-lighter-70;
           }
+        }
 
-          img {
-            height: 1.75rem;
-            width: auto;
-          }
+        :deep(.fio-image) {
+          min-width: unset;
+          width: auto;
+        }
+
+        :deep(img),
+        :deep(.fio-image svg) {
+          height: 1.75rem;
+          width: auto;
         }
       }
 

@@ -103,6 +103,11 @@ nav {
       }
     }
 
+    :deep(.fio-image) {
+      min-width: unset;
+      width: auto;
+    }
+
     :deep(img),
     :deep(.fio-image svg) {
       height: 1.75rem;

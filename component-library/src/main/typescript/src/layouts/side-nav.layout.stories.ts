@@ -50,7 +50,7 @@ export const Default: Story = {
     template: `
             <fio-side-nav-layout :elements="elements">
                 <template #brand>
-                    <a href="#"><fio-icon icon="flag" /> MyApp</a>
+                    <a href="#"><fio-image name="logo" /> MyApp</a>
                 </template>
                 <div style="padding: 2rem;">
                     <h1>Page content</h1>
@@ -104,7 +104,7 @@ export const Interactive: Story = {
     template: `
             <fio-side-nav-layout :elements="elements">
                 <template #brand>
-                    <a href="#"><fio-icon icon="flag" /> MyApp</a>
+                    <a href="#"><fio-image name="logo" /> MyApp</a>
                 </template>
                 <div style="padding: 2rem;">
                     <p v-if="activeItem">Active section: <strong>{{ activeItem }}</strong></p>

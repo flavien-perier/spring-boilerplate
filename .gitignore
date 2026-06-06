@@ -3,6 +3,7 @@
 .kotlin/
 .gradle/
 .worktrees/
+.playwright-mcp/
 **/target/
 **/build/
 **/node_modules/
