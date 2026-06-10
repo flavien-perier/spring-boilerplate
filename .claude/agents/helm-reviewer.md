@@ -1,7 +1,7 @@
 ---
 name: helm-reviewer
 description: Use this agent to review the Helm chart for correctness and Kubernetes best practices. Invoke it after modifying templates, values, or Chart.yaml.
-model: claude-opus-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob
 ---

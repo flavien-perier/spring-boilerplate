@@ -68,7 +68,6 @@ class SessionControllerTest {
         // Given
         val refreshTokenId = "refreshTokenId"
 
-        // Mock ContextUtil.refreshTokenId
         mockkObject(ContextUtil)
         every { ContextUtil.refreshTokenId } returns refreshTokenId
 
@@ -79,7 +78,6 @@ class SessionControllerTest {
         verify(refreshTokenService!!).delete(refreshTokenId)
         assertEquals(HttpStatus.NO_CONTENT, response.statusCode)
 
-        // Clean up
         unmockkObject(ContextUtil)
     }
 
@@ -109,7 +107,6 @@ class SessionControllerTest {
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(refreshTokenPropertiesDtos, response.body)
 
-        // Clean up
         unmockkObject(ContextUtil)
     }
 
@@ -143,12 +140,18 @@ class SessionControllerTest {
         // Given
         val sessionUuid = "123e4567-e89b-12d3-a456-426614174000"
         val uuid = UUID.fromString(sessionUuid)
+        val userId = 1L
+
+        mockkObject(ContextUtil)
+        every { ContextUtil.userId } returns userId
 
         // When
         val response = sessionController!!.deleteSession(sessionUuid)
 
         // Then
-        verify(refreshTokenService!!).delete(uuid)
+        verify(refreshTokenService!!).delete(uuid, userId)
         assertEquals(HttpStatus.NO_CONTENT, response.statusCode)
+
+        unmockkObject(ContextUtil)
     }
 }

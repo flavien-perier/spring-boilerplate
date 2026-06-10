@@ -7,10 +7,10 @@ Each module has a `README.md` that is the authoritative reference for its struct
 - `api/README.md` — controllers, mappers, filters, generated code
 - `batch/README.md` — Spring Batch jobs, steps, readers, processors, writers
 - `domain/README.md` — entities, services, repositories, exceptions, migrations
-- `utils/README.md` — Kotlin Multiplatform shared utilities (JVM + JS)
+- `libraries/library-common/README.md` — Kotlin Multiplatform shared utilities (JVM + JS)
 - `openapi/README.md` — OpenAPI spec, code generation targets
 - `frontend/README.md` — Vue 3 views, Pinia stores, routing, i18n
-- `component-library/README.md` — reusable `fio-*` Vue components
+- `libraries/library-vue3-components/README.md` — reusable `fio-*` Vue components
 - `helm/README.md` — Kubernetes Helm chart structure and values
 
 ## Key Commands

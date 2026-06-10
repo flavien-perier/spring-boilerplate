@@ -29,7 +29,7 @@ spotless {
 }
 
 gradle.projectsEvaluated {
-    val yarnTasks = listOf(":component-library:yarn", ":openapi:yarn", ":frontend:yarn")
+    val yarnTasks = listOf(":libraries:library-vue3-components:yarn", ":openapi:yarn", ":frontend:yarn")
     listOf("spotlessKotlinGradle", "spotlessKotlinGradleApply").forEach { taskName ->
         tasks.findByName(taskName)?.let { spotlessTask ->
             yarnTasks.forEach { yarnTask ->
@@ -62,8 +62,8 @@ allprojects {
     version = "1.0.0"
 }
 
-val kotlinProjects = setOf("api", "batch", "domain", "utils")
-val frontendProjects = setOf("frontend", "component-library")
+val kotlinProjects = setOf("api", "batch", "domain", "library-common", "library-test")
+val frontendProjects = setOf("frontend", "library-vue3-components")
 
 subprojects {
     tasks.withType<JavaCompile> {

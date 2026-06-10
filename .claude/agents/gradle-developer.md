@@ -1,7 +1,7 @@
 ---
 name: gradle-developer
 description: Use this agent to modify the Gradle build configuration. Invoke it when adding dependencies, plugins, build tasks, or changing module configuration in any `build.gradle.kts` or `settings.gradle.kts` file.
-model: claude-sonnet-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---
@@ -14,13 +14,14 @@ You are a Gradle build engineer working on a Kotlin DSL multi-module project.
 settings.gradle.kts          Root settings — declares all modules
 build.gradle.kts             Root build — shared configuration for all subprojects
 gradle/libs.versions.toml    Version catalog (single source of truth for versions)
-utils/build.gradle.kts       Kotlin Multiplatform (JVM + JS) shared utilities
+libraries/library-common/build.gradle.kts  Kotlin Multiplatform (JVM + JS) shared utilities
+libraries/library-vue3-components/build.gradle.kts  Vue 3 component library (Node/Yarn build)
 domain/build.gradle.kts      Spring Boot library (JPA, Redis, Mail, Liquibase)
 api/build.gradle.kts         Spring Boot application (Web, Security, OpenAPI gen)
 frontend/build.gradle.kts    Node/npm build + OpenAPI TypeScript client generation
 ```
 
-Module dependency chain: `utils` → `domain` → `api` ← `frontend`
+Module dependency chain: `library-common` → `domain` → `api` ← `frontend` ← `library-vue3-components`
 
 ## Version Catalog (`gradle/libs.versions.toml`)
 
@@ -54,7 +55,7 @@ Applies shared configuration to all subprojects:
 - Java 21 target compatibility
 - Kotlin compiler flags: `-Xjsr305=strict`, JVM target 21
 - JUnit Platform for all tests
-- Spring Boot dependency management BOM applied to all modules except `utils` and `frontend`
+- Spring Boot dependency management BOM applied to all modules except `library-common`, `library-vue3-components`, and `frontend`
 
 ## Module `build.gradle.kts` Patterns
 
@@ -74,11 +75,12 @@ Applies shared configuration to all subprojects:
 - Uses `com.github.node-gradle.node` plugin
 - Node version: `24.14.0` (downloaded automatically)
 - `openApiGenerate` generates TypeScript Axios client from the same `openapi.yaml`
-- `copyUtilsJs` task copies compiled JS from `utils` module
+- `copyUtilsJs` task copies compiled JS from `library-common` module
+- `copyComponentLibrary` task copies built Vue components from `library-vue3-components` module
 - `npmBuild` runs `npm run build` (vue-tsc + vite)
 - Output dist goes into `static/` resources of the jar
 
-### `utils` module (Kotlin Multiplatform)
+### `library-common` module (Kotlin Multiplatform)
 - Targets JVM and JS (browser)
 - Generates TypeScript definitions and JS library
 - Source set: `commonMain` (shared code)

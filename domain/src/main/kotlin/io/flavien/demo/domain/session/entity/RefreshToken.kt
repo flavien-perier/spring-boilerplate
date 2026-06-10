@@ -1,5 +1,6 @@
 package io.flavien.demo.domain.session.entity
 
+import io.flavien.demo.domain.session.model.REFRESH_TOKEN_TTL_SECONDS
 import io.flavien.demo.domain.user.model.UserRole
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
@@ -8,10 +9,9 @@ import java.io.Serializable
 import java.time.OffsetDateTime
 import java.util.UUID
 
-@RedisHash("RefreshToken", timeToLive = 3600 * 24 * 365)
+@RedisHash("RefreshToken", timeToLive = REFRESH_TOKEN_TTL_SECONDS)
 data class RefreshToken(
     @Id
-    @Indexed
     val id: String,
     @Indexed
     val uuid: UUID,

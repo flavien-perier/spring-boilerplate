@@ -6,10 +6,14 @@ import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.ArchRule
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
+import io.flavien.demo.domain.tenant.TenantContext
+import io.flavien.demo.libtest.SpringModuleArchitectureTest
 import jakarta.persistence.Entity
+import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.infrastructure.item.ItemProcessor
 import org.springframework.batch.infrastructure.item.ItemReader
 import org.springframework.batch.infrastructure.item.ItemWriter
+import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Controller
@@ -20,9 +24,10 @@ import org.springframework.stereotype.Service
     packages = ["io.flavien.demo.batch"],
     importOptions = [ImportOption.DoNotIncludeTests::class],
 )
-class ArchitectureTest {
+@Suppress("ktlint:standard:property-naming")
+class ArchitectureTest : SpringModuleArchitectureTest() {
     @ArchTest
-    val itemReadersShouldBeAnnotatedWithComponent: ArchRule =
+    val `item reader classes should be annotated with @Component`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemReader")
@@ -33,7 +38,7 @@ class ArchitectureTest {
             .because("Item readers must be registered as @Component Spring beans")
 
     @ArchTest
-    val itemWritersShouldBeAnnotatedWithComponent: ArchRule =
+    val `item writer classes should be annotated with @Component`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemWriter")
@@ -44,7 +49,7 @@ class ArchitectureTest {
             .because("Item writers must be registered as @Component Spring beans")
 
     @ArchTest
-    val itemProcessorsShouldBeAnnotatedWithComponent: ArchRule =
+    val `item processor classes should be annotated with @Component`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemProcessor")
@@ -55,7 +60,7 @@ class ArchitectureTest {
             .because("Item processors must be registered as @Component Spring beans")
 
     @ArchTest
-    val itemReadersShouldImplementItemReader: ArchRule =
+    val `item reader classes should implement ItemReader`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemReader")
@@ -66,7 +71,7 @@ class ArchitectureTest {
             .because("Item reader classes must implement the Spring Batch ItemReader interface")
 
     @ArchTest
-    val itemWritersShouldImplementItemWriter: ArchRule =
+    val `item writer classes should implement ItemWriter`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemWriter")
@@ -77,7 +82,7 @@ class ArchitectureTest {
             .because("Item writer classes must implement the Spring Batch ItemWriter interface")
 
     @ArchTest
-    val itemProcessorsShouldImplementItemProcessor: ArchRule =
+    val `item processor classes should implement ItemProcessor`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemProcessor")
@@ -88,7 +93,7 @@ class ArchitectureTest {
             .because("Item processor classes must implement the Spring Batch ItemProcessor interface")
 
     @ArchTest
-    val itemReadersShouldResideInStepPackage: ArchRule =
+    val `item reader classes should reside in a step package`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemReader")
@@ -99,7 +104,7 @@ class ArchitectureTest {
             .because("Item readers must be co-located in their step sub-package under step/")
 
     @ArchTest
-    val itemWritersShouldResideInStepPackage: ArchRule =
+    val `item writer classes should reside in a step package`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemWriter")
@@ -110,7 +115,7 @@ class ArchitectureTest {
             .because("Item writers must be co-located in their step sub-package under step/")
 
     @ArchTest
-    val itemProcessorsShouldResideInStepPackage: ArchRule =
+    val `item processor classes should reside in a step package`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("ItemProcessor")
@@ -121,7 +126,7 @@ class ArchitectureTest {
             .because("Item processors must be co-located in their step sub-package under step/")
 
     @ArchTest
-    val stepConfigsShouldBeAnnotatedWithConfiguration: ArchRule =
+    val `step config classes should be annotated with @Configuration`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("StepConfig")
@@ -130,7 +135,7 @@ class ArchitectureTest {
             .because("Step configuration classes must be annotated with @Configuration")
 
     @ArchTest
-    val stepConfigsShouldResideInStepPackage: ArchRule =
+    val `step config classes should reside in a step package`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("StepConfig")
@@ -139,7 +144,7 @@ class ArchitectureTest {
             .because("Step configuration classes must reside in their step sub-package under step/")
 
     @ArchTest
-    val jobConfigsShouldBeAnnotatedWithConfiguration: ArchRule =
+    val `job config classes should be annotated with @Configuration`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("JobConfig")
@@ -148,7 +153,7 @@ class ArchitectureTest {
             .because("Job configuration classes must be annotated with @Configuration")
 
     @ArchTest
-    val jobConfigsShouldResideInJobPackage: ArchRule =
+    val `job config classes should reside in a job package`: ArchRule =
         classes()
             .that()
             .haveSimpleNameEndingWith("JobConfig")
@@ -157,7 +162,7 @@ class ArchitectureTest {
             .because("Job configuration classes must reside in the job/ package")
 
     @ArchTest
-    val batchShouldNotContainServiceBeans: ArchRule =
+    val `batch module should not contain @Service beans`: ArchRule =
         noClasses()
             .that()
             .resideInAPackage("io.flavien.demo.batch..")
@@ -169,7 +174,7 @@ class ArchitectureTest {
             )
 
     @ArchTest
-    val batchShouldNotContainRepositoryBeans: ArchRule =
+    val `batch module should not contain @Repository beans`: ArchRule =
         noClasses()
             .that()
             .resideInAPackage("io.flavien.demo.batch..")
@@ -178,7 +183,7 @@ class ArchitectureTest {
             .because("Repositories must only reside in the domain module, not in the batch module")
 
     @ArchTest
-    val batchShouldNotContainJpaEntities: ArchRule =
+    val `batch module should not contain @Entity classes`: ArchRule =
         noClasses()
             .that()
             .resideInAPackage("io.flavien.demo.batch..")
@@ -187,7 +192,7 @@ class ArchitectureTest {
             .because("JPA entities must only reside in the domain module, not in the batch module")
 
     @ArchTest
-    val batchShouldNotDependOnApiModule: ArchRule =
+    val `batch module should not depend on the api module`: ArchRule =
         noClasses()
             .that()
             .resideInAPackage("io.flavien.demo.batch..")
@@ -197,7 +202,7 @@ class ArchitectureTest {
             .because("The batch module must not depend on the api module — they are sibling modules")
 
     @ArchTest
-    val batchShouldNotHaveControllerAnnotation: ArchRule =
+    val `batch module should not contain @Controller beans`: ArchRule =
         noClasses()
             .that()
             .resideInAPackage("io.flavien.demo.batch..")
@@ -206,7 +211,7 @@ class ArchitectureTest {
             .because("The batch module is a standalone CLI-style application with no HTTP layer")
 
     @ArchTest
-    val batchShouldNotHaveRestControllerAnnotation: ArchRule =
+    val `batch module should not contain @RestController beans`: ArchRule =
         noClasses()
             .that()
             .resideInAPackage("io.flavien.demo.batch..")
@@ -215,7 +220,7 @@ class ArchitectureTest {
             .because("The batch module is a standalone CLI-style application with no HTTP layer")
 
     @ArchTest
-    val batchShouldNotDependOnServletApi: ArchRule =
+    val `batch module should not depend on the servlet API`: ArchRule =
         noClasses()
             .that()
             .resideInAPackage("io.flavien.demo.batch..")
@@ -223,4 +228,67 @@ class ArchitectureTest {
             .dependOnClassesThat()
             .resideInAPackage("jakarta.servlet..")
             .because("The batch module has no HTTP/servlet concerns")
+
+    @ArchTest
+    val `only job runners should manage the TenantContext lifecycle`: ArchRule =
+        noClasses()
+            .that()
+            .resideOutsideOfPackage("..batch.runner..")
+            .should()
+            .callMethod(TenantContext::class.java, "set", String::class.java)
+            .orShould()
+            .callMethod(TenantContext::class.java, "clear")
+            .because(
+                "The tenant lifecycle is owned by the job runner — " +
+                    "steps, readers, processors and writers must only read the current tenant",
+            )
+
+    @ArchTest
+    val `application runners should reside in the runner package and be named Runner`: ArchRule =
+        classes()
+            .that()
+            .areAssignableTo(ApplicationRunner::class.java)
+            .and()
+            .areNotInterfaces()
+            .should()
+            .resideInAPackage("..runner..")
+            .andShould()
+            .haveSimpleNameEndingWith("Runner")
+            .because("Job orchestration entry points must be uniformly named and located in the runner package")
+
+    @ArchTest
+    val `runners should not access domain repositories directly`: ArchRule =
+        noClasses()
+            .that()
+            .resideInAPackage("..batch.runner..")
+            .should()
+            .dependOnClassesThat()
+            .areAnnotatedWith(Repository::class.java)
+            .because("Runners must delegate to domain services, never bypass the service layer by accessing repositories directly")
+
+    @ArchTest
+    val `item reader classes should be annotated with @StepScope`: ArchRule =
+        classes()
+            .that()
+            .haveSimpleNameEndingWith("ItemReader")
+            .and()
+            .areNotInterfaces()
+            .should()
+            .beAnnotatedWith(StepScope::class.java)
+            .because(
+                "Stateful item readers must be @StepScope so Spring Batch " +
+                    "creates a fresh instance per step execution",
+            )
+
+    @ArchTest
+    val `@StepScope classes should also be annotated with @Component`: ArchRule =
+        classes()
+            .that()
+            .areAnnotatedWith(StepScope::class.java)
+            .should()
+            .beAnnotatedWith(Component::class.java)
+            .because(
+                "Spring Batch requires @StepScope beans to also be @Component " +
+                    "so the scoped proxy is correctly registered in the application context",
+            ).allowEmptyShould(true)
 }

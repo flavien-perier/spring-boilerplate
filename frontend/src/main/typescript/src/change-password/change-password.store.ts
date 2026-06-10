@@ -36,7 +36,10 @@ export const useChangePasswordStore = defineStore("change-password", {
         .updatePassword({
           token: this.token,
           password: this.password,
-          proofOfWork: await passwordUtil.proofOfWork(this.password, this.email),
+          proofOfWork: await passwordUtil.proofOfWork(
+            this.password,
+            this.email
+          ),
         })
         .then(() => {
           applicationStore.sendNotification(
@@ -45,7 +48,17 @@ export const useChangePasswordStore = defineStore("change-password", {
           );
           this.$router.push({ name: "login" });
         })
-        .catch(applicationStore.axiosException)
+        .catch((error: any) => {
+          const status: number = error.response?.status;
+          if (status === 400 || status === 404) {
+            applicationStore.sendNotification(
+              "danger",
+              "notification.change-password-failed"
+            );
+          } else {
+            applicationStore.axiosException(error);
+          }
+        })
         .finally(() => {
           this.computeAction = false;
         });

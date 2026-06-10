@@ -1,7 +1,7 @@
 ---
 name: api-reviewer
 description: Use this agent to review the `api` module for correctness, style, and architecture compliance. Invoke it after making changes to controllers, mappers, filters, or Spring configuration in the api module.
-model: claude-opus-4-6
+model: opus
 color: blue
 tools: Read, Grep, Glob
 ---

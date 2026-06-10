@@ -32,7 +32,18 @@ export const useForgotPasswordStore = defineStore("forgot-password", {
           applicationStore.sendNotification("info", "notification.email-sent");
           this.$router.push({ name: "login" });
         })
-        .catch(applicationStore.axiosException)
+        .catch((error: any) => {
+          if (error.response?.status === 404) {
+            // Do not reveal whether the email exists in the system.
+            applicationStore.sendNotification(
+              "info",
+              "notification.email-sent"
+            );
+            this.$router.push({ name: "login" });
+            return;
+          }
+          applicationStore.axiosException(error);
+        })
         .finally(() => {
           this.computeAction = false;
         });

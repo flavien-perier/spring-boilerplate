@@ -1,7 +1,7 @@
 ---
 name: openapi-developer
 description: Use this agent to add, modify, or remove endpoints and schemas in the OpenAPI specification. Invoke it when changing the HTTP API contract — new routes, request/response bodies, query parameters, security requirements, or DTO schemas.
-model: claude-sonnet-4-6
+model: opus
 color: orange
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

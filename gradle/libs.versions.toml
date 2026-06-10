@@ -15,6 +15,7 @@ jedis = "7.5.2"
 mapstruct = "1.6.3"
 jackson-databind-nullable = "0.2.10"
 spring-retry = "2.0.12"
+resilience4j = "2.3.0"
 springdoc-openapi = "3.0.3"
 swagger-parser = "2.1.43"
 subethasmtp = "7.2.2"
@@ -23,6 +24,7 @@ mockk = "1.14.11"
 testcontainers = "1.21.4"
 archunit = "1.4.2"
 logstash-logback-encoder = "9.0"
+bouncycastle = "1.82"
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
@@ -42,6 +44,8 @@ versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-vers
 [libraries]
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-security-crypto = { module = "org.springframework.security:spring-security-crypto" }
+spring-web = { module = "org.springframework:spring-web" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
@@ -65,6 +69,8 @@ mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
 mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
 
 jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version.ref = "jackson-databind-nullable" }
+jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
 springdoc-openapi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
 swagger-parser = { module = "io.swagger.parser.v3:swagger-parser", version.ref = "swagger-parser" }
 
@@ -79,5 +85,6 @@ micrometer-tracing-bridge-brave = { module = "io.micrometer:micrometer-tracing-b
 zipkin-reporter-brave = { module = "io.zipkin.reporter2:zipkin-reporter-brave" }
 spring-boot-micrometer-tracing-brave = { module = "org.springframework.boot:spring-boot-micrometer-tracing-brave" }
 
-spring-retry = { module = "org.springframework.retry:spring-retry", version.ref = "spring-retry" }
+resilience4j-spring-boot = { module = "io.github.resilience4j:resilience4j-spring-boot3", version.ref = "resilience4j" }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder" }
+bouncycastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }

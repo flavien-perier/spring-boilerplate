@@ -1,123 +1,76 @@
 package io.flavien.demo.domain
 
 import com.tngtech.archunit.base.DescribedPredicate
+import com.tngtech.archunit.core.domain.JavaCall
 import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaModifier
+import com.tngtech.archunit.core.domain.properties.HasName
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
+import com.tngtech.archunit.lang.ArchCondition
 import com.tngtech.archunit.lang.ArchRule
+import com.tngtech.archunit.lang.ConditionEvents
+import com.tngtech.archunit.lang.SimpleConditionEvent
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
+import io.flavien.demo.domain.shared.exception.FioException
+import io.flavien.demo.domain.tenant.TenantContext
+import io.flavien.demo.libtest.SpringModuleArchitectureTest
+import io.github.resilience4j.retry.annotation.Retry
 import jakarta.persistence.Entity
-import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.mail.javamail.JavaMailSender
-import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Controller
-import org.springframework.stereotype.Repository
-import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import java.io.Serializable
 
 @AnalyzeClasses(
     packages = ["io.flavien.demo.domain"],
     importOptions = [ImportOption.DoNotIncludeTests::class],
 )
-class ArchitectureTest {
+@Suppress("ktlint:standard:property-naming")
+class ArchitectureTest : SpringModuleArchitectureTest() {
     private val haveJavaMailSenderField =
         object : DescribedPredicate<JavaClass>("declare a JavaMailSender field") {
             override fun test(input: JavaClass) = input.fields.any { it.rawType.isEquivalentTo(JavaMailSender::class.java) }
         }
 
-    @ArchTest
-    val serviceClassesShouldBeAnnotatedWithService: ArchRule =
-        classes()
-            .that()
-            .haveSimpleNameEndingWith("Service")
-            .and()
-            .areNotInterfaces()
-            .should()
-            .beAnnotatedWith(Service::class.java)
-            .because("All service classes must be annotated with @Service")
+    private val haveAPasswordField =
+        object : DescribedPredicate<JavaClass>("have a password field") {
+            override fun test(input: JavaClass) = input.fields.any { it.name == "password" }
+        }
+
+    private val declareTheirOwnToString =
+        object : ArchCondition<JavaClass>("declare their own toString()") {
+            override fun check(
+                item: JavaClass,
+                events: ConditionEvents,
+            ) {
+                val declaresToString = item.methods.any { it.name == "toString" && it.rawParameterTypes.isEmpty() }
+                events.add(
+                    SimpleConditionEvent(
+                        item,
+                        declaresToString,
+                        "${item.name} ${if (declaresToString) "declares" else "does not declare"} its own toString()",
+                    ),
+                )
+            }
+        }
 
     @ArchTest
-    val serviceClassesShouldResideInServicePackage: ArchRule =
+    val `@Configuration classes should reside in a configuration package`: ArchRule =
         classes()
             .that()
-            .areAnnotatedWith(Service::class.java)
+            .areAnnotatedWith("org.springframework.context.annotation.Configuration")
             .should()
-            .resideInAPackage("..service..")
-            .because("@Service classes must be organized in service sub-packages")
+            .resideInAPackage("..configuration..")
+            .because("@Configuration beans must be organized in a configuration sub-package")
+            .allowEmptyShould(true)
 
     @ArchTest
-    val repositoriesShouldBeInterfaces: ArchRule =
-        classes()
-            .that()
-            .haveSimpleNameEndingWith("Repository")
-            .should()
-            .beInterfaces()
-            .because("Repositories in Spring Data are interfaces delegated to runtime-generated proxies")
-
-    @ArchTest
-    val repositoriesShouldBeAnnotatedWithRepository: ArchRule =
-        classes()
-            .that()
-            .haveSimpleNameEndingWith("Repository")
-            .should()
-            .beAnnotatedWith(Repository::class.java)
-            .because("All repository interfaces must be annotated with @Repository")
-
-    @ArchTest
-    val repositoriesShouldResideInRepositoryPackage: ArchRule =
-        classes()
-            .that()
-            .areAnnotatedWith(Repository::class.java)
-            .should()
-            .resideInAPackage("..repository..")
-            .because("@Repository interfaces must be organized in repository sub-packages")
-
-    @ArchTest
-    val exceptionsInExceptionPackageShouldExtendRuntimeException: ArchRule =
-        classes()
-            .that()
-            .resideInAPackage("..exception..")
-            .and()
-            .areNotInterfaces()
-            .should()
-            .beAssignableTo(RuntimeException::class.java)
-            .because("All classes in exception packages must extend RuntimeException")
-
-    @ArchTest
-    val exceptionsInExceptionPackageShouldBeAnnotatedWithResponseStatus: ArchRule =
-        classes()
-            .that()
-            .resideInAPackage("..exception..")
-            .and()
-            .areNotInterfaces()
-            .and()
-            .doNotHaveModifier(JavaModifier.ABSTRACT)
-            .should()
-            .beAnnotatedWith(ResponseStatus::class.java)
-            .because(
-                "Domain exceptions must be annotated with @ResponseStatus " +
-                    "to declare the HTTP status code returned when the exception propagates",
-            )
-
-    @ArchTest
-    val exceptionNamesShouldEndWithException: ArchRule =
-        classes()
-            .that()
-            .resideInAPackage("..exception..")
-            .and()
-            .areNotInterfaces()
-            .should()
-            .haveSimpleNameEndingWith("Exception")
-            .because("Exception classes must follow the naming convention *Exception")
-
-    @ArchTest
-    val entitiesInEntityPackageShouldBeAnnotatedCorrectly: ArchRule =
+    val `classes in entity packages should be annotated with @Entity or @RedisHash`: ArchRule =
         classes()
             .that()
             .resideInAPackage("..entity..")
@@ -133,61 +86,7 @@ class ArchitectureTest {
             )
 
     @ArchTest
-    val domainShouldNotHaveControllerAnnotation: ArchRule =
-        noClasses()
-            .that()
-            .resideInAPackage("io.flavien.demo.domain..")
-            .should()
-            .beAnnotatedWith(Controller::class.java)
-            .because("HTTP controllers must not reside in the domain module")
-
-    @ArchTest
-    val domainShouldNotHaveRestControllerAnnotation: ArchRule =
-        noClasses()
-            .that()
-            .resideInAPackage("io.flavien.demo.domain..")
-            .should()
-            .beAnnotatedWith(RestController::class.java)
-            .because("HTTP controllers must not reside in the domain module")
-
-    @ArchTest
-    val domainShouldNotDependOnApiModule: ArchRule =
-        noClasses()
-            .that()
-            .resideInAPackage("io.flavien.demo.domain..")
-            .should()
-            .dependOnClassesThat()
-            .resideInAPackage("io.flavien.demo.api..")
-            .because(
-                "The domain module must not depend on the api module — " +
-                    "the dependency direction is api → domain, never the reverse",
-            )
-
-    @ArchTest
-    val domainShouldNotDependOnBatchModule: ArchRule =
-        noClasses()
-            .that()
-            .resideInAPackage("io.flavien.demo.domain..")
-            .should()
-            .dependOnClassesThat()
-            .resideInAPackage("io.flavien.demo.batch..")
-            .because("The domain module must not depend on the batch module")
-
-    @ArchTest
-    val domainShouldNotDependOnServletApi: ArchRule =
-        noClasses()
-            .that()
-            .resideInAPackage("io.flavien.demo.domain..")
-            .should()
-            .dependOnClassesThat()
-            .resideInAPackage("jakarta.servlet..")
-            .because(
-                "The domain module must be HTTP-agnostic — " +
-                    "servlet API concepts belong in the api module",
-            )
-
-    @ArchTest
-    val entityAnnotatedClassesShouldResideInEntityPackage: ArchRule =
+    val `@Entity and @RedisHash classes should reside in an entity package`: ArchRule =
         classes()
             .that()
             .areAnnotatedWith(Entity::class.java)
@@ -201,27 +100,244 @@ class ArchitectureTest {
             )
 
     @ArchTest
-    val configurationClassesShouldBeAnnotatedWithConfiguration: ArchRule =
+    val `@RedisHash classes should implement Serializable`: ArchRule =
         classes()
             .that()
-            .haveSimpleNameEndingWith("Configuration")
-            .and()
-            .areNotInterfaces()
+            .areAnnotatedWith(RedisHash::class.java)
             .should()
-            .beAnnotatedWith(Configuration::class.java)
-            .because("Classes named *Configuration must be annotated with @Configuration")
+            .implement(Serializable::class.java)
+            .because(
+                "Redis-persisted entities must implement Serializable " +
+                    "for correct Java serialization by Spring Data Redis",
+            )
 
     @ArchTest
-    val publicMethodsOfMailServicesShouldBeAnnotatedWithRetry: ArchRule =
+    val `domain module should not contain @Controller beans`: ArchRule =
+        noClasses()
+            .that()
+            .resideInAPackage("io.flavien.demo.domain..")
+            .should()
+            .beAnnotatedWith(Controller::class.java)
+            .because("HTTP controllers must not reside in the domain module")
+
+    @ArchTest
+    val `domain module should not contain @RestController beans`: ArchRule =
+        noClasses()
+            .that()
+            .resideInAPackage("io.flavien.demo.domain..")
+            .should()
+            .beAnnotatedWith(RestController::class.java)
+            .because("HTTP controllers must not reside in the domain module")
+
+    @ArchTest
+    val `domain module should not depend on the api module`: ArchRule =
+        noClasses()
+            .that()
+            .resideInAPackage("io.flavien.demo.domain..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAPackage("io.flavien.demo.api..")
+            .because(
+                "The domain module must not depend on the api module — " +
+                    "the dependency direction is api → domain, never the reverse",
+            )
+
+    @ArchTest
+    val `domain module should not depend on the batch module`: ArchRule =
+        noClasses()
+            .that()
+            .resideInAPackage("io.flavien.demo.domain..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAPackage("io.flavien.demo.batch..")
+            .because("The domain module must not depend on the batch module")
+
+    @ArchTest
+    val `domain module should not depend on the servlet API`: ArchRule =
+        noClasses()
+            .that()
+            .resideInAPackage("io.flavien.demo.domain..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAPackage("jakarta.servlet..")
+            .because(
+                "The domain module must be HTTP-agnostic — " +
+                    "servlet API concepts belong in the api module",
+            )
+
+    @ArchTest
+    val `public methods of classes with a JavaMailSender field should be annotated with @Retry`: ArchRule =
         methods()
             .that()
             .areDeclaredInClassesThat(haveJavaMailSenderField)
             .and()
             .arePublic()
             .should()
-            .beAnnotatedWith(Retryable::class.java)
+            .beAnnotatedWith(Retry::class.java)
             .because(
                 "Services that send email must protect their public methods with " +
-                    "@Retryable to retry on transient SMTP failures",
+                    "@Retry (Resilience4j) to retry on transient SMTP failures",
             )
+
+    @ArchTest
+    val `only tenant infrastructure should manage the TenantContext lifecycle`: ArchRule =
+        noClasses()
+            .that()
+            .resideOutsideOfPackage("..domain.tenant..")
+            .should()
+            .callMethod(TenantContext::class.java, "set", String::class.java)
+            .orShould()
+            .callMethod(TenantContext::class.java, "clear")
+            .because(
+                "Only entry points (HTTP filter, batch runner) own the tenant lifecycle — " +
+                    "domain services must only read the current tenant",
+            )
+
+    @ArchTest
+    val `only MailService and tenant infrastructure should use JavaMailSender`: ArchRule =
+        noClasses()
+            .that()
+            .resideOutsideOfPackages("..shared.service..", "..tenant..", "..configuration..")
+            .should()
+            .dependOnClassesThat()
+            .areAssignableTo(JavaMailSender::class.java)
+            .because("Email sending is centralized in MailService, which carries the @Retryable policy")
+
+    @ArchTest
+    val `random tokens should be generated with an explicit SecureRandom`: ArchRule =
+        noClasses()
+            .should()
+            .callMethodWhere(JavaCall.Predicates.target(HasName.Predicates.name("randomString\$default")))
+            .because(
+                "RandomUtil.randomString must be called with SECURE_RANDOM — " +
+                    "relying on the default Random parameter is not cryptographically secure",
+            )
+
+    @ArchTest
+    val `only PasswordService should depend on spring-security-crypto`: ArchRule =
+        noClasses()
+            .that()
+            .doNotHaveSimpleName("PasswordService")
+            .should()
+            .dependOnClassesThat()
+            .resideInAPackage("org.springframework.security.crypto..")
+            .because("Password hashing algorithm choices must have a single owner")
+
+    @ArchTest
+    val `tenant models holding a password should mask it in toString`: ArchRule =
+        classes()
+            .that()
+            .resideInAPackage("..tenant.model..")
+            .and(haveAPasswordField)
+            .should(declareTheirOwnToString)
+            .because("Kotlin data classes leak all constructor properties in their generated toString — secrets must be masked")
+
+    @ArchTest
+    val `@Service classes should reside in a service package`: ArchRule =
+        classes()
+            .that()
+            .areAnnotatedWith("org.springframework.stereotype.Service")
+            .should()
+            .resideInAPackage("..service..")
+            .because("@Service classes must be organized in service sub-packages")
+
+    @ArchTest
+    val `service classes should be annotated with @Service`: ArchRule =
+        classes()
+            .that()
+            .haveSimpleNameEndingWith("Service")
+            .and()
+            .areNotInterfaces()
+            .should()
+            .beAnnotatedWith("org.springframework.stereotype.Service")
+            .because("All service classes must be annotated with @Service")
+
+    @ArchTest
+    val `@Service classes should have names ending with Service`: ArchRule =
+        classes()
+            .that()
+            .areAnnotatedWith("org.springframework.stereotype.Service")
+            .should()
+            .haveSimpleNameEndingWith("Service")
+            .because("@Service classes must follow the naming convention *Service")
+
+    @ArchTest
+    val `@Repository interfaces should reside in a repository package`: ArchRule =
+        classes()
+            .that()
+            .areAnnotatedWith("org.springframework.stereotype.Repository")
+            .should()
+            .resideInAPackage("..repository..")
+            .because("@Repository interfaces must be organized in repository sub-packages")
+
+    @ArchTest
+    val `repository classes should be interfaces`: ArchRule =
+        classes()
+            .that()
+            .haveSimpleNameEndingWith("Repository")
+            .should()
+            .beInterfaces()
+            .because("Repositories in Spring Data are interfaces delegated to runtime-generated proxies")
+
+    @ArchTest
+    val `repository interfaces should be annotated with @Repository`: ArchRule =
+        classes()
+            .that()
+            .haveSimpleNameEndingWith("Repository")
+            .should()
+            .beAnnotatedWith("org.springframework.stereotype.Repository")
+            .because("All repository interfaces must be annotated with @Repository")
+
+    @ArchTest
+    val `@Repository interfaces should have names ending with Repository`: ArchRule =
+        classes()
+            .that()
+            .areAnnotatedWith("org.springframework.stereotype.Repository")
+            .should()
+            .haveSimpleNameEndingWith("Repository")
+            .because("@Repository interfaces must follow the naming convention *Repository")
+
+    @ArchTest
+    val `non-abstract classes in exception packages should be annotated with @ResponseStatus`: ArchRule =
+        classes()
+            .that()
+            .resideInAPackage("..exception..")
+            .and()
+            .areNotInterfaces()
+            .and()
+            .doNotHaveModifier(JavaModifier.ABSTRACT)
+            .should()
+            .beAnnotatedWith("org.springframework.web.bind.annotation.ResponseStatus")
+            .because(
+                "Domain exceptions must be annotated with @ResponseStatus " +
+                    "to declare the HTTP status code returned when the exception propagates",
+            )
+
+    @ArchTest
+    val `abstract classes in exception packages should not be annotated with @ResponseStatus`: ArchRule =
+        noClasses()
+            .that()
+            .resideInAPackage("..exception..")
+            .and()
+            .haveModifier(JavaModifier.ABSTRACT)
+            .should()
+            .beAnnotatedWith("org.springframework.web.bind.annotation.ResponseStatus")
+            .because(
+                "Abstract exception base classes must not carry @ResponseStatus — " +
+                    "only concrete leaf exceptions declare an HTTP status",
+            )
+
+    @ArchTest
+    val `domain exceptions should extend FioException`: ArchRule =
+        classes()
+            .that()
+            .resideInAPackage("..exception..")
+            .and()
+            .areNotInterfaces()
+            .should()
+            .beAssignableTo(FioException::class.java)
+            .because(
+                "All domain exceptions must extend FioException " +
+                    "to ensure consistent error handling and wrapping semantics",
+            ).allowEmptyShould(true)
 }

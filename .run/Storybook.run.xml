@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Storybook" type="js.build_tools.npm">
-    <package-json value="$PROJECT_DIR$/component-library/src/main/typescript/package.json" />
+    <package-json value="$PROJECT_DIR$/libraries/library-vue3-components/src/main/typescript/package.json" />
     <command value="run" />
     <scripts>
       <script value="dev" />

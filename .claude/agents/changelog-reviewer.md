@@ -1,7 +1,7 @@
 ---
 name: changelog-reviewer
 description: Use this agent to review Liquibase database migration changesets for correctness before they are applied. Invoke it after a new changeset file has been created or modified.
-model: claude-opus-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob
 ---

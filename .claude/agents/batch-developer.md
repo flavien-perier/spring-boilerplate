@@ -1,7 +1,7 @@
 ---
 name: batch-developer
 description: Use this agent to implement or modify Spring Batch code in the `batch` module. Invoke it when adding new jobs, steps, readers, processors, or writers.
-model: claude-sonnet-4-6
+model: opus
 color: cyan
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

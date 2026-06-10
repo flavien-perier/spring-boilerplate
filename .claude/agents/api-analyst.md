@@ -1,7 +1,7 @@
 ---
 name: api-analyst
 description: Use this agent to analyse the `api` module before starting development. Invoke it to map existing controllers, mappers, filters, and generated code before adding or modifying API behaviour.
-model: claude-opus-4-6
+model: opus
 color: blue
 tools: Read, Grep, Glob
 ---

@@ -13,12 +13,12 @@ class DeleteInactiveUsersItemWriter(
 ) : ItemWriter<User> {
     override fun write(chunk: Chunk<out User>) {
         chunk.forEach { user ->
-            logger.info("Deleting inactive user ${user.email} (last login: ${user.lastLogin})")
+            log.info("Deleting inactive user ${user.email} (last login: ${user.lastLogin})")
             userService.delete(user.id!!)
         }
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(DeleteInactiveUsersItemWriter::class.java)
+        private val log = LoggerFactory.getLogger(DeleteInactiveUsersItemWriter::class.java)
     }
 }

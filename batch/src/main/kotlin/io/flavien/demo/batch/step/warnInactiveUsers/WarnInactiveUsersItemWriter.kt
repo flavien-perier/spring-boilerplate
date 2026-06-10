@@ -13,12 +13,12 @@ class WarnInactiveUsersItemWriter(
 ) : ItemWriter<User> {
     override fun write(chunk: Chunk<out User>) {
         chunk.forEach { user ->
-            logger.info("Sending deletion warning to ${user.email}")
+            log.info("Sending deletion warning to ${user.email}")
             userDeletionWarningService.sendWarningEmail(user)
         }
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(WarnInactiveUsersItemWriter::class.java)
+        private val log = LoggerFactory.getLogger(WarnInactiveUsersItemWriter::class.java)
     }
 }

@@ -1,7 +1,7 @@
 ---
 name: frontend-analyst
 description: Use this agent to analyse the `frontend` module before starting development. Invoke it to map existing views, stores, routes, i18n keys, and API client usage before adding or modifying frontend features.
-model: claude-opus-4-6
+model: opus
 color: yellow
 tools: Read, Grep, Glob
 ---

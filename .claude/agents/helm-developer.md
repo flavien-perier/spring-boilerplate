@@ -1,7 +1,7 @@
 ---
 name: helm-developer
 description: Use this agent to modify the Helm chart for Kubernetes deployment. Invoke it when adding or changing Kubernetes resources, Helm values, environment variables, secrets, ConfigMaps, or infrastructure components (database, Valkey, ingress).
-model: claude-sonnet-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

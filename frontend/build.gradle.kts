@@ -104,15 +104,15 @@ val copyApiDist =
 
 val copyUtilsJs =
     tasks.register<Sync>("copyUtilsJs") {
-        dependsOn(":utils:jsBrowserProductionLibraryDistribution")
-        from("${rootProject.projectDir}/utils/build/dist/js/productionLibrary")
+        dependsOn(":libraries:library-common:jsBrowserProductionLibraryDistribution")
+        from("${rootProject.projectDir}/libraries/library-common/build/dist/js/productionLibrary")
         into("$projectDir/src/main/typescript/generated/utils")
     }
 
 val copyComponentLibrary =
     tasks.register<Sync>("copyComponentLibrary") {
-        dependsOn(":component-library:yarnBuild")
-        from("${rootProject.projectDir}/component-library/src/main/typescript/dist")
+        dependsOn(":libraries:library-vue3-components:yarnBuild")
+        from("${rootProject.projectDir}/libraries/library-vue3-components/src/main/typescript/dist")
         into("$projectDir/src/main/typescript/generated/component-library")
     }
 

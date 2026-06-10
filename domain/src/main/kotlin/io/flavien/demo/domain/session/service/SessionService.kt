@@ -10,6 +10,8 @@ import io.flavien.demo.domain.user.repository.UserRepository
 import io.flavien.demo.domain.user.service.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.security.MessageDigest
 import java.time.OffsetDateTime
 
 @Service
@@ -21,6 +23,7 @@ class SessionService(
     private val passwordService: PasswordService,
     private val otpService: OtpService,
 ) {
+    @Transactional
     fun login(
         email: String,
         password: String,
@@ -34,12 +37,12 @@ class SessionService(
         }
 
         if (!passwordService.testPassword(password, user.passwordSalt, user.password)) {
-            logger.warn("Bad password for user $email")
+            log.warn("Bad password for user $email")
             throw BadPasswordException()
         }
 
-        if (user.proofOfWork != proofOfWork) {
-            logger.warn("Bad proofOfWork for user $email")
+        if (!MessageDigest.isEqual(user.proofOfWork.toByteArray(), proofOfWork.toByteArray())) {
+            log.warn("Bad proofOfWork for user $email")
             throw BadPasswordException()
         }
 
@@ -55,6 +58,8 @@ class SessionService(
 
         user.lastLogin = OffsetDateTime.now()
         userRepository.save(user)
+        // Token writes target Redis and do not participate in the surrounding JPA transaction:
+        // on a JPA rollback these tokens stay orphaned (TTL is the safeguard that eventually evicts them).
         val refreshToken = refreshTokenService.create(user.id!!, user.role)
         val accessToken = accessTokenService.create(refreshToken)
         return Session(refreshToken, accessToken)
@@ -77,6 +82,6 @@ class SessionService(
     }
 
     companion object {
-        private var logger = LoggerFactory.getLogger(SessionService::class.java)
+        private val log = LoggerFactory.getLogger(SessionService::class.java)
     }
 }

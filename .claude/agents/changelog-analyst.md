@@ -1,7 +1,7 @@
 ---
 name: changelog-analyst
 description: Use this agent to analyse the database schema before writing migrations. Invoke it to map existing tables, columns, indexes, and constraints from the Liquibase changelog before adding or modifying schema objects.
-model: claude-opus-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob
 ---

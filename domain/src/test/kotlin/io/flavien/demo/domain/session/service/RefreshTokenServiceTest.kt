@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
@@ -37,8 +38,6 @@ class RefreshTokenServiceTest {
         val result = refreshTokenService!!.create(userId, role)
 
         // Then
-        verify(refreshTokenRepository!!).existsById(result.id)
-
         val refreshTokenCaptor = ArgumentCaptor.forClass(RefreshToken::class.java)
         verify(refreshTokenRepository!!).save(refreshTokenCaptor.capture())
         val savedRefreshToken = refreshTokenCaptor.value
@@ -199,16 +198,33 @@ class RefreshTokenServiceTest {
     fun `Should delete a refresh token according to its uuid`() {
         // Given
         val uuid = UUID.randomUUID()
-        val refreshToken = SessionTestFactory.initRefreshToken()
+        val refreshToken = SessionTestFactory.initRefreshToken(userId = 1L)
 
         `when`(refreshTokenRepository!!.getByUuid(uuid)).thenReturn(refreshToken)
 
         // When
-        refreshTokenService!!.delete(uuid)
+        refreshTokenService!!.delete(uuid, 1L)
 
         // Then
         verify(refreshTokenRepository!!).getByUuid(uuid)
         verify(refreshTokenRepository!!).delete(refreshToken)
+    }
+
+    @Test
+    fun `Should throw a BadRefreshTokenException when deleting a refresh token owned by another user`() {
+        // Given
+        val uuid = UUID.randomUUID()
+        val refreshToken = SessionTestFactory.initRefreshToken(userId = 1L)
+
+        `when`(refreshTokenRepository!!.getByUuid(uuid)).thenReturn(refreshToken)
+
+        // When / Then
+        assertThrows(BadRefreshTokenException::class.java) {
+            refreshTokenService!!.delete(uuid, 2L)
+        }
+
+        verify(refreshTokenRepository!!).getByUuid(uuid)
+        verify(refreshTokenRepository!!, never()).delete(refreshToken)
     }
 
     @Test

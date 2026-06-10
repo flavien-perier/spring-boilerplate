@@ -14,7 +14,6 @@ import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper
 import io.flavien.demo.domain.user.service.UserService
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 
@@ -27,42 +26,31 @@ class UserController(
     override fun createUser(userCreationDto: UserCreationDto): ResponseEntity<Unit> {
         userService.create(userCreationDto.email, userCreationDto.password, userCreationDto.proofOfWork)
 
-        return ResponseEntity(
-            HttpStatus.NO_CONTENT,
-        )
+        return ResponseEntity.noContent().build()
     }
 
     override fun activateUser(token: String): ResponseEntity<Unit> {
         userService.activate(token)
 
-        return ResponseEntity(
-            HttpStatus.NO_CONTENT,
-        )
+        return ResponseEntity.noContent().build()
     }
 
     override fun forgotPassword(forgotPasswordDto: ForgotPasswordDto): ResponseEntity<Unit> {
         userService.sendForgotPassword(forgotPasswordDto.email)
 
-        return ResponseEntity(
-            HttpStatus.NO_CONTENT,
-        )
+        return ResponseEntity.noContent().build()
     }
 
     override fun updatePassword(changePasswordDto: ChangePasswordDto): ResponseEntity<Unit> {
         userService.updatePassword(changePasswordDto.password, changePasswordDto.proofOfWork, changePasswordDto.token)
 
-        return ResponseEntity(
-            HttpStatus.NO_CONTENT,
-        )
+        return ResponseEntity.noContent().build()
     }
 
     override fun getUser(userMail: String): ResponseEntity<UserDto> {
         val user = userService.get(userMail)
 
-        return ResponseEntity(
-            userMapper.toUserDto(user),
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(userMapper.toUserDto(user))
     }
 
     override fun updateUser(
@@ -71,54 +59,45 @@ class UserController(
     ): ResponseEntity<UserDto> {
         val user = userService.update(userMail, userUpdateMapper.fromUserUpdateAdminDto(userUpdateAdminDto))
 
-        return ResponseEntity(
-            userMapper.toUserDto(user),
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(userMapper.toUserDto(user))
     }
 
     override fun deleteUser(userMail: String): ResponseEntity<Unit> {
         userService.delete(userMail)
 
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        return ResponseEntity.noContent().build()
     }
 
     override fun getCurrentUser(): ResponseEntity<UserDto> {
         val user = userService.get(ContextUtil.userId)
 
-        return ResponseEntity(
-            userMapper.toUserDto(user),
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(userMapper.toUserDto(user))
     }
 
     override fun updateCurrentUser(userUpdateDto: UserUpdateDto): ResponseEntity<UserDto> {
         val user = userService.update(ContextUtil.userId, userUpdateMapper.fromUserUpdateDto(userUpdateDto))
 
-        return ResponseEntity(
-            userMapper.toUserDto(user),
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(userMapper.toUserDto(user))
     }
 
     override fun deleteCurrentUser(): ResponseEntity<Unit> {
         userService.delete(ContextUtil.userId)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        return ResponseEntity.noContent().build()
     }
 
     override fun setupCurrentUserOtp(): ResponseEntity<OtpSetupDto> {
         val uri = userService.setupOtp(ContextUtil.userId)
-        return ResponseEntity(OtpSetupDto(uri), HttpStatus.OK)
+        return ResponseEntity.ok(OtpSetupDto(uri))
     }
 
     override fun confirmCurrentUserOtp(otpConfirmDto: OtpConfirmDto): ResponseEntity<Unit> {
         userService.confirmOtp(ContextUtil.userId, otpConfirmDto.otp)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        return ResponseEntity.noContent().build()
     }
 
     override fun disableCurrentUserOtp(): ResponseEntity<Unit> {
         userService.disableOtp(ContextUtil.userId)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        return ResponseEntity.noContent().build()
     }
 
     override fun findUsers(
@@ -137,9 +116,6 @@ class UserController(
                 users.content.map { userMapper.toUserDto(it) },
             )
 
-        return ResponseEntity(
-            userPageDto,
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(userPageDto)
     }
 }

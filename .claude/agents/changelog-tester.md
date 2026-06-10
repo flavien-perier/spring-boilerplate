@@ -1,7 +1,7 @@
 ---
 name: changelog-tester
 description: Use this agent to verify Liquibase database migrations. Invoke it after creating or modifying changesets to confirm they apply cleanly and produce the expected schema.
-model: claude-sonnet-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

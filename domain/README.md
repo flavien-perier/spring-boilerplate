@@ -13,7 +13,7 @@ Core business logic module. Contains everything that is not HTTP-specific.
 ## Key facts
 
 - Package root: `io.flavien.demo.domain`
-- Depends on: `utils`
+- Depends on: `libraries:library-common`
 - Required by: `api`
 - No HTTP/servlet concepts allowed in this module
 - Schema changes always go through Liquibase; never alter the DB schema manually

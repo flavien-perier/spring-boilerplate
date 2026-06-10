@@ -27,7 +27,13 @@ export const useAdminUsersStore = defineStore("admin-users", {
     deleteUser(email: string) {
       userApi
         .deleteUser(email)
-        .then(this.findUsers)
+        .then(() => {
+          applicationStore.sendNotification(
+            "info",
+            "notification.user-deleted"
+          );
+          this.findUsers();
+        })
         .catch(applicationStore.axiosException);
     },
   },

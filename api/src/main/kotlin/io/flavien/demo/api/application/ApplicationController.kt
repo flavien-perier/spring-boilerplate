@@ -3,8 +3,7 @@ package io.flavien.demo.api.application
 import io.flavien.demo.api.application.mapper.ConfigurationMapper
 import io.flavien.demo.api.generated.api.ApplicationApi
 import io.flavien.demo.api.generated.dto.ConfigurationDto
-import io.flavien.demo.domain.config.ApplicationProperties
-import org.springframework.http.HttpStatus
+import io.flavien.demo.domain.configuration.properties.ApplicationProperties
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 
@@ -14,8 +13,5 @@ class ApplicationController(
     private val applicationProperties: ApplicationProperties,
 ) : ApplicationApi {
     override fun getConf(): ResponseEntity<ConfigurationDto> =
-        ResponseEntity(
-            configurationMapper.toConfigurationDto(applicationProperties),
-            HttpStatus.OK,
-        )
+        ResponseEntity.ok(configurationMapper.toConfigurationDto(applicationProperties))
 }

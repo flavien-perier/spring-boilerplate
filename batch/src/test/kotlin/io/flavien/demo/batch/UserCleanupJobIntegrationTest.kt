@@ -1,8 +1,10 @@
 package io.flavien.demo.batch
 
+import io.flavien.demo.domain.tenant.TenantContext
 import io.flavien.demo.domain.user.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.batch.core.BatchStatus
 import org.springframework.batch.core.job.Job
@@ -10,7 +12,6 @@ import org.springframework.batch.core.job.parameters.JobParametersBuilder
 import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -20,6 +21,8 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
+import java.io.File
+import java.nio.file.Files
 import java.time.OffsetDateTime
 
 @SpringBootTest
@@ -27,7 +30,6 @@ import java.time.OffsetDateTime
 class UserCleanupJobIntegrationTest {
     companion object {
         @Container
-        @ServiceConnection
         @JvmField
         val postgres: PostgreSQLContainer<Nothing> = PostgreSQLContainer("postgres:15-alpine")
 
@@ -40,17 +42,30 @@ class UserCleanupJobIntegrationTest {
         @JvmStatic
         @DynamicPropertySource
         fun configureTestProperties(registry: DynamicPropertyRegistry) {
-            registry.add("VALKEY_HOST", valkey::getHost)
-            registry.add("VALKEY_PORT") { valkey.getMappedPort(6379).toString() }
-            registry.add("VALKEY_PASSWORD") { "" }
-            registry.add("SMTP_HOST") { "localhost" }
-            registry.add("SMTP_PORT") { "25" }
-            registry.add("SMTP_USERNAME") { "" }
-            registry.add("SMTP_PASSWORD") { "" }
-            registry.add("SMTP_AUTH") { "no" }
-            registry.add("SMTP_STARTTLS") { "no" }
-            registry.add("MAIL_ACCOUNT_CREATOR") { "no-reply@test.io" }
-            registry.add("MAIL_DOMAIN_LINKS") { "http://localhost" }
+            val tenantDir = Files.createTempDirectory("batch-tenants").toFile()
+            val tenantYaml =
+                """
+                tenantId: test-tenant
+                db:
+                  jdbcUrl: ${postgres.jdbcUrl}
+                  username: ${postgres.username}
+                  password: ${postgres.password}
+                  schema: public
+                redis:
+                  host: ${valkey.host}
+                  port: ${valkey.getMappedPort(6379)}
+                smtp:
+                  host: localhost
+                  port: 25
+                  username: ""
+                  password: ""
+                  auth: false
+                  starttls: false
+                  accountCreator: no-reply@test.io
+                  domainLinks: http://localhost
+                """.trimIndent()
+            File(tenantDir, "test-tenant.yml").writeText(tenantYaml)
+            registry.add("flavien-io.tenants.directory") { tenantDir.absolutePath }
         }
     }
 
@@ -66,9 +81,15 @@ class UserCleanupJobIntegrationTest {
     @Autowired
     lateinit var userRepository: UserRepository
 
+    @BeforeEach
+    fun setupTenant() {
+        TenantContext.set("test-tenant")
+    }
+
     @AfterEach
     fun cleanup() {
         userRepository.deleteAll()
+        TenantContext.clear()
     }
 
     @Test

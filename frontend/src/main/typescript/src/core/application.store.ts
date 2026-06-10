@@ -124,7 +124,7 @@ export const useApplicationStore = defineStore("application", {
       const status: number = exception.response.status;
       const detail: string = exception.response.data?.detail || "";
 
-      if (status === 401 || status === 403) {
+      if (status === 401) {
         if (detail === "Change password failed") {
           this.sendNotification(
             "danger",
@@ -136,11 +136,18 @@ export const useApplicationStore = defineStore("application", {
         return;
       }
 
+      if (status === 403) {
+        this.sendNotification("danger", "notification.error.forbidden");
+        return;
+      }
+
       const key = (() => {
         if (status === 400 || status === 422)
           return "notification.error.bad-request";
         if (status === 404) return "notification.error.not-found";
         if (status === 409) return "notification.error.conflict";
+        if (status === 429 || status === 503)
+          return "notification.error.service-unavailable";
         if (status >= 500) return "notification.error.server";
         return "notification.error.unknown";
       })();
@@ -186,7 +193,6 @@ export const useApplicationStore = defineStore("application", {
         })
         .catch((exception) => {
           this.axiosException(exception);
-          this.disconnected();
         });
     },
   },

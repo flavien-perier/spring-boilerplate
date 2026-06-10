@@ -1,7 +1,7 @@
 ---
 name: helm-tester
 description: Use this agent to validate the Helm chart after changes. Invoke it to lint templates and verify rendered output is correct before deployment.
-model: claude-sonnet-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

@@ -10,7 +10,6 @@ import java.time.OffsetDateTime
 @RedisHash("AccessToken", timeToLive = 900)
 data class AccessToken(
     @Id
-    @Indexed
     val id: String,
     @Indexed
     val userId: Long,

@@ -1,7 +1,7 @@
 ---
 name: openapi-analyst
 description: Use this agent to analyse the OpenAPI specification before starting development. Invoke it to map existing endpoints, schemas, tags, and security requirements before adding or modifying the API contract.
-model: claude-opus-4-6
+model: opus
 color: orange
 tools: Read, Grep, Glob
 ---

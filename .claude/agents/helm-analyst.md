@@ -1,7 +1,7 @@
 ---
 name: helm-analyst
 description: Use this agent to analyse the Helm chart before starting infrastructure changes. Invoke it to map existing templates, values, environment variables, and resource configuration before modifying the Kubernetes deployment.
-model: claude-opus-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob
 ---

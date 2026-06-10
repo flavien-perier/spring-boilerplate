@@ -1,7 +1,7 @@
 ---
 name: domain-tester
 description: Use this agent to write or fix tests for the `domain` module. Invoke it when creating unit tests for services, repositories, or domain utilities.
-model: claude-sonnet-4-6
+model: opus
 color: blue
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

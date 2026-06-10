@@ -13,7 +13,7 @@ object ContextUtil {
     var userId: Long
         get() {
             val request = getRequest() ?: throw ContextException()
-            return request.getAttribute(KEY_USER_ID) as Long
+            return request.getAttribute(KEY_USER_ID) as? Long ?: throw ContextException()
         }
         set(value) {
             val request = getRequest() ?: throw ContextException()
@@ -23,7 +23,7 @@ object ContextUtil {
     var userRole: UserRole
         get() {
             val request = getRequest() ?: throw ContextException()
-            return request.getAttribute(KEY_USER_ROLE) as UserRole
+            return request.getAttribute(KEY_USER_ROLE) as? UserRole ?: throw ContextException()
         }
         set(value) {
             val request = getRequest() ?: throw ContextException()
@@ -33,7 +33,7 @@ object ContextUtil {
     var refreshTokenId: String
         get() {
             val request = getRequest() ?: throw ContextException()
-            return request.getAttribute(KEY_SESSION_ID) as String
+            return request.getAttribute(KEY_SESSION_ID) as? String ?: throw ContextException()
         }
         set(value) {
             val request = getRequest() ?: throw ContextException()

@@ -3,7 +3,6 @@ package io.flavien.demo.domain.session.service
 import io.flavien.demo.domain.comparator.OffsetDateTimeTestComparator
 import io.flavien.demo.domain.session.SessionTestFactory
 import io.flavien.demo.domain.session.entity.AccessToken
-import io.flavien.demo.domain.session.exception.BadAccessTokenCreationException
 import io.flavien.demo.domain.session.exception.BadAccessTokenException
 import io.flavien.demo.domain.session.repository.AccessTokenRepository
 import io.flavien.demo.domain.user.model.UserRole
@@ -21,11 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import java.time.OffsetDateTime
 import java.util.Optional
 
-// NOTE – @Retryable annotations on AccessTokenService work via Spring AOP proxies
-// and therefore have NO effect in plain Mockito unit tests where the service is instantiated
-// directly (no proxy wraps the instance). The retry integration is validated by E2E /
-// integration tests that spin up a full Spring context.
-
 @ExtendWith(MockitoExtension::class)
 class AccessTokenServiceTest {
     @InjectMocks
@@ -41,14 +35,6 @@ class AccessTokenServiceTest {
     fun `Should create an access token`() {
         // Given
         val refreshToken = SessionTestFactory.initRefreshToken()
-
-        Mockito
-            .`when`(accessTokenRepository!!.existsById(anyString()))
-            .thenReturn(true, false)
-
-        Mockito
-            .`when`(refreshTokenService!!.exists(refreshToken.id))
-            .thenReturn(true)
 
         // When
         val accessToken = accessTokenService!!.create(refreshToken)
@@ -69,24 +55,6 @@ class AccessTokenServiceTest {
             )
 
         Mockito.verify(accessTokenRepository!!).save(any(AccessToken::class.java))
-    }
-
-    @Test
-    fun `Should fail when creating an access token (Refresh token is invalid)`() {
-        // Given
-        val refreshToken = SessionTestFactory.initRefreshToken()
-
-        Mockito
-            .`when`(refreshTokenService!!.exists(refreshToken.id))
-            .thenReturn(false)
-
-        // When/Then
-        assertThrows(BadAccessTokenCreationException::class.java) {
-            accessTokenService!!.create(refreshToken)
-        }
-
-        Mockito.verify(refreshTokenService!!).exists(refreshToken.id)
-        Mockito.verify(accessTokenRepository!!, Mockito.never()).save(any())
     }
 
     @Test

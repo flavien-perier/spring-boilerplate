@@ -10,10 +10,11 @@ import io.flavien.demo.api.generated.dto.SessionWebDto
 import io.flavien.demo.api.session.mapper.RefreshTokenMapper
 import io.flavien.demo.api.session.mapper.SessionMapper
 import io.flavien.demo.api.session.util.ContextUtil
+import io.flavien.demo.domain.session.exception.BadRefreshTokenException
+import io.flavien.demo.domain.session.model.REFRESH_TOKEN_TTL_SECONDS
 import io.flavien.demo.domain.session.service.RefreshTokenService
 import io.flavien.demo.domain.session.service.SessionService
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -29,16 +30,13 @@ class SessionController(
 ) : SessionApi {
     override fun login(loginDto: LoginDto): ResponseEntity<SessionDto> {
         val session = sessionService.login(loginDto.email, loginDto.password, loginDto.proofOfWork, loginDto.otp)
-        return ResponseEntity(
-            sessionMapper.toSessionDto(session),
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(sessionMapper.toSessionDto(session))
     }
 
     override fun loginWeb(loginDto: LoginDto): ResponseEntity<SessionWebDto> {
         val session = sessionService.login(loginDto.email, loginDto.password, loginDto.proofOfWork, loginDto.otp)
 
-        val refreshToken = session.refreshToken?.id ?: ""
+        val refreshToken = checkNotNull(session.refreshToken) { "Login must return a refresh token" }.id
 
         val refreshTokenCookie =
             ResponseCookie
@@ -46,7 +44,7 @@ class SessionController(
                 .httpOnly(true)
                 .secure(true)
                 .path("/api/session/renew")
-                .maxAge(Duration.ofDays(REFRESH_TOKEN_DURATION_DAYS))
+                .maxAge(Duration.ofSeconds(REFRESH_TOKEN_TTL_SECONDS))
                 .sameSite("Strict")
                 .build()
 
@@ -54,9 +52,9 @@ class SessionController(
             ResponseCookie
                 .from(EMAIL_COOKIE_NAME, loginDto.email)
                 .httpOnly(false)
-                .secure(false)
+                .secure(true)
                 .path("/")
-                .maxAge(Duration.ofDays(REFRESH_TOKEN_DURATION_DAYS))
+                .maxAge(Duration.ofSeconds(REFRESH_TOKEN_TTL_SECONDS))
                 .sameSite("Strict")
                 .build()
 
@@ -75,30 +73,36 @@ class SessionController(
                 .from(REFRESH_TOKEN_COOKIE_NAME, "")
                 .httpOnly(true)
                 .secure(true)
+                .path("/api/session/renew")
+                .sameSite("Strict")
+                .maxAge(0)
+                .build()
+
+        val clearedEmailCookie =
+            ResponseCookie
+                .from(EMAIL_COOKIE_NAME, "")
+                .httpOnly(false)
+                .secure(true)
                 .path("/")
+                .sameSite("Strict")
                 .maxAge(0)
                 .build()
 
         return ResponseEntity
             .noContent()
             .header(HttpHeaders.SET_COOKIE, clearedRefreshCookie.toString())
+            .header(HttpHeaders.SET_COOKIE, clearedEmailCookie.toString())
             .build()
     }
 
     override fun findSessions(): ResponseEntity<List<RefreshTokenPropertiesDto>> {
         val refreshTokens = refreshTokenService.findByUserId(ContextUtil.userId)
-        return ResponseEntity(
-            refreshTokenMapper.toRefreshTokenPropertiesDtoList(refreshTokens),
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(refreshTokenMapper.toRefreshTokenPropertiesDtoList(refreshTokens))
     }
 
     override fun renewSession(sessionRenewalDto: SessionRenewalDto): ResponseEntity<SessionDto> {
         val session = sessionService.renew(sessionRenewalDto.email, sessionRenewalDto.refreshToken)
-        return ResponseEntity(
-            sessionMapper.toSessionDto(session),
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(sessionMapper.toSessionDto(session))
     }
 
     override fun renewSessionWeb(
@@ -106,20 +110,17 @@ class SessionController(
         sessionRenewalWebDto: SessionRenewalWebDto,
     ): ResponseEntity<SessionWebDto> {
         val session = sessionService.renew(sessionRenewalWebDto.email, refreshToken)
-        return ResponseEntity(
-            sessionMapper.toSessionWebDto(session),
-            HttpStatus.OK,
-        )
+        return ResponseEntity.ok(sessionMapper.toSessionWebDto(session))
     }
 
     override fun deleteSession(sessionUuid: String): ResponseEntity<Unit> {
-        refreshTokenService.delete(UUID.fromString(sessionUuid))
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        val uuid = runCatching { UUID.fromString(sessionUuid) }.getOrElse { throw BadRefreshTokenException() }
+        refreshTokenService.delete(uuid, ContextUtil.userId)
+        return ResponseEntity.noContent().build()
     }
 
     companion object {
         private const val EMAIL_COOKIE_NAME = "email"
         private const val REFRESH_TOKEN_COOKIE_NAME = "refresh_token"
-        private const val REFRESH_TOKEN_DURATION_DAYS = 30L
     }
 }

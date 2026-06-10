@@ -1,16 +1,16 @@
 package io.flavien.demo.domain.user.service
 
-import io.flavien.demo.domain.config.MailProperties
+import io.flavien.demo.domain.shared.service.MailService
+import io.flavien.demo.domain.shared.util.SECURE_RANDOM
+import io.flavien.demo.domain.tenant.TenantContext
+import io.flavien.demo.domain.tenant.repository.TenantRegistry
 import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.entity.UserActivation
 import io.flavien.demo.domain.user.exception.ActivationFailedException
 import io.flavien.demo.domain.user.repository.UserActivationRepository
-import io.flavien.demo.utils.RandomUtil
+import io.flavien.demo.library.common.RandomUtil
 import org.slf4j.LoggerFactory
 import org.springframework.mail.SimpleMailMessage
-import org.springframework.mail.javamail.JavaMailSender
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
@@ -20,33 +20,30 @@ import kotlin.jvm.optionals.getOrNull
 class UserActivationService(
     private val userActivationRepository: UserActivationRepository,
     private val templateEngine: TemplateEngine,
-    private val emailSender: JavaMailSender,
-    private val mailProperties: MailProperties,
+    private val mailService: MailService,
+    private val registry: TenantRegistry,
 ) {
-    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun sendActivationToken(user: User) {
-        var activationToken = RandomUtil.randomString(64)
-        while (userActivationRepository.existsById(activationToken)) {
-            activationToken = RandomUtil.randomString(64)
-        }
+        val activationToken = RandomUtil.randomString(64, SECURE_RANDOM)
 
         val userActivation = UserActivation(activationToken, user.id!!)
         userActivationRepository.save(userActivation)
 
+        val smtp = registry.get(TenantContext.require()).smtp
+
         val context = Context()
-        context.setVariable("domainLinks", mailProperties.domainLinks)
+        context.setVariable("domainLinks", smtp.domainLinks)
         context.setVariable("activationToken", activationToken)
 
         val message = SimpleMailMessage()
-        message.from = mailProperties.accountCreator
+        message.from = smtp.accountCreator
         message.setTo(user.email)
         message.subject = "Activation code"
         message.text = templateEngine.process("user-activation", context)
-        emailSender.send(message)
-        logger.info("Sent activation email to ${user.email}")
+        mailService.send(message)
+        log.info("Sent activation email to ${user.email}")
     }
 
-    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun validate(token: String): UserActivation {
         val userActivation = userActivationRepository.findById(token).getOrNull() ?: throw ActivationFailedException()
 
@@ -55,12 +52,11 @@ class UserActivationService(
         return userActivation
     }
 
-    @Retryable(include = [org.springframework.mail.MailException::class], maxAttempts = 3, backoff = Backoff(delay = 500))
     fun deleteByUserId(userId: Long) {
         userActivationRepository.deleteByUserId(userId)
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(UserActivationService::class.java)
+        private val log = LoggerFactory.getLogger(UserActivationService::class.java)
     }
 }

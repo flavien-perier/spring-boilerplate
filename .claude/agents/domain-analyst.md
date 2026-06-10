@@ -1,7 +1,7 @@
 ---
 name: domain-analyst
 description: Use this agent to analyse the `domain` module before starting development. Invoke it to map existing entities, services, repositories, and exceptions before adding or modifying business logic.
-model: claude-opus-4-6
+model: opus
 color: blue
 tools: Read, Grep, Glob
 ---

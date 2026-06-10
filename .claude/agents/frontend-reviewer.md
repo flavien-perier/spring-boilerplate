@@ -1,7 +1,7 @@
 ---
 name: frontend-reviewer
 description: Use this agent to review the `frontend` module for correctness, style, and architecture compliance. Invoke it after making changes to Vue components, Pinia stores, router entries, or TypeScript utilities.
-model: claude-opus-4-6
+model: opus
 color: yellow
 tools: Read, Grep, Glob
 ---
@@ -18,7 +18,6 @@ frontend/src/main/typescript/src/
 │   ├── {feature}.view.vue       Main view (page-level component)
 │   ├── {feature}.store.ts       Pinia store
 │   └── {feature}.router.ts      Route definition
-├── component-library/           Shared reusable components
 ├── core/
 │   ├── application.store.ts     Global app state
 │   ├── util/                    Shared utilities (api-util, cookie-util, etc.)

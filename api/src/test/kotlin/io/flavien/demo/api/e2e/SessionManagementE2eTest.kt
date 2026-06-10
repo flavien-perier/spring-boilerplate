@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.http.MediaType
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -23,6 +22,8 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 import reactor.core.publisher.Mono
+import java.io.File
+import java.nio.file.Files
 
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -42,6 +43,7 @@ class SessionManagementE2eTest {
             webTestClient
                 .get()
                 .uri("/api/conf")
+                .header("X-Tenant-Id", "test-tenant")
                 .exchange()
                 .returnResult(Void::class.java)
         csrfToken = result.responseCookies.getFirst("XSRF-TOKEN")?.value
@@ -55,6 +57,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/users")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
@@ -80,7 +83,8 @@ class SessionManagementE2eTest {
                     .path("/api/users/activate")
                     .queryParam("token", activationToken)
                     .build()
-            }.contentType(MediaType.APPLICATION_JSON)
+            }.header("X-Tenant-Id", "test-tenant")
+            .contentType(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
@@ -95,6 +99,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/users")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
@@ -120,7 +125,8 @@ class SessionManagementE2eTest {
                     .path("/api/users/activate")
                     .queryParam("token", activationToken)
                     .build()
-            }.contentType(MediaType.APPLICATION_JSON)
+            }.header("X-Tenant-Id", "test-tenant")
+            .contentType(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
             .header("X-XSRF-TOKEN", csrfToken!!)
             .exchange()
@@ -135,6 +141,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/session/login")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
@@ -159,6 +166,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/session/login")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
@@ -183,6 +191,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/session/login")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
@@ -207,6 +216,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/session/login")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
@@ -235,6 +245,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/session/login")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
@@ -263,6 +274,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/session/login")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
@@ -290,6 +302,7 @@ class SessionManagementE2eTest {
         webTestClient
             .get()
             .uri("/api/sessions")
+            .header("X-Tenant-Id", "test-tenant")
             .accept(MediaType.APPLICATION_JSON)
             .header("Authorization", "Bearer $accessTokenSessionUser11")
             .exchange()
@@ -312,6 +325,7 @@ class SessionManagementE2eTest {
         webTestClient
             .post()
             .uri("/api/session/renew")
+            .header("X-Tenant-Id", "test-tenant")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .cookie("XSRF-TOKEN", csrfToken!!)
@@ -357,31 +371,9 @@ class SessionManagementE2eTest {
 
         private val valkeyPassword = "password"
 
-        @JvmStatic
-        @DynamicPropertySource
-        fun registerProperties(registry: DynamicPropertyRegistry) {
-            registry.add("spring.data.redis.host", valkeyContainer::getHost)
-            registry.add("spring.data.redis.port") {
-                valkeyContainer.getMappedPort(6379).toString()
-            }
-            registry.add("spring.data.redis.password") {
-                valkeyPassword
-            }
-            registry.add("spring.mail.port") {
-                smtp.server.port
-            }
-        }
-
-        @JvmStatic
-        @AfterAll
-        fun stopSmtp() {
-            smtp.stop()
-        }
-
         val smtp = MailServerUtil.create()
 
         @Container
-        @ServiceConnection
         val postgresContainer = PostgreSQLContainer("postgres:15-alpine")
 
         @Container
@@ -389,5 +381,42 @@ class SessionManagementE2eTest {
             GenericContainer(DockerImageName.parse("valkey/valkey:7-alpine"))
                 .withCommand("valkey-server --requirepass $valkeyPassword")
                 .withExposedPorts(6379)
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun registerProperties(registry: DynamicPropertyRegistry) {
+            val tenantDir = Files.createTempDirectory("e2e-tenants").toFile()
+            val tenantYaml =
+                """
+                tenantId: test-tenant
+                db:
+                  jdbcUrl: ${postgresContainer.jdbcUrl}
+                  username: ${postgresContainer.username}
+                  password: ${postgresContainer.password}
+                  schema: public
+                redis:
+                  host: ${valkeyContainer.host}
+                  port: ${valkeyContainer.getMappedPort(6379)}
+                  password: $valkeyPassword
+                  database: 0
+                smtp:
+                  host: localhost
+                  port: ${smtp.server.port}
+                  username: ""
+                  password: ""
+                  auth: false
+                  starttls: false
+                  accountCreator: no-reply@test.io
+                  domainLinks: http://localhost
+                """.trimIndent()
+            File(tenantDir, "test-tenant.yml").writeText(tenantYaml)
+            registry.add("flavien-io.tenants.directory") { tenantDir.absolutePath }
+        }
+
+        @JvmStatic
+        @AfterAll
+        fun stopSmtp() {
+            smtp.stop()
+        }
     }
 }

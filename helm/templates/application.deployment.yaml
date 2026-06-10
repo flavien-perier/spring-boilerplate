@@ -46,89 +46,26 @@ spec:
               done
               echo "Valkey is ready!"
       {{- end }}
+      {{- if .Values.tenants.list }}
+      volumes:
+        - name: tenants-volume
+          secret:
+            secretName: tenants-config
+      {{- end }}
       containers:
         - name: application
           image: "{{ .Values.registry }}/{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: Always
 
+          {{- if .Values.tenants.list }}
+          volumeMounts:
+            - name: tenants-volume
+              mountPath: {{ .Values.tenants.mountPath }}
+              readOnly: true
+          {{- end }}
           env:
-            # Database configuration
-            - name: POSTGRES_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: POSTGRES_URL
-            - name: POSTGRES_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: application-secret
-                  key: DATABASE_PASSWORD
-
-            # Valkey/Redis configuration
-            - name: VALKEY_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: VALKEY_HOST
-            - name: VALKEY_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: VALKEY_PORT
-            - name: VALKEY_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: application-secret
-                  key: VALKEY_PASSWORD
-
-            # SMTP configuration
-            - name: SMTP_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: SMTP_HOST
-            - name: SMTP_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: SMTP_PORT
-            - name: SMTP_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: SMTP_USERNAME
-            - name: SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: application-secret
-                  key: SMTP_PASSWORD
-            - name: SMTP_AUTH
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: SMTP_AUTH
-            - name: SMTP_STARTTLS
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: SMTP_STARTTLS
-
-            # Application custom configuration
-            - name: MAIL_ACCOUNT_CREATOR
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: MAIL_ACCOUNT_CREATOR
-            - name: MAIL_DOMAIN_LINKS
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: MAIL_DOMAIN_LINKS
+            - name: TENANTS_DIRECTORY
+              value: {{ .Values.tenants.mountPath | quote }}
 
           ports:
             - containerPort: 8080

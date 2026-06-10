@@ -15,7 +15,7 @@ dependencies {
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.spring.boot.starter.mail)
-    testImplementation(libs.archunit.junit5)
+    testImplementation(project(":libraries:library-test"))
 }
 
 tasks.withType<Test> {

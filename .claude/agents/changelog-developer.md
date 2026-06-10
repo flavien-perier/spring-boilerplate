@@ -1,7 +1,7 @@
 ---
 name: changelog-developer
 description: Use this agent to create Liquibase database migration changesets. Invoke it when adding new tables, columns, indexes, constraints, or any other schema change to the PostgreSQL database.
-model: claude-sonnet-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

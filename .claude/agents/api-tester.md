@@ -1,7 +1,7 @@
 ---
 name: api-tester
 description: Use this agent to write or fix tests for the `api` module. Invoke it when creating unit tests for controllers and mappers, or E2E tests for the full API.
-model: claude-sonnet-4-6
+model: opus
 color: blue
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

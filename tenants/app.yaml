@@ -1,0 +1,20 @@
+tenantId: app
+db:
+  jdbcUrl: jdbc:postgresql://127.0.0.1:5432/admin
+  username: admin
+  password: ${POSTGRES_PASSWORD:password}
+  schema: public
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ${VALKEY_PASSWORD:password}
+  database: 0
+smtp:
+  host: 127.0.0.1
+  port: 25
+  username: ""
+  password: ""
+  auth: false
+  starttls: false
+  accountCreator: no-reply@app.local
+  domainLinks: http://localhost:8080

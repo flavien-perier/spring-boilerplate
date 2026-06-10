@@ -33,11 +33,15 @@ export const useLoginStore = defineStore("login", {
               "notification.account-activated"
             );
           })
-          .catch(() => {
-            applicationStore.sendNotification(
-              "danger",
-              "notification.account-activation-failed"
-            );
+          .catch((error: any) => {
+            if (error.response && error.response.status < 500) {
+              applicationStore.sendNotification(
+                "danger",
+                "notification.account-activation-failed"
+              );
+            } else {
+              applicationStore.axiosException(error);
+            }
           });
       }
     },
@@ -56,7 +60,10 @@ export const useLoginStore = defineStore("login", {
         .loginWeb({
           email: this.email,
           password: this.password,
-          proofOfWork: await passwordUtil.proofOfWork(this.password, this.email),
+          proofOfWork: await passwordUtil.proofOfWork(
+            this.password,
+            this.email
+          ),
           otp: this.otpRequired ? this.otp : undefined,
         })
         .then((response) => {
@@ -65,23 +72,27 @@ export const useLoginStore = defineStore("login", {
           this.$router.push({ name: "home" });
         })
         .catch((error: any) => {
-          if (error.response?.data?.detail === "OTP required") {
+          if (!error.response) {
+            applicationStore.axiosException(error);
+            return;
+          }
+          const detail: string = error.response?.data?.detail || "";
+          if (detail === "OTP required") {
             this.otpRequired = true;
-          } else if (
-            error.response?.data?.detail === "Invalid OTP" ||
-            this.otpRequired
-          ) {
+          } else if (detail === "Invalid OTP") {
             this.otp = "";
             applicationStore.sendNotification(
               "danger",
               "notification.error.invalid-otp"
             );
-          } else {
+          } else if (error.response.status === 401) {
             this.password = "";
             applicationStore.sendNotification(
               "danger",
               "notification.authentication-failed"
             );
+          } else {
+            applicationStore.axiosException(error);
           }
         })
         .finally(() => {

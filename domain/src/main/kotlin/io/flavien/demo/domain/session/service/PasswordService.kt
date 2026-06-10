@@ -1,32 +1,30 @@
 package io.flavien.demo.domain.session.service
 
-import io.flavien.demo.domain.config.ApplicationProperties
+import io.flavien.demo.domain.configuration.properties.ApplicationProperties
 import io.flavien.demo.domain.session.exception.BadPasswordFormatException
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.stereotype.Service
-import java.math.BigInteger
-import java.security.MessageDigest
 
 @Service
 class PasswordService(
     private val applicationProperties: ApplicationProperties,
 ) {
+    private val encoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8()
+
     fun hashPassword(
         password: String,
         salt: String,
     ): String {
         testPasswordFormat(password)
 
-        val md = MessageDigest.getInstance("SHA-512")
-        val messageDigest = md.digest("$password-$salt".toByteArray())
-        val no = BigInteger(1, messageDigest)
-        return no.toString(16)
+        return checkNotNull(encoder.encode("$password-$salt")) { "Argon2 encoder returned null" }
     }
 
     fun testPassword(
         password: String,
         salt: String,
         hash: String,
-    ) = hashPassword(password, salt) == hash
+    ) = encoder.matches("$password-$salt", hash)
 
     private fun testPasswordFormat(password: String) {
         // Test password length

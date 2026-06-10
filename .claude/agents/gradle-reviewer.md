@@ -1,7 +1,7 @@
 ---
 name: gradle-reviewer
 description: Use this agent to review Gradle build configuration for correctness, style, and architecture compliance. Invoke it after modifying `build.gradle.kts`, `settings.gradle.kts`, or `gradle/libs.versions.toml`.
-model: claude-opus-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob
 ---

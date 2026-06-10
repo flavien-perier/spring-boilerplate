@@ -2,10 +2,10 @@ package io.flavien.demo.domain.session.service
 
 import io.flavien.demo.domain.session.entity.AccessToken
 import io.flavien.demo.domain.session.entity.RefreshToken
-import io.flavien.demo.domain.session.exception.BadAccessTokenCreationException
 import io.flavien.demo.domain.session.exception.BadAccessTokenException
 import io.flavien.demo.domain.session.repository.AccessTokenRepository
-import io.flavien.demo.utils.RandomUtil
+import io.flavien.demo.domain.shared.util.SECURE_RANDOM
+import io.flavien.demo.library.common.RandomUtil
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
@@ -15,14 +15,7 @@ class AccessTokenService(
     private val refreshTokenService: RefreshTokenService,
 ) {
     fun create(refreshToken: RefreshToken): AccessToken {
-        var id = RandomUtil.randomString(64)
-        while (accessTokenRepository.existsById(id)) {
-            id = RandomUtil.randomString(64)
-        }
-
-        if (!refreshTokenService.exists(refreshToken.id)) {
-            throw BadAccessTokenCreationException()
-        }
+        val id = RandomUtil.randomString(64, SECURE_RANDOM)
 
         val accessToken = AccessToken(id, refreshToken.userId, refreshToken.role, refreshToken.id, OffsetDateTime.now())
         accessTokenRepository.save(accessToken)
@@ -31,13 +24,7 @@ class AccessTokenService(
     }
 
     fun get(token: String): AccessToken {
-        val optionalAccessToken = accessTokenRepository.findById(token)
-
-        if (optionalAccessToken.isEmpty) {
-            throw BadAccessTokenException()
-        }
-
-        val accessToken = optionalAccessToken.get()
+        val accessToken = accessTokenRepository.findById(token).orElseThrow { BadAccessTokenException() }
 
         if (!refreshTokenService.exists(accessToken.refreshTokenId)) {
             delete(token)

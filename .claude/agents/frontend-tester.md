@@ -1,7 +1,7 @@
 ---
 name: frontend-tester
 description: Use this agent to write or fix tests for the `frontend` module. Invoke it when creating unit tests for Pinia stores or Vue view components.
-model: claude-sonnet-4-6
+model: opus
 color: yellow
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

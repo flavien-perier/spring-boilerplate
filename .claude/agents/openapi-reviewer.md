@@ -1,7 +1,7 @@
 ---
 name: openapi-reviewer
 description: Use this agent to review the OpenAPI specification for correctness, style, and API design compliance. Invoke it after adding or modifying endpoints, schemas, or security definitions.
-model: claude-opus-4-6
+model: opus
 color: orange
 tools: Read, Grep, Glob
 ---

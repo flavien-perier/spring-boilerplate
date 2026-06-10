@@ -17,7 +17,7 @@ interface UserRepository : JpaRepository<User, Long> {
 
     fun getUserById(userId: Long): Optional<User>
 
-    @Query("SELECT u FROM app_user u WHERE u.email LIKE %:query%")
+    @Query("SELECT u FROM app_user u WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%'))")
     fun find(
         query: String,
         page: Pageable,

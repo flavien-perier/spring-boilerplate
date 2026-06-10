@@ -39,7 +39,7 @@ dependencies {
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.spring.boot.testcontainers)
     testImplementation(libs.subethasmtp)
-    testImplementation(libs.archunit.junit5)
+    testImplementation(project(":libraries:library-test"))
 }
 
 openApiGenerate {
@@ -105,6 +105,11 @@ tasks.named("processResources") {
 
 springBoot {
     mainClass.set("io.flavien.demo.api.ApplicationKt")
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    args("--spring.profiles.active=dev")
+    workingDir = rootProject.projectDir
 }
 
 if (project.hasProperty("native")) {

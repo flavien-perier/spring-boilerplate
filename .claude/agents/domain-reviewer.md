@@ -1,7 +1,7 @@
 ---
 name: domain-reviewer
 description: Use this agent to review the `domain` module for correctness, style, and architecture compliance. Invoke it after making changes to entities, repositories, services, or domain exceptions.
-model: claude-opus-4-6
+model: opus
 color: blue
 tools: Read, Grep, Glob
 ---

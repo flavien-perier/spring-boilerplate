@@ -1,7 +1,7 @@
 ---
 name: batch-analyst
 description: Use this agent to analyse the `batch` module before starting development. Invoke it to map existing jobs, steps, readers, processors, and writers before adding or modifying batch processing logic.
-model: claude-opus-4-6
+model: opus
 color: cyan
 tools: Read, Grep, Glob
 ---

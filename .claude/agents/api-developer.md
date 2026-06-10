@@ -1,7 +1,7 @@
 ---
 name: api-developer
 description: Use this agent to implement or modify Kotlin code in the `api` module. Invoke it when adding new controllers, mappers, filters, or Spring configuration classes.
-model: claude-sonnet-4-6
+model: opus
 color: blue
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

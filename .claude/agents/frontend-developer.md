@@ -1,12 +1,12 @@
 ---
 name: frontend-developer
 description: Use this agent to implement or modify Vue 3 frontend code. Invoke it when adding views, stores, components, router entries, or any TypeScript logic in the `frontend` module.
-model: claude-sonnet-4-6
+model: opus
 color: yellow
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
-Read `frontend/README.md` and `component-library/README.md` to understand the role and structure of the modules you are working in.
+Read `frontend/README.md` and `libraries/library-vue3-components/README.md` to understand the role and structure of the modules you are working in.
 
 You are a Vue 3 / TypeScript frontend developer working on a SPA embedded in a Spring Boot multi-module Gradle project.
 
@@ -37,7 +37,6 @@ src/
 │   ├── {feature}.view.vue       Main view component
 │   ├── {feature}.store.ts       Pinia store
 │   └── {feature}.router.ts      Route definition
-├── component-library/           Shared reusable components
 ├── core/
 │   ├── application.store.ts     Global app state (auth, notifications)
 │   ├── model/                   TypeScript interfaces/types

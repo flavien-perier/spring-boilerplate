@@ -1,7 +1,7 @@
 ---
 name: domain-developer
 description: Use this agent to implement or modify Kotlin code in the `domain` module. Invoke it when adding new entities, services, repositories, exceptions, or domain models.
-model: claude-sonnet-4-6
+model: opus
 color: blue
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

@@ -1,5 +1,6 @@
-package io.flavien.demo.utils
+package io.flavien.demo.domain.util
 
+import io.flavien.demo.library.common.RandomUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource

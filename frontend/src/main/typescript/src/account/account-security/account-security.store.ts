@@ -63,6 +63,10 @@ export const useAccountSecurityStore = defineStore("account-security", {
       sessionApi
         .deleteSession(sessionUuid)
         .then(() => {
+          applicationStore.sendNotification(
+            "info",
+            "notification.session-deleted"
+          );
           this.loadSessions();
         })
         .catch(applicationStore.axiosException);
@@ -96,7 +100,7 @@ export const useAccountSecurityStore = defineStore("account-security", {
           return applicationStore.login(applicationStore.accessToken);
         })
         .catch((error: any) => {
-          if (error.response?.data?.message === "Invalid OTP") {
+          if (error.response?.data?.detail === "Invalid OTP") {
             applicationStore.sendNotification(
               "danger",
               "notification.error.invalid-otp"

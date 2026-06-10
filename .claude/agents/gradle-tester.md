@@ -1,7 +1,7 @@
 ---
 name: gradle-tester
 description: Use this agent to verify Gradle build configuration changes. Invoke it after modifying build files to confirm all modules compile and their tests pass.
-model: claude-sonnet-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

@@ -1,7 +1,7 @@
 ---
 name: batch-reviewer
 description: Use this agent to review the `batch` module for correctness, style, and architecture compliance. Invoke it after making changes to jobs, steps, readers, processors, or writers.
-model: claude-opus-4-6
+model: opus
 color: cyan
 tools: Read, Grep, Glob
 ---

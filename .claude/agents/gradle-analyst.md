@@ -1,7 +1,7 @@
 ---
 name: gradle-analyst
 description: Use this agent to analyse the Gradle build configuration before making build changes. Invoke it to map existing modules, dependencies, plugins, and version catalog entries before adding dependencies or modifying build logic.
-model: claude-opus-4-6
+model: opus
 color: red
 tools: Read, Grep, Glob
 ---

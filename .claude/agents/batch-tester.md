@@ -1,7 +1,7 @@
 ---
 name: batch-tester
 description: Use this agent to write or fix tests for the `batch` module. Invoke it when creating integration tests for Spring Batch jobs.
-model: claude-sonnet-4-6
+model: opus
 color: cyan
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

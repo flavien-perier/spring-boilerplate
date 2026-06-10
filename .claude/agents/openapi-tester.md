@@ -1,7 +1,7 @@
 ---
 name: openapi-tester
 description: Use this agent to verify an OpenAPI specification change. Invoke it after modifying the spec to confirm code generation succeeds and both the backend and frontend compile.
-model: claude-sonnet-4-6
+model: opus
 color: orange
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---

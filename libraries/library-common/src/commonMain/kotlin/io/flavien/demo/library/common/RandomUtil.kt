@@ -1,0 +1,21 @@
+@file:OptIn(ExperimentalJsExport::class)
+
+package io.flavien.demo.library.common
+
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.random.Random
+
+@JsExport
+object RandomUtil {
+    private val CHAR_POOL: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+
+    fun randomString(
+        length: Int,
+        random: Random = Random.Default,
+    ) = buildString(length) {
+        repeat(length) {
+            append(CHAR_POOL[random.nextInt(CHAR_POOL.size)])
+        }
+    }
+}

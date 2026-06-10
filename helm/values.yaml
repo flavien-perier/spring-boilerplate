@@ -11,26 +11,56 @@ batch:
 
 database:
   embedded: true
-  address: ""
-  port: ""
-  username: user
-  password: password
 
 valkey:
   embedded: true
-  address: ""
-  port: ""
-  password: password
 
-smtp:
-  address: localhost
-  port: 25
-  auth: false
-  username: ""
-  password: password
-  starttls: false
-
-mail:
-  accountCreator: "no-reply@flavien.io"
-  domainLinks: "https://flavien.io:443"
-
+tenants:
+  mountPath: /etc/tenants
+  # Default tenant used when no X-Tenant-Id header is sent.
+  # Do not commit real credentials — pass via --set or a gitignored values-secret.yaml.
+  app:
+    db:
+      jdbcUrl: "jdbc:postgresql://database:5432/admin"
+      username: "admin"
+      password: "changeme"
+      schema: "public"
+    redis:
+      host: "valkey"
+      port: 6379
+      password: "changeme"
+      database: 0
+    smtp:
+      host: "smtp"
+      port: 25
+      username: ""
+      password: ""
+      auth: false
+      starttls: false
+      accountCreator: "no-reply@app.local"
+      domainLinks: "https://app.local"
+  # Additional tenants. Do not commit real credentials.
+  # Pass via --set or a gitignored values-secret.yaml file.
+  list: []
+  # Example:
+  # list:
+  #   - tenantId: acme
+  #     db:
+  #       jdbcUrl: jdbc:postgresql://db-host:5432/acme
+  #       username: acme_user
+  #       password: changeme
+  #       schema: acme
+  #     redis:
+  #       host: redis-host
+  #       port: 6379
+  #       password: changeme
+  #       database: 0
+  #     smtp:
+  #       host: smtp.example.com
+  #       port: 587
+  #       username: user@example.com
+  #       password: changeme
+  #       auth: true
+  #       starttls: true
+  #       accountCreator: no-reply@acme.com
+  #       domainLinks: https://acme.com:443

@@ -19,27 +19,31 @@ tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
 }
 
 dependencies {
-    api(project(":utils"))
+    api(project(":libraries:library-common"))
 
     api(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.data.redis)
     implementation(libs.spring.boot.starter.mail)
-    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.web)
     implementation(libs.spring.boot.starter.thymeleaf)
     implementation(libs.spring.boot.starter.liquibase)
+
+    implementation(libs.spring.security.crypto)
+    implementation(libs.bouncycastle)
 
     implementation(libs.kotlin.reflect)
 
     runtimeOnly(libs.postgresql)
     implementation(libs.jedis)
+    implementation(libs.jackson.dataformat.yaml)
+    implementation(libs.jackson.module.kotlin)
 
-    implementation(libs.spring.boot.starter.aspectj)
-    implementation(libs.spring.retry)
+    implementation(libs.resilience4j.spring.boot)
     runtimeOnly(libs.logstash.logback.encoder)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.mockk)
     testImplementation(libs.assertj)
     testImplementation(libs.subethasmtp)
-    testImplementation(libs.archunit.junit5)
+    testImplementation(project(":libraries:library-test"))
 }
