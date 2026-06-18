@@ -73,8 +73,8 @@ const endElements = computed(() =>
     flex-direction: column;
     width: 240px;
     min-height: 100vh;
-    background-color: $secondary-darker-40;
-    color: $primary-lighter-90;
+    background-color: darker(secondary, 40);
+    color: lighter(primary, 90);
     transition: width 0.2s ease;
     flex-shrink: 0;
 
@@ -94,13 +94,13 @@ const endElements = computed(() =>
           display: flex;
           align-items: center;
           gap: $margin-xs;
-          color: $primary-lighter-90;
+          color: lighter(primary, 90);
           text-decoration: none;
           font-weight: 600;
           font-size: $font-l-size;
 
           &:hover {
-            color: $primary-lighter-70;
+            color: lighter(primary, 70);
           }
         }
 
@@ -122,7 +122,7 @@ const endElements = computed(() =>
         justify-content: center;
         background: none;
         border: none;
-        color: $primary-lighter-90;
+        color: lighter(primary, 90);
         cursor: pointer;
         padding: $margin-xs;
         border-radius: $border-radius-size;
@@ -130,7 +130,7 @@ const endElements = computed(() =>
         flex-shrink: 0;
 
         &:hover {
-          background-color: $secondary-darker-50;
+          background-color: darker(secondary, 50);
         }
       }
     }
@@ -157,15 +157,15 @@ const endElements = computed(() =>
           display: flex;
           align-items: center;
           gap: $margin-s;
-          color: $primary-lighter-90;
+          color: lighter(primary, 90);
           text-decoration: none;
           padding: $margin-s $margin;
           transition: background-color 0.2s ease, color 0.2s ease;
           white-space: nowrap;
 
           &:hover {
-            background-color: $secondary-darker-50;
-            color: $primary-lighter-70;
+            background-color: darker(secondary, 50);
+            color: lighter(primary, 70);
           }
         }
       }

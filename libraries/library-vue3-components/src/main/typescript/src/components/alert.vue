@@ -32,25 +32,25 @@ const emit = defineEmits<{ close: [] }>();
   justify-content: space-between;
   padding: $margin-s $margin;
   border-radius: $border-radius-size;
-  border: 1px solid transparent;
+  border: $border-size solid transparent;
   margin-bottom: $margin-s;
 
   &--info {
-    background-color: $info-lighter-60;
-    border-color: $info-lighter-40;
-    color: $info-darker-60;
+    background-color: lighter(info, 60);
+    border-color: lighter(info, 40);
+    color: darker(info, 60);
   }
 
   &--warning {
-    background-color: $warning-lighter-60;
-    border-color: $warning-lighter-40;
-    color: $warning-darker-60;
+    background-color: lighter(warning, 60);
+    border-color: lighter(warning, 40);
+    color: darker(warning, 60);
   }
 
   &--danger {
-    background-color: $danger-lighter-60;
-    border-color: $danger-lighter-40;
-    color: $danger-darker-60;
+    background-color: lighter(danger, 60);
+    border-color: lighter(danger, 40);
+    color: darker(danger, 60);
   }
 
   &__close {

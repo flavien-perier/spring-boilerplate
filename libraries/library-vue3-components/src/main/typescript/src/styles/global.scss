@@ -3,8 +3,8 @@
 
 html,
 body {
-  color: $secondary-darker-80;
-  background-color: $secondary-lighter-90;
+  color: darker(secondary, 80);
+  background-color: lighter(secondary, 90);
 }
 
 a {
@@ -12,7 +12,7 @@ a {
   text-decoration: none;
 
   &:hover {
-    color: $primary-darker-40;
+    color: darker(primary, 40);
   }
 }
 

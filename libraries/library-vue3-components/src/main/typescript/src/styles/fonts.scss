@@ -6,24 +6,24 @@ body {
     "Helvetica Neue", Arial, sans-serif;
   font-size: $font-size;
   line-height: 1.5;
-  color: $secondary-darker-70;
+  color: darker(secondary, 70);
 }
 
 strong {
   font-weight: 600;
-  color: $secondary-darker-80;
+  color: darker(secondary, 80);
 }
 
 .low {
   font-weight: 300;
-  color: $secondary-darker-60;
+  color: darker(secondary, 60);
   font-size: $font-s-size;
 }
 
 @mixin title-style {
   font-weight: 700;
   text-transform: uppercase;
-  color: $secondary-darker-90;
+  color: darker(secondary, 90);
   margin-bottom: $margin-s;
 }
 

@@ -4,6 +4,8 @@
   "menu.login": "Login",
   "menu.logout": "Logout",
   "menu.language": "Language",
+  "menu.theme.dark": "Dark mode",
+  "menu.theme.light": "Light mode",
   "menu.create-account": "Create account",
   "menu.account": "Account",
   "menu.information": "Information",

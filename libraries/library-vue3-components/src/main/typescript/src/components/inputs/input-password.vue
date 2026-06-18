@@ -105,7 +105,7 @@ function emitBlur(event: Event) {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: $secondary;
+  color: darker(secondary, 30);
   padding: $margin-xs;
   border-radius: $border-radius-size;
   display: flex;
@@ -113,6 +113,7 @@ function emitBlur(event: Event) {
 
   &:disabled {
     cursor: not-allowed;
+    color: darker(secondary, 10);
   }
 }
 </style>

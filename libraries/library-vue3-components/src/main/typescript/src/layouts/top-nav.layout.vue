@@ -79,8 +79,8 @@ nav {
   align-items: center;
   gap: $margin-s;
 
-  background-color: $secondary-darker-40;
-  color: $primary-lighter-90;
+  background-color: darker(secondary, 40);
+  color: lighter(primary, 90);
   padding: 0 $margin;
   height: 3.5rem;
 
@@ -93,13 +93,13 @@ nav {
       display: flex;
       align-items: center;
       gap: $margin-xs;
-      color: $primary-lighter-90;
+      color: lighter(primary, 90);
       text-decoration: none;
       font-weight: 600;
       font-size: $font-l-size;
 
       &:hover {
-        color: $primary-lighter-70;
+        color: lighter(primary, 70);
       }
     }
 
@@ -138,7 +138,7 @@ nav {
       display: flex;
       align-items: center;
       gap: $margin-xs;
-      color: $primary-lighter-90;
+      color: lighter(primary, 90);
       text-decoration: none;
       padding: $margin-xs $margin-s;
       border-radius: $border-radius-size;
@@ -146,12 +146,12 @@ nav {
       white-space: nowrap;
 
       &:hover {
-        background-color: $secondary-darker-50;
-        color: $primary-lighter-70;
+        background-color: darker(secondary, 50);
+        color: lighter(primary, 70);
       }
 
       &.router-link-active {
-        background-color: $secondary-darker-60;
+        background-color: darker(secondary, 60);
       }
     }
 
@@ -166,13 +166,13 @@ footer {
   justify-content: center;
   align-items: center;
 
-  background-color: $secondary-darker-40;
-  color: $primary-lighter-90;
+  background-color: darker(secondary, 40);
+  color: lighter(primary, 90);
   padding: $margin-s;
 
   a {
     padding-left: $margin-xs;
-    color: $primary-lighter-30;
+    color: lighter(primary, 30);
   }
 }
 </style>

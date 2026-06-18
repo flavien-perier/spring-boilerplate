@@ -35,7 +35,7 @@ import type { NavbarElement } from "@generated/component-library";
 const router = useRouter();
 const i18n = useI18n();
 const applicationStore = useApplicationStore();
-const { initOk, isAuthenticated } = storeToRefs(applicationStore);
+const {initOk, isAuthenticated, theme} = storeToRefs(applicationStore);
 
 applicationStore.init();
 
@@ -63,6 +63,12 @@ const navbarElements = computed<NavbarElement[]>(() => [
     action: () => {
       i18n.locale.value = i18n.locale.value === "fr" ? "en" : "fr";
     },
+  },
+  {
+    i18nKey: theme.value === "dark" ? "menu.theme.light" : "menu.theme.dark",
+    direction: "end",
+    faIcon: theme.value === "dark" ? "sun" : "moon",
+    action: () => applicationStore.toggleTheme(),
   },
   ...(!isAuthenticated.value
     ? [

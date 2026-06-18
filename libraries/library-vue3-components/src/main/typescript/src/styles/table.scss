@@ -1,7 +1,7 @@
 @use "variables" as *;
 @use "variables-colors" as *;
 
-$table-border: 1px solid $secondary-lighter-60;
+$table-border: 1px solid lighter(secondary, 60);
 
 .fio-table {
   width: 100%;
@@ -19,8 +19,8 @@ $table-border: 1px solid $secondary-lighter-60;
   }
 
   thead {
-    background-color: $primary-lighter-70;
-    color: $primary-darker-70;
+    background-color: lighter(primary, 70);
+    color: darker(primary, 70);
 
     th {
       border-bottom: $table-border;

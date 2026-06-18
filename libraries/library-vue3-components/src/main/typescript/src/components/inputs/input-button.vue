@@ -2,7 +2,7 @@
   <button
     type="button"
     class="fio-btn"
-    :class="variant"
+    :class="[`fio-btn--${variant}`, size && `fio-btn--${size}`]"
     :disabled="disabled || waiting"
     @click="emit('click')"
   >
@@ -27,12 +27,14 @@ const {
   disabled = false,
   waiting = false,
   variant = "submit",
+  size,
   icon,
 } = defineProps<{
   label: string;
   disabled?: boolean;
   waiting?: boolean;
   variant?: "submit" | "warning" | "danger";
+  size?: "xs" | "s" | "m" | "l" | "xl";
   icon?: string;
 }>();
 
@@ -54,37 +56,67 @@ button.fio-btn {
   cursor: pointer;
   transition: background-color 0.2s ease;
 
-  color: $secondary-lighter-90;
+  color: lighter(secondary, 90);
 
   font-size: $font-l-size;
   padding: $margin-s $margin;
+
+  &--xs {
+    width: auto;
+    font-size: $font-s-size;
+    padding: $margin-xxs $margin-xs;
+  }
+
+  &--s {
+    width: auto;
+    font-size: $font-size;
+    padding: $margin-xs $margin-s;
+  }
+
+  &--m {
+    width: auto;
+    font-size: $font-l-size;
+    padding: $margin-s $margin;
+  }
+
+  &--l {
+    width: auto;
+    font-size: $font-xl-size;
+    padding: $margin $margin-l;
+  }
+
+  &--xl {
+    width: auto;
+    font-size: $font-xxl-size;
+    padding: $margin-l $margin-xl;
+  }
 
   &:disabled {
     opacity: 0.65;
     cursor: not-allowed;
   }
 
-  &.submit {
+  &--submit {
     background-color: $primary;
 
     &:hover:not(:disabled) {
-      background-color: $primary-darker-20;
+      background-color: darker(primary, 20);
     }
 
     &:active:not(:disabled) {
-      background-color: $primary-darker-40;
+      background-color: darker(primary, 40);
     }
   }
 
-  &.danger {
+  &--danger {
     background-color: $danger;
 
     &:hover:not(:disabled) {
-      background-color: $danger-darker-20;
+      background-color: darker(danger, 20);
     }
 
     &:active:not(:disabled) {
-      background-color: $danger-darker-40;
+      background-color: darker(danger, 40);
     }
   }
 }

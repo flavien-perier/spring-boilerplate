@@ -13,8 +13,8 @@ $margin-l: 1.25rem;
 $margin-xl: 1.5rem;
 $margin-xxl: 1.75rem;
 
-$shadow: $primary-darker-90 0 5px 10px, $primary-darker-90 0 5px 10px;
-$border-size: 1px;
+$shadow: darker(primary, 90) 0 5px 10px, darker(primary, 90) 0 5px 10px;
+$border-size: 2px;
 $border-radius-size: 4px;
 
 $font-s-size: 0.75rem;

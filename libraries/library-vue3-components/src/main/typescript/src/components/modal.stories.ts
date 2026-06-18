@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/vue3";
-import { ref } from "vue";
+import type {Meta, StoryObj} from "@storybook/vue3";
+import {ref} from "vue";
 import FioModal from "./modal.vue";
 
 const meta: Meta<typeof FioModal> = {
@@ -27,8 +27,8 @@ const meta: Meta<typeof FioModal> = {
       control: "text",
       description: "Label for the confirm/resolve button — hidden when empty",
     },
-    onClose: { action: "close" },
-    onResolve: { action: "resolve" },
+    onClose: {action: "close"},
+    onResolve: {action: "resolve"},
   },
 };
 

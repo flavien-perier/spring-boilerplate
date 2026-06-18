@@ -31,6 +31,8 @@ import {
   faAngleRight,
   faXmark,
   faSort,
+  faMoon,
+  faSun,
 } from "@fortawesome/free-solid-svg-icons";
 import { computed } from "vue";
 import type { IconColor } from "@/model/icon-color";
@@ -51,7 +53,9 @@ library.add(
   faAngleLeft,
   faAngleRight,
   faXmark,
-  faSort
+    faSort,
+    faMoon,
+    faSun
 );
 
 defineOptions({

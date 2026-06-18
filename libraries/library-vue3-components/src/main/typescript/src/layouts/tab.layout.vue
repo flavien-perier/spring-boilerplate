@@ -45,7 +45,7 @@ defineProps<{
   list-style: none;
   padding: 0;
   margin: 0;
-  border-bottom: 2px solid $secondary-lighter-80;
+  border-bottom: $border-size solid lighter(secondary, 80);
 
   &__item {
     margin-bottom: -2px;
@@ -57,11 +57,11 @@ defineProps<{
     cursor: pointer;
     text-decoration: none;
     color: $secondary;
-    border-bottom: 2px solid transparent;
+    border-bottom: $border-size solid transparent;
     transition: color 0.15s, border-color 0.15s;
 
     &:hover {
-      color: $secondary-darker-20;
+      color: darker(secondary, 20);
     }
 
     &--active {

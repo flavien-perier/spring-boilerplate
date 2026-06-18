@@ -3,28 +3,25 @@
     <div class="fio-modal__dialog">
       <div class="fio-modal__header">
         <h5 class="fio-modal__title">{{ title }}</h5>
-        <button class="fio-modal__close" @click="emit('close')">
-          <fio-icon icon="xmark" />
-        </button>
+        <fio-icon icon="xmark" clickable class="fio-modal__close" @click="emit('close')"/>
       </div>
       <div class="fio-modal__body">
         <p>{{ content }}</p>
       </div>
       <div class="fio-modal__footer" v-if="rejectMessage || resolveMessage">
-        <button
-          class="fio-modal__btn fio-modal__btn--secondary"
+        <fio-input-button
           v-if="rejectMessage"
+          :label="rejectMessage"
+          variant="danger"
+          size="s"
           @click="emit('close')"
-        >
-          {{ rejectMessage }}
-        </button>
-        <button
-          class="fio-modal__btn fio-modal__btn--primary"
+        />
+        <fio-input-button
           v-if="resolveMessage"
+          :label="resolveMessage"
+          size="s"
           @click="emit('resolve')"
-        >
-          {{ resolveMessage }}
-        </button>
+        />
       </div>
     </div>
   </div>
@@ -32,6 +29,7 @@
 
 <script setup lang="ts">
 import FioIcon from "./icon.vue";
+import FioInputButton from "./inputs/input-button.vue";
 
 defineOptions({
   name: "FioModal",
@@ -62,19 +60,19 @@ const emit = defineEmits<{ close: []; resolve: [] }>();
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1050;
 
   &__dialog {
-    background: $secondary-lighter-90;
-    border-radius: 8px;
-    border: 1px solid $secondary-lighter-70;
-    max-width: 500px;
+    background: lighter(secondary, 90);
+    border-radius: $border-radius-size;
+    border: $border-size solid lighter(secondary, 70);
+    max-width: 32rem;
     width: calc(100% - 2rem);
-    margin: 1rem;
-    box-shadow: $shadow;
+    margin: $margin;
   }
 
   &__header {
@@ -82,7 +80,7 @@ const emit = defineEmits<{ close: []; resolve: [] }>();
     align-items: center;
     justify-content: space-between;
     padding: $margin $margin;
-    border-bottom: 1px solid $secondary-lighter-70;
+    border-bottom: $border-size solid lighter(secondary, 70);
   }
 
   &__title {
@@ -100,43 +98,14 @@ const emit = defineEmits<{ close: []; resolve: [] }>();
     justify-content: flex-end;
     gap: $margin-s;
     padding: $margin;
-    border-top: 1px solid $secondary-lighter-70;
+    border-top: $border-size solid lighter(secondary, 70);
   }
 
   &__close {
-    background: transparent;
-    border: none;
-    cursor: pointer;
     opacity: 0.7;
-    display: flex;
-    align-items: center;
-    padding: 0;
 
     &:hover {
       opacity: 1;
-    }
-  }
-
-  &__btn {
-    padding: $margin-xs $margin-s;
-    border-radius: $border-radius-size;
-    border: 1px solid transparent;
-    cursor: pointer;
-    font-size: $font-size;
-    transition: opacity 0.15s;
-
-    &:hover {
-      opacity: 0.85;
-    }
-
-    &--primary {
-      background-color: $primary;
-      color: $secondary-lighter-90;
-    }
-
-    &--secondary {
-      background-color: $secondary;
-      color: $secondary-lighter-90;
     }
   }
 }

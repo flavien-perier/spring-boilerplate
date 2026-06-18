@@ -184,10 +184,10 @@ watch(
 .password-constraints {
   position: absolute;
   top: 100%;
-  background-color: $secondary-lighter-90;
-  border: $border-size solid $secondary-lighter-80;
+  background-color: lighter(secondary, 90);
+  border: $border-size solid lighter(secondary, 80);
   border-radius: $border-radius-size;
-  box-shadow: 0 4px 12px rgba($secondary-darker-90, 0.1);
+  box-shadow: 0 4px 12px rgba(darker(secondary, 90), 0.1);
   z-index: 3;
   margin-top: $margin-xxs;
   padding: $margin-s $margin;

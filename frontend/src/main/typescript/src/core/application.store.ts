@@ -13,6 +13,7 @@ const NOTIFICATION_DURATION = 3000;
 const MAX_NOTIFICATIONS = 5;
 
 const EMAIL_LOCAL_STORAGE_KEY = "email";
+const THEME_LOCAL_STORAGE_KEY = "fio-theme";
 
 export const useApplicationStore = defineStore("application", {
   state: () => ({
@@ -24,6 +25,7 @@ export const useApplicationStore = defineStore("application", {
     accessToken: "",
     notifications: [] as Notification[],
     lastNotificationId: 0,
+    theme: (localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "light") as "light" | "dark",
     modal: {
       show: false,
       title: "",
@@ -38,7 +40,14 @@ export const useApplicationStore = defineStore("application", {
     isAuthenticated: (state) => state.user !== null && state.accessToken !== "",
   },
   actions: {
+    toggleTheme() {
+      this.theme = this.theme === "light" ? "dark" : "light";
+      localStorage.setItem(THEME_LOCAL_STORAGE_KEY, this.theme);
+      document.documentElement.setAttribute("data-theme", this.theme);
+    },
+
     async init() {
+      document.documentElement.setAttribute("data-theme", this.theme);
       const email = cookieUtil.get(EMAIL_LOCAL_STORAGE_KEY) || "";
 
       await applicationApi

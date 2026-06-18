@@ -1,4 +1,4 @@
-import type { Preview, App } from "@storybook/vue3";
+import type {Preview, App, Decorator} from "@storybook/vue3";
 import { setup } from "@storybook/vue3";
 import { createI18n } from "vue-i18n";
 import { createRouter, createMemoryHistory } from "vue-router";
@@ -73,7 +73,29 @@ setup((app: App) => {
   app.use(ComponentLibrary);
 });
 
+export const globalTypes = {
+  theme: {
+    name: "Theme",
+    description: "Color theme",
+    defaultValue: "light",
+    toolbar: {
+      icon: "paintbrush",
+      items: [
+        {value: "light", title: "Light", icon: "sun"},
+        {value: "dark", title: "Dark", icon: "moon"},
+      ],
+      dynamicTitle: true,
+    },
+  },
+};
+
+const themeDecorator: Decorator = (story, context) => {
+  document.documentElement.setAttribute("data-theme", context.globals["theme"] ?? "light");
+  return story();
+};
+
 const preview: Preview = {
+  decorators: [themeDecorator],
   parameters: {
     controls: {
       matchers: {
