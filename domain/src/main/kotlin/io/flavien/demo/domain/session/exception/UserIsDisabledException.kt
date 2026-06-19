@@ -7,4 +7,4 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 class UserIsDisabledException(
     email: String,
-) : FioException("user $email is disabled")
+) : FioException("user $email is disabled", "USER_DISABLED")

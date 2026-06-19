@@ -4,6 +4,13 @@ plugins {
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.jpa)
+    alias(libs.plugins.cyclonedx)
+}
+
+tasks.cyclonedxBom {
+    includeMetadataResolution = true
+    outputFormat = "json"
+    schemaVersion = "1.5"
 }
 
 tasks.named<org.gradle.jvm.tasks.Jar>("jar") {

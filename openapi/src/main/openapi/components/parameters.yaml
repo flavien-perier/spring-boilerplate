@@ -59,7 +59,7 @@ sortColumn:
   required: false
   schema:
     type: string
-    enum: [ email, firstname, lastname ]
+    enum: [ email ]
 
 sortOrder:
   name: sortOrder

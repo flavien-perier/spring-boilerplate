@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useApplicationStore } from "@/core/application.store";
-import { sessionApi, userApi } from "@/core/util/api-util";
+import {sessionApi, userApi, getErrorCode} from "@/core/util/api-util";
 import { passwordUtil } from "@generated/component-library";
 
 const applicationStore = useApplicationStore();
@@ -76,10 +76,10 @@ export const useLoginStore = defineStore("login", {
             applicationStore.axiosException(error);
             return;
           }
-          const detail: string = error.response?.data?.detail || "";
-          if (detail === "OTP required") {
+          const errorCode: string = getErrorCode(error.response?.data);
+          if (errorCode === "OTP_REQUIRED") {
             this.otpRequired = true;
-          } else if (detail === "Invalid OTP") {
+          } else if (errorCode === "INVALID_OTP") {
             this.otp = "";
             applicationStore.sendNotification(
               "danger",

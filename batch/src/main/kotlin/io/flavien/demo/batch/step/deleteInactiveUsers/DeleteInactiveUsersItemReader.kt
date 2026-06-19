@@ -17,17 +17,14 @@ class DeleteInactiveUsersItemReader(
 ) : ItemReader<User> {
     private val inactiveSince: OffsetDateTime = OffsetDateTime.now().minusMonths(deleteThresholdMonths)
     private val buffer: MutableList<User> = mutableListOf()
-    private var initialized: Boolean = false
 
     override fun read(): User? {
-        if (!initialized) {
-            initialized = true
-            var pageNumber = 0
-            do {
-                val page = userRepository.findUsersToDelete(inactiveSince, PageRequest.of(pageNumber++, PAGE_SIZE))
-                buffer.addAll(page.content)
-                if (page.isLast) break
-            } while (true)
+        while (buffer.isEmpty()) {
+            val page = userRepository.findUsersToDelete(inactiveSince, PageRequest.of(0, PAGE_SIZE))
+            if (page.content.isEmpty()) {
+                return null
+            }
+            buffer.addAll(page.content)
         }
         return if (buffer.isEmpty()) null else buffer.removeFirst()
     }

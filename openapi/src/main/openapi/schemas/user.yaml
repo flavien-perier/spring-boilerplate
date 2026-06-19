@@ -16,10 +16,6 @@ UserCreationDto:
 UserUpdateDto:
   type: object
   description: An account of an user or an organization.
-  required:
-    - email
-    - password
-    - proofOfWork
   properties:
     email:
       $ref: "common.yaml#/email"
@@ -88,10 +84,6 @@ UserDto:
 UserUpdateAdminDto:
   type: object
   description: An account of an user or an organization.
-  required:
-    - email
-    - password
-    - proofOfWork
   properties:
     email:
       $ref: "common.yaml#/email"

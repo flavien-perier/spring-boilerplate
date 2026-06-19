@@ -10,9 +10,9 @@ import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
@@ -22,8 +22,7 @@ import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class SessionControllerTest {
-    @InjectMocks
-    var sessionController: SessionController? = null
+    private lateinit var sessionController: SessionController
 
     @Mock
     var sessionService: SessionService? = null
@@ -36,6 +35,18 @@ class SessionControllerTest {
 
     @Mock
     var refreshTokenMapper: RefreshTokenMapper? = null
+
+    @BeforeEach
+    fun setUp() {
+        sessionController =
+            SessionController(
+                sessionService!!,
+                refreshTokenService!!,
+                sessionMapper!!,
+                refreshTokenMapper!!,
+                true,
+            )
+    }
 
     @Test
     fun `Test login`() {

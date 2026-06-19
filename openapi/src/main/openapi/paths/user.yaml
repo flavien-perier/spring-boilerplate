@@ -119,7 +119,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user ]
+      - bearer: [ user, admin ]
 
 /api/users/me/otp:
   post:

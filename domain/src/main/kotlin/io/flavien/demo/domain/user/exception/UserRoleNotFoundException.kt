@@ -7,4 +7,4 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class UserRoleNotFoundException(
     role: String,
-) : FioException("User role ($role) not found")
+) : FioException("User role ($role) not found", "USER_ROLE_NOT_FOUND")

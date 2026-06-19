@@ -7,4 +7,4 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @ResponseStatus(value = HttpStatus.CONFLICT)
 class UserAlreadyExistsException(
     email: String,
-) : FioException("User $email already exists")
+) : FioException("User $email already exists", "USER_ALREADY_EXISTS")

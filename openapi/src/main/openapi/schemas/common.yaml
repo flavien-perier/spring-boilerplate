@@ -53,14 +53,14 @@ refreshToken:
   description: User refresh token.
   example: "AZERTYUIOPQSDFGHJKLM"
   maxLength: 64
-  pattern: ^[A-Za-z0-9]*$
+  pattern: ^[A-Za-z0-9]+$
 
 accessToken:
   type: string
   description: User access token.
   example: "AZERTYUIOPQSDFGHJKLM"
   maxLength: 64
-  pattern: ^[A-Za-z0-9]*$
+  pattern: ^[A-Za-z0-9]+$
 
 otpUri:
   type: string

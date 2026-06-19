@@ -6,6 +6,7 @@ import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import java.net.URI
 
 @RestControllerAdvice
 class SharedExceptionHandler {
@@ -18,8 +19,8 @@ class SharedExceptionHandler {
                 ?: HttpStatus.INTERNAL_SERVER_ERROR
 
         val problemDetail = ProblemDetail.forStatus(status)
-        problemDetail.title = status.reasonPhrase
-        problemDetail.detail = ex.message
+        problemDetail.type = URI("urn:problem:${ex.errorCode}")
+        problemDetail.title = ex.message
         return problemDetail
     }
 }

@@ -166,6 +166,29 @@ class ArchitectureTest : SpringModuleArchitectureTest() {
             )
 
     @ArchTest
+    val `domain should only use spring-web for HTTP status on exceptions`: ArchRule =
+        noClasses()
+            .that()
+            .resideOutsideOfPackage("..domain..exception..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAPackage("org.springframework.web..")
+            .because(
+                "Only domain exceptions may carry HTTP status via @ResponseStatus/HttpStatus; " +
+                        "controllers and servlet API belong in the api module",
+            )
+
+    @ArchTest
+    val `domain should only use spring-http for status on exceptions`: ArchRule =
+        noClasses()
+            .that()
+            .resideOutsideOfPackage("..domain..exception..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAPackage("org.springframework.http..")
+            .because("Only domain exceptions may reference HttpStatus")
+
+    @ArchTest
     val `public methods of classes with a JavaMailSender field should be annotated with @Retry`: ArchRule =
         methods()
             .that()

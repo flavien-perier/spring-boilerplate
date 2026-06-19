@@ -54,7 +54,7 @@ spec:
       {{- end }}
       containers:
         - name: application
-          image: "{{ .Values.registry }}/{{ .Values.image }}:{{ .Values.imageTag }}"
+          image: "{{ .Values.registry }}/{{ .Values.application.image }}:{{ .Values.application.imageTag }}"
           imagePullPolicy: Always
 
           {{- if .Values.tenants.list }}

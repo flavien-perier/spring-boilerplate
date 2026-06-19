@@ -7,11 +7,12 @@ COPY gradle ./gradle
 COPY settings.gradle.kts build.gradle.kts ./
 COPY api/build.gradle.kts ./api/
 COPY batch/build.gradle.kts ./batch/
-COPY component-library/build.gradle.kts ./component-library/
+COPY libraries/library-common/build.gradle.kts ./libraries/library-common/
+COPY libraries/library-vue3-components/build.gradle.kts ./libraries/library-vue3-components/
+COPY libraries/library-test/build.gradle.kts ./libraries/library-test/
 COPY domain/build.gradle.kts ./domain/
 COPY frontend/build.gradle.kts ./frontend/
 COPY openapi/build.gradle.kts ./openapi/
-COPY utils/build.gradle.kts ./utils/
 
 RUN chmod +x gradlew && ./gradlew :batch:dependencies --no-daemon 2>/dev/null || true
 

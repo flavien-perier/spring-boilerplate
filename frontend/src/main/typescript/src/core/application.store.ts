@@ -5,6 +5,7 @@ import {
   sessionApi,
   userApi,
   setAccessToken,
+  getErrorCode,
 } from "@/core/util/api-util";
 import type { UserDto } from "@generated/api";
 import { cookieUtil } from "@/core/util/cookie-util";
@@ -25,7 +26,9 @@ export const useApplicationStore = defineStore("application", {
     accessToken: "",
     notifications: [] as Notification[],
     lastNotificationId: 0,
-    theme: (localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "light") as "light" | "dark",
+    theme: (localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "light") as
+      | "light"
+      | "dark",
     modal: {
       show: false,
       title: "",
@@ -131,10 +134,10 @@ export const useApplicationStore = defineStore("application", {
       }
 
       const status: number = exception.response.status;
-      const detail: string = exception.response.data?.detail || "";
+      const errorCode: string = getErrorCode(exception.response.data);
 
       if (status === 401) {
-        if (detail === "Change password failed") {
+        if (errorCode === "CHANGE_PASSWORD_FAILED") {
           this.sendNotification(
             "danger",
             "notification.change-password-failed"

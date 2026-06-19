@@ -14,6 +14,7 @@ import io.flavien.demo.domain.session.exception.BadRefreshTokenException
 import io.flavien.demo.domain.session.model.REFRESH_TOKEN_TTL_SECONDS
 import io.flavien.demo.domain.session.service.RefreshTokenService
 import io.flavien.demo.domain.session.service.SessionService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
@@ -27,6 +28,7 @@ class SessionController(
     private val refreshTokenService: RefreshTokenService,
     private val sessionMapper: SessionMapper,
     private val refreshTokenMapper: RefreshTokenMapper,
+    @param:Value("\${flavien-io.session.secure-cookies:true}") private val secureCookies: Boolean = true,
 ) : SessionApi {
     override fun login(loginDto: LoginDto): ResponseEntity<SessionDto> {
         val session = sessionService.login(loginDto.email, loginDto.password, loginDto.proofOfWork, loginDto.otp)
@@ -42,7 +44,7 @@ class SessionController(
             ResponseCookie
                 .from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(secureCookies)
                 .path("/api/session/renew")
                 .maxAge(Duration.ofSeconds(REFRESH_TOKEN_TTL_SECONDS))
                 .sameSite("Strict")
@@ -52,7 +54,7 @@ class SessionController(
             ResponseCookie
                 .from(EMAIL_COOKIE_NAME, loginDto.email)
                 .httpOnly(false)
-                .secure(true)
+                .secure(secureCookies)
                 .path("/")
                 .maxAge(Duration.ofSeconds(REFRESH_TOKEN_TTL_SECONDS))
                 .sameSite("Strict")
@@ -72,7 +74,7 @@ class SessionController(
             ResponseCookie
                 .from(REFRESH_TOKEN_COOKIE_NAME, "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(secureCookies)
                 .path("/api/session/renew")
                 .sameSite("Strict")
                 .maxAge(0)
@@ -82,7 +84,7 @@ class SessionController(
             ResponseCookie
                 .from(EMAIL_COOKIE_NAME, "")
                 .httpOnly(false)
-                .secure(true)
+                .secure(secureCookies)
                 .path("/")
                 .sameSite("Strict")
                 .maxAge(0)

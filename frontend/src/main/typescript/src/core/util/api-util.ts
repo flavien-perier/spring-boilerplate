@@ -45,8 +45,8 @@ axiosRetry(axiosInstance, {
   retries: 1,
   retryCondition: (error) => {
     const isSession =
-      error.response?.config?.url === "/api/session" &&
-      error.response?.config?.method == "post";
+      !!error.response?.config?.url &&
+      error.response.config.url.startsWith("/api/session");
     const status = error?.response?.status || 0;
     return (
       (status === 401 || status === 403) &&
@@ -69,3 +69,11 @@ axiosRetry(axiosInstance, {
 });
 
 export { applicationApi, userApi, sessionApi, setAccessToken };
+
+export function getErrorCode(data: unknown): string {
+  const type = (data as Record<string, unknown>)?.type;
+  if (typeof type === "string" && type.startsWith("urn:problem:")) {
+    return type.slice("urn:problem:".length);
+  }
+  return "";
+}

@@ -5,4 +5,4 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-class BadRefreshTokenException : FioException("Bad refresh token")
+class BadRefreshTokenException : FioException("Bad refresh token", "BAD_REFRESH_TOKEN")

@@ -7,4 +7,4 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 class TenantNotFoundException(
     tenantId: String,
-) : FioException("Tenant not found: $tenantId")
+) : FioException("Tenant not found: $tenantId", "TENANT_NOT_FOUND")

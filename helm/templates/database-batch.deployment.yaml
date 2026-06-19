@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: database
+  name: database-batch
   labels:
-    app: {{ .Values.appName }}
+    app: { { .Values.appName } }
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.appName }}
-      tier: database
+      app: { { .Values.appName } }
+      tier: database-batch
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: {{ .Values.appName }}
-        tier: database
+        app: { { .Values.appName } }
+        tier: database-batch
     spec:
       containers:
         - image: "postgres:18-alpine"
           imagePullPolicy: Always
-          name: database
+          name: database-batch
 
           env:
             - name: POSTGRES_DB
-              value: {{ .Values.appName }}
+              value: batch
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -46,13 +46,13 @@ spec:
 
           ports:
             - containerPort: 5432
-              name: database
+              name: database-batch
 
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
-              name: database-persistent-storage
+              name: database-batch-persistent-storage
 
       volumes:
-        - name: database-persistent-storage
+        - name: database-batch-persistent-storage
           persistentVolumeClaim:
-            claimName: database-pvc
+            claimName: database-batch-pvc

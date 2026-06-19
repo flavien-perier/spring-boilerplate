@@ -31,7 +31,11 @@ class UserCleanupJobIntegrationTest {
     companion object {
         @Container
         @JvmField
-        val postgres: PostgreSQLContainer<Nothing> = PostgreSQLContainer("postgres:15-alpine")
+        val postgres: PostgreSQLContainer<Nothing> = PostgreSQLContainer("postgres:18-alpine")
+
+        @Container
+        @JvmField
+        val postgresBatch: PostgreSQLContainer<Nothing> = PostgreSQLContainer("postgres:18-alpine")
 
         @Container
         @JvmField
@@ -66,6 +70,9 @@ class UserCleanupJobIntegrationTest {
                 """.trimIndent()
             File(tenantDir, "test-tenant.yml").writeText(tenantYaml)
             registry.add("flavien-io.tenants.directory") { tenantDir.absolutePath }
+            registry.add("spring.batch.datasource.url") { postgresBatch.jdbcUrl }
+            registry.add("spring.batch.datasource.username") { postgresBatch.username }
+            registry.add("spring.batch.datasource.password") { postgresBatch.password }
         }
     }
 

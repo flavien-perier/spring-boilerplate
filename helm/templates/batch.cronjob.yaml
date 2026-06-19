@@ -36,6 +36,18 @@ spec:
                     echo "Waiting for Valkey..."
                     sleep 2
                   done
+            { { - if .Values.databaseBatch.embedded } }
+            - name: wait-for-database-batch
+              image: busybox:1.36
+              command:
+                - sh
+                - -c
+                - |
+                  until nc -z database-batch 5432; do
+                    echo "Waiting for database-batch..."
+                    sleep 2
+                  done
+            { { - end } }
           {{- end }}
           {{- if .Values.tenants.list }}
           volumes:
@@ -56,3 +68,9 @@ spec:
               env:
                 - name: TENANTS_DIRECTORY
                   value: {{ .Values.tenants.mountPath | quote }}
+                - name: BATCH_DB_URL
+                  value: { { .Values.batch.database.jdbcUrl | quote } }
+                - name: BATCH_DB_USERNAME
+                  value: { { .Values.batch.database.username | quote } }
+                - name: BATCH_DB_PASSWORD
+                  value: { { .Values.batch.database.password | quote } }

@@ -2,6 +2,13 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.cyclonedx)
+}
+
+tasks.cyclonedxBom {
+    includeMetadataResolution = true
+    outputFormat = "json"
+    schemaVersion = "1.5"
 }
 
 dependencies {
@@ -24,4 +31,9 @@ tasks.withType<Test> {
 
 springBoot {
     mainClass.set("io.flavien.demo.batch.ApplicationKt")
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    args("--spring.profiles.active=dev")
+    workingDir = rootProject.projectDir
 }

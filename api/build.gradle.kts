@@ -6,6 +6,13 @@ plugins {
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.openapi.generator)
+    alias(libs.plugins.cyclonedx)
+}
+
+tasks.cyclonedxBom {
+    includeMetadataResolution = true
+    outputFormat = "json"
+    schemaVersion = "1.5"
 }
 
 if (project.hasProperty("native")) {

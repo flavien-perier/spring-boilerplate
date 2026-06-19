@@ -13,9 +13,12 @@ import org.springframework.context.annotation.Primary
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.data.repository.config.BootstrapMode
 import org.springframework.jdbc.datasource.AbstractDataSource
+import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.JpaVendorAdapter
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
+import org.springframework.transaction.PlatformTransactionManager
 import java.sql.Connection
 import javax.sql.DataSource
 
@@ -50,6 +53,9 @@ class JpaConfiguration {
     fun currentTenantIdentifierResolver(): TenantContextIdentifierResolver = TenantContextIdentifierResolver()
 
     @Bean
+    fun jpaVendorAdapter(): JpaVendorAdapter = HibernateJpaVendorAdapter()
+
+    @Bean
     @Primary
     @DependsOn("liquibaseMultiTenantRunner")
     fun entityManagerFactory(
@@ -74,4 +80,9 @@ class JpaConfiguration {
                 ),
             )
         }
+
+    @Bean
+    @Primary
+    fun transactionManager(entityManagerFactory: jakarta.persistence.EntityManagerFactory): PlatformTransactionManager =
+        JpaTransactionManager().apply { this.entityManagerFactory = entityManagerFactory }
 }

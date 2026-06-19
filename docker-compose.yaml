@@ -1,13 +1,25 @@
 services:
   database:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     restart: always
     volumes:
-      - db-postgres:/var/lib/postgresql/data
+      - db-postgres:/var/lib/postgresql
     ports:
       - 127.0.0.1:5432:5432
     environment:
       POSTGRES_DB: admin
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  database-batch:
+    image: postgres:18-alpine
+    restart: always
+    volumes:
+      - db-postgres-batch:/var/lib/postgresql
+    ports:
+      - 127.0.0.1:5433:5432
+    environment:
+      POSTGRES_DB: batch
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
@@ -29,4 +41,5 @@ services:
 
 volumes:
   db-postgres:
+  db-postgres-batch:
   db-valkey:

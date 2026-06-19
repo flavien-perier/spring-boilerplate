@@ -4,7 +4,7 @@ ProblemDetailDto:
   required:
     - status
     - title
-    - detail
+    - type
     - instance
   properties:
     status:
@@ -12,7 +12,12 @@ ProblemDetailDto:
       description: HTTP status code.
     title:
       type: string
-      description: HTTP status reason phrase (e.g. "Unauthorized").
+      description: Human-readable summary of the problem type.
+    type:
+      type: string
+      format: uri
+      description: URN identifying the problem type (e.g. "urn:problem:OTP_REQUIRED").
+      example: "urn:problem:OTP_REQUIRED"
     detail:
       type: string
       description: Human-readable error message.

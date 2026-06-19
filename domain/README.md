@@ -15,7 +15,10 @@ Core business logic module. Contains everything that is not HTTP-specific.
 - Package root: `io.flavien.demo.domain`
 - Depends on: `libraries:library-common`
 - Required by: `api`
-- No HTTP/servlet concepts allowed in this module
+- HTTP controllers and the servlet API must not live in this module, but domain
+  exceptions intentionally carry `@ResponseStatus` / `HttpStatus` to map a
+  business error to its HTTP status code at the point where it is raised
+- No `jakarta.servlet..` concepts allowed in this module
 - Schema changes always go through Liquibase; never alter the DB schema manually
 
 ## Build

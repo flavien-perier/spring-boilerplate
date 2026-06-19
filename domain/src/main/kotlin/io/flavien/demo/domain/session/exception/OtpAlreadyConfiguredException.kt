@@ -5,4 +5,4 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
 @ResponseStatus(value = HttpStatus.CONFLICT)
-class OtpAlreadyConfiguredException : FioException("OTP already configured")
+class OtpAlreadyConfiguredException : FioException("OTP already configured", "OTP_ALREADY_CONFIGURED")

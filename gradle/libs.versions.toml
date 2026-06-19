@@ -25,6 +25,7 @@ testcontainers = "1.21.4"
 archunit = "1.4.2"
 logstash-logback-encoder = "9.0"
 bouncycastle = "1.82"
+cyclonedx = "2.3.0"
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
@@ -40,6 +41,7 @@ node = { id = "com.github.node-gradle.node", version.ref = "node-gradle" }
 graalvm-native = { id = "org.graalvm.buildtools.native", version.ref = "graalvm-native" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions" }
+cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
 
 [libraries]
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }

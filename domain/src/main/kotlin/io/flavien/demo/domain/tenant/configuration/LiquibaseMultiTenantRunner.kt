@@ -1,5 +1,6 @@
 package io.flavien.demo.domain.tenant.configuration
 
+import io.flavien.demo.domain.tenant.model.TenantDefinition
 import io.flavien.demo.domain.tenant.repository.TenantRegistry
 import jakarta.annotation.PostConstruct
 import liquibase.integration.spring.SpringLiquibase
@@ -19,20 +20,27 @@ class LiquibaseMultiTenantRunner(
     fun runMigrations() {
         registry.getAll().values.forEach { tenant ->
             log.info("Running Liquibase migrations for tenant: ${tenant.tenantId}")
-            try {
-                val liquibase =
-                    SpringLiquibase().apply {
-                        dataSource = provider.getOrCreate(tenant.tenantId)
-                        defaultSchema = tenant.db.schema
-                        changeLog = "classpath:db/changelog/db.changelog-master.yaml"
-                        setShouldRun(true)
-                    }
-                liquibase.afterPropertiesSet()
-                log.info("Migrations complete for tenant: ${tenant.tenantId}")
-            } catch (e: Exception) {
-                log.error("Liquibase migration failed for tenant: ${tenant.tenantId}", e)
-                throw IllegalStateException("Liquibase migration failed for tenant: ${tenant.tenantId}", e)
-            }
+            runChangeLog(tenant, "classpath:db/changelog/db.changelog-master.yaml")
+            log.info("Migrations complete for tenant: ${tenant.tenantId}")
+        }
+    }
+
+    private fun runChangeLog(
+        tenant: TenantDefinition,
+        changeLogPath: String,
+    ) {
+        try {
+            val liquibase =
+                SpringLiquibase().apply {
+                    dataSource = provider.getOrCreate(tenant.tenantId)
+                    defaultSchema = tenant.db.schema
+                    changeLog = changeLogPath
+                    setShouldRun(true)
+                }
+            liquibase.afterPropertiesSet()
+        } catch (e: Exception) {
+            log.error("Liquibase migration failed for tenant: ${tenant.tenantId} ($changeLogPath)", e)
+            throw IllegalStateException("Liquibase migration failed for tenant: ${tenant.tenantId} ($changeLogPath)", e)
         }
     }
 }

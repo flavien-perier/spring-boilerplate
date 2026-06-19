@@ -2,20 +2,26 @@ import { Buffer } from "buffer";
 import * as scrypt from "scrypt-js";
 class PasswordUtil {
   public async proofOfWork(password: string, salt: string): Promise<string> {
-    const passwordBuffer = new Buffer(password);
-    const saltBuffer = new Buffer(salt);
+    const passwordBuffer = Buffer.from(password);
+    const saltBuffer = Buffer.from(salt);
 
     const N = 4096;
     const r = 8;
     const p = 4;
     const dkLen = 32;
 
-    return (
-      await scrypt.scrypt(passwordBuffer, saltBuffer, N, r, p, dkLen)
-    ).join("");
+    const derivedKey = await scrypt.scrypt(
+      passwordBuffer,
+      saltBuffer,
+      N,
+      r,
+      p,
+      dkLen
+    );
+    return Buffer.from(derivedKey).toString("hex");
   }
 
-  public checkPassword(password: string, minLength: number = 8): boolean {
+  public checkPassword(password: string, minLength: number = 12): boolean {
     return (
       this.checkPasswordLength(password, minLength) &&
       this.checkPasswordNumber(password) &&
@@ -25,7 +31,10 @@ class PasswordUtil {
     );
   }
 
-  public checkPasswordLength(password: string, minLength: number = 8): boolean {
+  public checkPasswordLength(
+    password: string,
+    minLength: number = 12
+  ): boolean {
     return password.length >= minLength;
   }
 

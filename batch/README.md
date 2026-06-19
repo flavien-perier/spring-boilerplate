@@ -25,15 +25,18 @@ Scheduled batch jobs module. Implements Spring Batch jobs that run as standalone
 ```
 batch/src/main/kotlin/io/flavien/demo/batch/
 ├── Application.kt                                   Spring Boot entry point
+├── configuration/
+│   ├── BatchDataSourceConfiguration.kt     @Configuration — dedicated HikariDataSource for batch metadata
+│   └── BatchJobRepositoryConfiguration.kt  @Configuration — wires batch job repository to the dedicated datasource
 ├── job/
 │   └── UserCleanupJobConfig.kt                     @Configuration — assembles steps into the job
 └── step/
-    ├── warn/
+    ├── warnInactiveUsers/
     │   ├── WarnInactiveUsersItemReader.kt           @Component — reads users inactive ≥ warn-threshold-months
     │   ├── WarnInactiveUsersItemProcessor.kt        @Component — skips already-warned users
     │   ├── WarnInactiveUsersItemWriter.kt           @Component — sends warning email via domain service
     │   └── WarnInactiveUsersStepConfig.kt           @Configuration — wires reader/processor/writer into step
-    └── delete/
+    └── deleteInactiveUsers/
         ├── DeleteInactiveUsersItemReader.kt         @Component — reads users inactive ≥ delete-threshold-months
         ├── DeleteInactiveUsersItemWriter.kt         @Component — deletes users via domain service
         └── DeleteInactiveUsersStepConfig.kt         @Configuration — wires reader/writer into step

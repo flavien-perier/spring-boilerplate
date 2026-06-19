@@ -332,7 +332,7 @@ class OwnAccountManagementE2ETest {
         val smtp = MailServerUtil.create()
 
         @Container
-        val postgresContainer = PostgreSQLContainer("postgres:15-alpine")
+        val postgresContainer = PostgreSQLContainer("postgres:18-alpine")
 
         @Container
         val valkeyContainer =

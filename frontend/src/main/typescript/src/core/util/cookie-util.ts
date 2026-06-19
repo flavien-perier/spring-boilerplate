@@ -1,6 +1,15 @@
 class CookieUtil {
   public clearAll() {
-    document.cookie = "";
+    document.cookie.split(";").forEach((cookie) => {
+      const name = cookie.trim().split("=")[0];
+      if (name) {
+        this.clear(name);
+      }
+    });
+  }
+
+  public clear(name: string) {
+    document.cookie = `${name}=; max-age=0; path=/`;
   }
 
   public get(name: string): string | null {
