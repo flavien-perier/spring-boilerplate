@@ -7,7 +7,7 @@ Core business logic module. Contains everything that is not HTTP-specific.
 - **Entities** — JPA (`@Entity`) and Redis (`@RedisHash`) data models
 - **Repositories** — Spring Data JPA/CRUD repository interfaces
 - **Services** — `@Service` classes holding all business rules
-- **Exceptions** — `RuntimeException` subclasses annotated with `@ResponseStatus`
+- **Exceptions** — `FioException` subclasses passing their `HttpStatus` to the constructor
 - **Database migrations** — Liquibase changesets in `src/main/resources/db/changelog/`
 
 ## Key facts
@@ -16,8 +16,9 @@ Core business logic module. Contains everything that is not HTTP-specific.
 - Depends on: `libraries:library-common`
 - Required by: `api`
 - HTTP controllers and the servlet API must not live in this module, but domain
-  exceptions intentionally carry `@ResponseStatus` / `HttpStatus` to map a
-  business error to its HTTP status code at the point where it is raised
+  exceptions intentionally carry an `HttpStatus` (passed to the `FioException`
+  constructor) to map a business error to its HTTP status code at the point where
+  it is raised
 - No `jakarta.servlet..` concepts allowed in this module
 - Schema changes always go through Liquibase; never alter the DB schema manually
 

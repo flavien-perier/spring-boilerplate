@@ -2,7 +2,6 @@ package io.flavien.demo.domain.session.exception
 
 import io.flavien.demo.domain.shared.exception.FioException
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-class BadAccessTokenException : FioException("Bad access token", "BAD_ACCESS_TOKEN")
+class BadAccessTokenException :
+    FioException("Bad access token", HttpStatus.UNAUTHORIZED, "BAD_ACCESS_TOKEN")

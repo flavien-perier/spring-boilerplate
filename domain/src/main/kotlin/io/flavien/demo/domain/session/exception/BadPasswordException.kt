@@ -2,7 +2,6 @@ package io.flavien.demo.domain.session.exception
 
 import io.flavien.demo.domain.shared.exception.FioException
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-class BadPasswordException : FioException("Bad password", "AUTHENTICATION_FAILED")
+class BadPasswordException :
+    FioException("Bad password", HttpStatus.UNAUTHORIZED, "AUTHENTICATION_FAILED")

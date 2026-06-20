@@ -3,7 +3,6 @@ package io.flavien.demo.domain
 import com.tngtech.archunit.base.DescribedPredicate
 import com.tngtech.archunit.core.domain.JavaCall
 import com.tngtech.archunit.core.domain.JavaClass
-import com.tngtech.archunit.core.domain.JavaModifier
 import com.tngtech.archunit.core.domain.properties.HasName
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
@@ -174,7 +173,7 @@ class ArchitectureTest : SpringModuleArchitectureTest() {
             .dependOnClassesThat()
             .resideInAPackage("org.springframework.web..")
             .because(
-                "Only domain exceptions may carry HTTP status via @ResponseStatus/HttpStatus; " +
+                "Only domain exceptions may carry HTTP status via HttpStatus; " +
                         "controllers and servlet API belong in the api module",
             )
 
@@ -321,33 +320,15 @@ class ArchitectureTest : SpringModuleArchitectureTest() {
             .because("@Repository interfaces must follow the naming convention *Repository")
 
     @ArchTest
-    val `non-abstract classes in exception packages should be annotated with @ResponseStatus`: ArchRule =
-        classes()
-            .that()
-            .resideInAPackage("..exception..")
-            .and()
-            .areNotInterfaces()
-            .and()
-            .doNotHaveModifier(JavaModifier.ABSTRACT)
-            .should()
-            .beAnnotatedWith("org.springframework.web.bind.annotation.ResponseStatus")
-            .because(
-                "Domain exceptions must be annotated with @ResponseStatus " +
-                    "to declare the HTTP status code returned when the exception propagates",
-            )
-
-    @ArchTest
-    val `abstract classes in exception packages should not be annotated with @ResponseStatus`: ArchRule =
+    val `classes in exception packages should not be annotated with @ResponseStatus`: ArchRule =
         noClasses()
             .that()
             .resideInAPackage("..exception..")
-            .and()
-            .haveModifier(JavaModifier.ABSTRACT)
             .should()
             .beAnnotatedWith("org.springframework.web.bind.annotation.ResponseStatus")
             .because(
-                "Abstract exception base classes must not carry @ResponseStatus — " +
-                    "only concrete leaf exceptions declare an HTTP status",
+                "Domain exceptions declare their HTTP status through the FioException " +
+                        "constructor (HttpStatus), not via the @ResponseStatus annotation",
             )
 
     @ArchTest
