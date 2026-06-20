@@ -17,14 +17,19 @@ class DeleteInactiveUsersItemReader(
 ) : ItemReader<User> {
     private val inactiveSince: OffsetDateTime = OffsetDateTime.now().minusMonths(deleteThresholdMonths)
     private val buffer: MutableList<User> = mutableListOf()
+    private var loaded: Boolean = false
 
     override fun read(): User? {
-        while (buffer.isEmpty()) {
-            val page = userRepository.findUsersToDelete(inactiveSince, PageRequest.of(0, PAGE_SIZE))
-            if (page.content.isEmpty()) {
-                return null
-            }
-            buffer.addAll(page.content)
+        if (!loaded) {
+            // Snapshot all inactive users once: the writer deletes them, so re-querying mid-chunk
+            // would return users not yet removed and produce duplicate (failing) deletes.
+            var pageIndex = 0
+            do {
+                val page = userRepository.findUsersToDelete(inactiveSince, PageRequest.of(pageIndex, PAGE_SIZE))
+                buffer.addAll(page.content)
+                pageIndex++
+            } while (!page.content.isEmpty())
+            loaded = true
         }
         return if (buffer.isEmpty()) null else buffer.removeFirst()
     }

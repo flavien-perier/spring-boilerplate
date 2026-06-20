@@ -32,5 +32,15 @@ class DomainRuntimeHints : RuntimeHintsRegistrar {
                 MemberCategory.INVOKE_PUBLIC_METHODS,
             )
         }
+
+        // Hibernate 7 instantiates this generator reflectively when building the entity
+        // metamodel: both @CreationTimestamp and @UpdateTimestamp are backed by the single
+        // CurrentTimestampGeneration class. It is not covered by Spring Boot's Hibernate
+        // native-image hints, so it must be registered explicitly.
+        hints.reflection().registerTypeIfPresent(
+            classLoader,
+            "org.hibernate.generator.internal.CurrentTimestampGeneration",
+            MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+        )
     }
 }

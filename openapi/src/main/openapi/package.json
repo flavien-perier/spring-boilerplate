@@ -6,6 +6,6 @@
     "bundle": "redocly bundle index.yaml --output ../../../build/bundled/openapi.json"
   },
   "devDependencies": {
-    "@redocly/cli": "^1.0.0"
+    "@redocly/cli": "2.34.0"
   }
 }

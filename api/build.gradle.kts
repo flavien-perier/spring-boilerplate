@@ -9,10 +9,10 @@ plugins {
     alias(libs.plugins.cyclonedx)
 }
 
-tasks.cyclonedxBom {
+tasks.cyclonedxDirectBom {
+    schemaVersion = org.cyclonedx.Version.VERSION_16
     includeMetadataResolution = true
-    outputFormat = "json"
-    schemaVersion = "1.5"
+    xmlOutput.unsetConvention()
 }
 
 if (project.hasProperty("native")) {
