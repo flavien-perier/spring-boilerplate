@@ -10,7 +10,7 @@
           <li v-for="el in startElements" :key="el.i18nKey">
             <a href="#" @click.prevent="el.action">
               <fio-icon :icon="el.faIcon" />
-              {{ $t(el.i18nKey) }}
+              <span class="nav-label">{{ $t(el.i18nKey) }}</span>
             </a>
           </li>
         </ul>
@@ -18,7 +18,7 @@
           <li v-for="el in endElements" :key="el.i18nKey">
             <a href="#" @click.prevent="el.action">
               <fio-icon :icon="el.faIcon" />
-              {{ $t(el.i18nKey) }}
+              <span class="nav-label">{{ $t(el.i18nKey) }}</span>
             </a>
           </li>
         </ul>
@@ -95,7 +95,6 @@ nav {
       gap: $margin-xs;
       color: lighter(primary, 90);
       text-decoration: none;
-      font-weight: 600;
       font-size: $font-l-size;
 
       &:hover {
@@ -157,6 +156,12 @@ nav {
 
     :deep(li) {
       cursor: pointer;
+    }
+
+    @media (max-width: $breakpoint-md) {
+      :deep(.nav-label) {
+        display: none;
+      }
     }
   }
 }

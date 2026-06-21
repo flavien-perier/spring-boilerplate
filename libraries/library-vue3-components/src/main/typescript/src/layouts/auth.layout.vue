@@ -35,24 +35,20 @@ defineProps<{
   margin: 0 auto;
   padding: 0 1rem;
   width: 100%;
+}
 
-  @media (min-width: $breakpoint-md) {
-    --split-layout-columns: 8fr 7fr;
-  }
-
-  @media (min-width: $breakpoint-l) {
-    --split-layout-columns: 7fr 5fr;
-  }
-
-  @media (min-width: $breakpoint-xl) {
-    --split-layout-columns: 6fr 5fr;
+.split-layout.auth-layout {
+  @media (max-width: $breakpoint-l) {
+    flex-direction: column;
+    gap: 0;
+    align-items: stretch;
   }
 }
 
 .auth-layout__image {
   display: none;
 
-  @media (min-width: $breakpoint-md) {
+  @media (min-width: $breakpoint-l) {
     display: flex;
     align-items: center;
     justify-content: center;

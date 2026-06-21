@@ -1,6 +1,12 @@
 @use "variables" as *;
 @use "variables-colors" as *;
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
   color: darker(secondary, 80);
