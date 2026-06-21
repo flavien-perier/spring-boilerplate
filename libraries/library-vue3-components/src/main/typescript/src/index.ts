@@ -18,6 +18,7 @@ import PageView from "./layouts/page-view.layout.vue";
 import SplitLayout from "./layouts/split.layout.vue";
 
 import { passwordUtil } from "@/utils/password-util";
+import {downloadUtil} from "@/utils/download-util";
 
 import type { App } from "vue";
 
@@ -43,7 +44,7 @@ export default {
   },
 };
 
-export { passwordUtil };
+export {passwordUtil, downloadUtil};
 
 export type {
   Icon,

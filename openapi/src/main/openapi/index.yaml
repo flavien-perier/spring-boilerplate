@@ -46,6 +46,8 @@ paths:
     $ref: "paths/user.yaml#/~1api~1users~1me~1otp"
   /api/users/me/otp/confirm:
     $ref: "paths/user.yaml#/~1api~1users~1me~1otp~1confirm"
+  /api/users/me/export:
+    $ref: "paths/user.yaml#/~1api~1users~1me~1export"
   /api/users/{userMail}:
     $ref: "paths/user.yaml#/~1api~1users~1%7BuserMail%7D"
   /api/users:

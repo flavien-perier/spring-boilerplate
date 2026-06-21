@@ -7,6 +7,7 @@ import io.flavien.demo.api.generated.dto.OtpConfirmDto
 import io.flavien.demo.api.generated.dto.OtpSetupDto
 import io.flavien.demo.api.generated.dto.UserCreationDto
 import io.flavien.demo.api.generated.dto.UserDto
+import io.flavien.demo.api.generated.dto.UserExportDto
 import io.flavien.demo.api.generated.dto.UserPageDto
 import io.flavien.demo.api.generated.dto.UserUpdateAdminDto
 import io.flavien.demo.api.generated.dto.UserUpdateDto
@@ -98,6 +99,12 @@ class UserController(
     override fun disableCurrentUserOtp(): ResponseEntity<Unit> {
         userService.disableOtp(ContextUtil.userId)
         return ResponseEntity.noContent().build()
+    }
+
+    override fun exportCurrentUserData(): ResponseEntity<UserExportDto> {
+        val user = userService.get(ContextUtil.userId)
+
+        return ResponseEntity.ok(userMapper.toUserExportDto(user))
     }
 
     override fun findUsers(

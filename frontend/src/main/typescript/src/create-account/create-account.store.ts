@@ -46,16 +46,7 @@ export const useCreateAccountStore = defineStore("create-account", {
           );
           this.$router.push({ name: "login" });
         })
-        .catch((error: any) => {
-          if (error.response?.status === 409) {
-            applicationStore.sendNotification(
-              "danger",
-              "notification.error.email-already-used"
-            );
-          } else {
-            applicationStore.axiosException(error);
-          }
-        })
+        .catch(applicationStore.axiosException)
         .finally(() => {
           this.computeAction = false;
         });

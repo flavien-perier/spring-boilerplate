@@ -77,23 +77,43 @@ export const useLoginStore = defineStore("login", {
             return;
           }
           const errorCode: string = getErrorCode(error.response?.data);
+
           if (errorCode === "OTP_REQUIRED") {
             this.otpRequired = true;
-          } else if (errorCode === "INVALID_OTP") {
+            return;
+          }
+
+          if (errorCode === "INVALID_OTP") {
             this.otp = "";
-            applicationStore.sendNotification(
-              "danger",
-              "notification.error.invalid-otp"
-            );
-          } else if (error.response.status === 401) {
+            applicationStore.axiosException(error);
+            return;
+          }
+
+          if (errorCode === "USER_NOT_FOUND") {
             this.password = "";
             applicationStore.sendNotification(
               "danger",
               "notification.authentication-failed"
             );
-          } else {
-            applicationStore.axiosException(error);
+            return;
           }
+
+          if (errorCode === "USER_DISABLED") {
+            this.password = "";
+            applicationStore.axiosException(error);
+            return;
+          }
+
+          if (error.response.status === 401) {
+            this.password = "";
+            applicationStore.sendNotification(
+              "danger",
+              "notification.authentication-failed"
+            );
+            return;
+          }
+
+          applicationStore.axiosException(error);
         })
         .finally(() => {
           this.computeAction = false;

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useApplicationStore } from "@/core/application.store";
-import {userApi, getErrorCode} from "@/core/util/api-util";
+import {userApi} from "@/core/util/api-util";
 import { passwordUtil } from "@generated/component-library";
 
 const applicationStore = useApplicationStore();
@@ -48,22 +48,7 @@ export const useChangePasswordStore = defineStore("change-password", {
           );
           this.$router.push({ name: "login" });
         })
-        .catch((error: any) => {
-          const status: number = error.response?.status;
-          const errorCode: string = getErrorCode(error.response?.data);
-          if (
-            errorCode === "CHANGE_PASSWORD_FAILED" ||
-            status === 400 ||
-            status === 404
-          ) {
-            applicationStore.sendNotification(
-              "danger",
-              "notification.change-password-failed"
-            );
-          } else {
-            applicationStore.axiosException(error);
-          }
-        })
+        .catch(applicationStore.axiosException)
         .finally(() => {
           this.computeAction = false;
         });

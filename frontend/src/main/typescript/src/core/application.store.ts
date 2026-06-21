@@ -61,7 +61,7 @@ export const useApplicationStore = defineStore("application", {
         .catch(() => {
           this.sendNotification(
             "danger",
-            "notification.error.service-unavailable"
+            "http.error.503"
           );
         });
 
@@ -129,42 +129,35 @@ export const useApplicationStore = defineStore("application", {
       }
 
       if (!exception.response) {
-        this.sendNotification("danger", "notification.error.network");
+        this.sendNotification("danger", "http.error.network");
         return;
       }
 
       const status: number = exception.response.status;
       const errorCode: string = getErrorCode(exception.response.data);
 
+      if (errorCode && this.$i18n.t(`http.error.${errorCode}`) !== `http.error.${errorCode}`) {
+        this.sendNotification("danger", `http.error.${errorCode}`);
+        return;
+      }
+
       if (status === 401) {
-        if (errorCode === "CHANGE_PASSWORD_FAILED") {
-          this.sendNotification(
-            "danger",
-            "notification.change-password-failed"
-          );
-          return;
-        }
         this.disconnected();
         return;
       }
 
-      if (status === 403) {
-        this.sendNotification("danger", "notification.error.forbidden");
+      const statusKey = `http.error.${status}`;
+      if (this.$i18n.t(statusKey) !== statusKey) {
+        this.sendNotification("danger", statusKey);
         return;
       }
 
-      const key = (() => {
-        if (status === 400 || status === 422)
-          return "notification.error.bad-request";
-        if (status === 404) return "notification.error.not-found";
-        if (status === 409) return "notification.error.conflict";
-        if (status === 429 || status === 503)
-          return "notification.error.service-unavailable";
-        if (status >= 500) return "notification.error.server";
-        return "notification.error.unknown";
-      })();
+      if (status >= 500) {
+        this.sendNotification("danger", "http.error.500");
+        return;
+      }
 
-      this.sendNotification("danger", key);
+      this.sendNotification("danger", "http.error.unknown");
     },
 
     async login(accessToken: string = "") {

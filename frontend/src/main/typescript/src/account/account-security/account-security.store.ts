@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import {sessionApi, userApi, getErrorCode} from "@/core/util/api-util";
+import {sessionApi, userApi} from "@/core/util/api-util";
 import { useApplicationStore } from "@/core/application.store";
 import type { RefreshTokenPropertiesDto } from "@generated/api";
 
@@ -100,14 +100,8 @@ export const useAccountSecurityStore = defineStore("account-security", {
           return applicationStore.login(applicationStore.accessToken);
         })
         .catch((error: any) => {
-          if (getErrorCode(error.response?.data) === "INVALID_OTP") {
-            applicationStore.sendNotification(
-              "danger",
-              "notification.error.invalid-otp"
-            );
-          } else {
-            applicationStore.axiosException(error);
-          }
+          this.otpCode = "";
+          applicationStore.axiosException(error);
         })
         .finally(() => {
           this.computeActionConfirmOtp = false;

@@ -81,6 +81,41 @@ UserDto:
       type: boolean
       description: Whether OTP 2FA is active for this user.
 
+UserExportDto:
+  type: object
+  description: User personal data exported for GDPR data portability.
+  required:
+    - email
+    - role
+    - enabled
+    - lastLogin
+    - creationDate
+    - updateDate
+    - otpEnabled
+  properties:
+    email:
+      $ref: "common.yaml#/email"
+    role:
+      $ref: "#/RoleDto"
+    enabled:
+      type: boolean
+      description: Whether the account is enabled.
+    lastLogin:
+      type: string
+      format: date-time
+      description: The date and time of the last login.
+    creationDate:
+      type: string
+      format: date-time
+      description: The date and time of the account creation.
+    updateDate:
+      type: string
+      format: date-time
+      description: The date and time of the last account update.
+    otpEnabled:
+      type: boolean
+      description: Whether OTP 2FA is active for this user.
+
 UserUpdateAdminDto:
   type: object
   description: An account of an user or an organization.

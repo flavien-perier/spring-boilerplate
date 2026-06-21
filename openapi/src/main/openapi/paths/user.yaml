@@ -182,6 +182,26 @@
     security:
       - bearer: [ user, admin ]
 
+/api/users/me/export:
+  get:
+    tags:
+      - User
+    summary: Export the current user's personal data (GDPR compliance).
+    operationId: exportCurrentUserData
+    responses:
+      "200":
+        description: The current user's personal data.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user.yaml#/UserExportDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ user, admin ]
+
 /api/users/{userMail}:
   get:
     tags:

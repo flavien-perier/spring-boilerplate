@@ -34,6 +34,14 @@
           :waiting="computeAction"
           @click="accountInformationStore.update"
         />
+
+        <fio-input-button
+            class="mt-xl"
+            :label="$t('action.export-data')"
+            :disabled="exportAction"
+            :waiting="exportAction"
+            @click="accountInformationStore.exportData"
+        />
       </div>
     </template>
   </fio-split-layout>
@@ -47,8 +55,15 @@ import { onBeforeRouteLeave } from "vue-router";
 
 const accountInformationStore = useAccountInformationStore();
 const applicationStore = useApplicationStore();
-const { email, password, buttonEnabled, isEmailValid, isPasswordValid, computeAction } =
-  storeToRefs(accountInformationStore);
+const {
+  email,
+  password,
+  buttonEnabled,
+  isEmailValid,
+  isPasswordValid,
+  computeAction,
+  exportAction,
+} = storeToRefs(accountInformationStore);
 
 accountInformationStore.init();
 

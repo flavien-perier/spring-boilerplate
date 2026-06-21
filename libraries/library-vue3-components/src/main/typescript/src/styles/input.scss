@@ -26,14 +26,15 @@
 
   &:focus {
     border-color: $primary;
-    box-shadow: 0 0 0 3px lighter(primary, 20);
+    box-shadow: 0 0 0 $border-size lighter(primary, 20);
   }
 
   &--invalid {
     border-color: $danger;
 
     &:focus {
-      box-shadow: 0 0 0 3px lighter(danger, 20);
+      border-color: $danger;
+      box-shadow: 0 0 0 $border-size lighter(danger, 20);
     }
   }
 

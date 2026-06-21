@@ -6,6 +6,7 @@
       <script value="dev" />
     </scripts>
     <node-interpreter value="project" />
+    <package-manager value="$PROJECT_DIR$/frontend/build/yarn/yarn-v1.22.22/bin/yarn"/>
     <envs />
     <method v="2" />
   </configuration>

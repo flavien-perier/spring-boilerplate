@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { userApi } from "@/core/util/api-util";
 import { useApplicationStore } from "@/core/application.store";
-import { passwordUtil } from "@generated/component-library";
+import {passwordUtil, downloadUtil} from "@generated/component-library";
 
 const applicationStore = useApplicationStore();
 
@@ -12,6 +12,7 @@ export const useAccountInformationStore = defineStore("account-information", {
     isEmailValid: false,
     isPasswordValid: false,
     computeAction: false,
+    exportAction: false,
   }),
   getters: {
     buttonEnabled: (state) =>
@@ -51,6 +52,27 @@ export const useAccountInformationStore = defineStore("account-information", {
         .catch(applicationStore.axiosException)
         .finally(() => {
           this.computeAction = false;
+        });
+    },
+
+    async exportData() {
+      if (this.exportAction) {
+        return;
+      }
+      this.exportAction = true;
+
+      userApi
+        .exportCurrentUserData()
+        .then((response) => {
+          downloadUtil.downloadJson(response.data, "user-data.json");
+          applicationStore.sendNotification(
+            "info",
+            "notification.data-exported"
+          );
+        })
+        .catch(applicationStore.axiosException)
+        .finally(() => {
+          this.exportAction = false;
         });
     },
   },
