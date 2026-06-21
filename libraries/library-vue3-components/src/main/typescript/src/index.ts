@@ -10,6 +10,8 @@ import Modal from "./components/modal.vue";
 import Alert from "./components/alert.vue";
 import Table from "./components/table.vue";
 import InputText from "./components/inputs/input-text.vue";
+import InputCheckbox from "./components/inputs/input-checkbox.vue";
+import InputToggle from "./components/inputs/input-toggle.vue";
 import Markdown from "./components/markdown.vue";
 import InputMarkdown from "./components/inputs/input-markdown.vue";
 import TopNavLayout from "./layouts/top-nav.layout.vue";
@@ -38,6 +40,8 @@ export default {
     app.component("fio-alert", Alert);
     app.component("fio-table", Table);
     app.component("fio-input-text", InputText);
+    app.component("fio-input-checkbox", InputCheckbox);
+    app.component("fio-input-toggle", InputToggle);
     app.component("fio-markdown", Markdown);
     app.component("fio-input-markdown", InputMarkdown);
     app.component("fio-top-nav-layout", TopNavLayout);
@@ -65,6 +69,8 @@ export type {
   Alert,
   Table,
   InputText,
+  InputCheckbox,
+  InputToggle,
   Markdown,
   InputMarkdown,
   TopNavLayout,
