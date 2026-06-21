@@ -33,6 +33,13 @@ import {
   faSort,
   faMoon,
   faSun,
+  faBold,
+  faItalic,
+  faHeading,
+  faLink,
+  faListUl,
+  faCode,
+  faQuoteRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { computed } from "vue";
 import type { IconColor } from "@/model/icon-color";
@@ -55,7 +62,14 @@ library.add(
   faXmark,
     faSort,
     faMoon,
-    faSun
+    faSun,
+    faBold,
+    faItalic,
+    faHeading,
+    faLink,
+    faListUl,
+    faCode,
+    faQuoteRight
 );
 
 defineOptions({

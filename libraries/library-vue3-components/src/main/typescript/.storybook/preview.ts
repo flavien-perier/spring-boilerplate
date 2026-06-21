@@ -19,6 +19,16 @@ const i18n = createI18n({
       "fio.password.constraint.number": "At least one number",
       "fio.password.constraint.special-character":
         "At least one special character",
+      "fio.markdown.bold": "Bold",
+      "fio.markdown.italic": "Italic",
+      "fio.markdown.heading": "Heading",
+      "fio.markdown.link": "Link",
+      "fio.markdown.list": "List",
+      "fio.markdown.code": "Code",
+      "fio.markdown.quote": "Quote",
+      "fio.markdown.placeholder.text": "text",
+      "fio.markdown.placeholder.link-text": "link text",
+      "fio.markdown.placeholder.url": "url",
       "fio.layout.home": "Home",
       "fio.layout.settings": "Settings",
       "fio.layout.login": "Login",
@@ -40,6 +50,16 @@ const i18n = createI18n({
       "fio.password.constraint.number": "Au moins un chiffre",
       "fio.password.constraint.special-character":
         "Au moins un caractère spécial",
+      "fio.markdown.bold": "Gras",
+      "fio.markdown.italic": "Italique",
+      "fio.markdown.heading": "Titre",
+      "fio.markdown.link": "Lien",
+      "fio.markdown.list": "Liste",
+      "fio.markdown.code": "Code",
+      "fio.markdown.quote": "Citation",
+      "fio.markdown.placeholder.text": "texte",
+      "fio.markdown.placeholder.link-text": "texte du lien",
+      "fio.markdown.placeholder.url": "url",
       "fio.layout.home": "Accueil",
       "fio.layout.settings": "Paramètres",
       "fio.layout.login": "Connexion",
@@ -90,7 +110,10 @@ export const globalTypes = {
 };
 
 const themeDecorator: Decorator = (story, context) => {
-  document.documentElement.setAttribute("data-theme", context.globals["theme"] ?? "light");
+  document.documentElement.setAttribute(
+    "data-theme",
+    context.globals["theme"] ?? "light"
+  );
   return story();
 };
 

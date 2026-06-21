@@ -38,7 +38,8 @@
     }
   }
 
-  &:disabled {
+  &:disabled,
+  &--disabled {
     background-color: lighter(secondary, 70);
     color: darker(secondary, 50);
     cursor: not-allowed;

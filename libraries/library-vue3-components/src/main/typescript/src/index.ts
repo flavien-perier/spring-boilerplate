@@ -10,6 +10,8 @@ import Modal from "./components/modal.vue";
 import Alert from "./components/alert.vue";
 import Table from "./components/table.vue";
 import InputText from "./components/inputs/input-text.vue";
+import Markdown from "./components/markdown.vue";
+import InputMarkdown from "./components/inputs/input-markdown.vue";
 import TopNavLayout from "./layouts/top-nav.layout.vue";
 import SideNavLayout from "./layouts/side-nav.layout.vue";
 import AuthLayout from "./layouts/auth.layout.vue";
@@ -19,6 +21,7 @@ import SplitLayout from "./layouts/split.layout.vue";
 
 import { passwordUtil } from "@/utils/password-util";
 import {downloadUtil} from "@/utils/download-util";
+import {markdownUtil} from "@/utils/markdown-util";
 
 import type { App } from "vue";
 
@@ -35,6 +38,8 @@ export default {
     app.component("fio-alert", Alert);
     app.component("fio-table", Table);
     app.component("fio-input-text", InputText);
+    app.component("fio-markdown", Markdown);
+    app.component("fio-input-markdown", InputMarkdown);
     app.component("fio-top-nav-layout", TopNavLayout);
     app.component("fio-side-nav-layout", SideNavLayout);
     app.component("fio-auth-layout", AuthLayout);
@@ -44,7 +49,9 @@ export default {
   },
 };
 
-export {passwordUtil, downloadUtil};
+export {passwordUtil, downloadUtil, markdownUtil};
+
+export type {MarkdownOptions} from "@/utils/markdown-util";
 
 export type {
   Icon,
@@ -58,6 +65,8 @@ export type {
   Alert,
   Table,
   InputText,
+  Markdown,
+  InputMarkdown,
   TopNavLayout,
   SideNavLayout,
   AuthLayout,
