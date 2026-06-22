@@ -57,11 +57,6 @@ OtpConfirmDto:
     otp:
       $ref: "common.yaml#/otp"
 
-RoleDto:
-  type: string
-  description: The user's role.
-  enum: [ USER, ADMIN ]
-
 UserDto:
   type: object
   description: An account of an user or an organization.
@@ -71,8 +66,6 @@ UserDto:
   properties:
     email:
       $ref: "common.yaml#/email"
-    role:
-      $ref: "#/RoleDto"
     lastLogin:
       type: string
       format: date-time
@@ -86,7 +79,6 @@ UserExportDto:
   description: User personal data exported for GDPR data portability.
   required:
     - email
-    - role
     - enabled
     - lastLogin
     - creationDate
@@ -95,8 +87,6 @@ UserExportDto:
   properties:
     email:
       $ref: "common.yaml#/email"
-    role:
-      $ref: "#/RoleDto"
     enabled:
       type: boolean
       description: Whether the account is enabled.
@@ -126,8 +116,6 @@ UserUpdateAdminDto:
       $ref: "common.yaml#/password"
     proofOfWork:
       $ref: "common.yaml#/proofOfWork"
-    role:
-      $ref: "#/RoleDto"
 
 UserPageDto:
   type: object

@@ -80,7 +80,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_ACCOUNT ]
   put:
     tags:
       - User
@@ -105,7 +105,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_ACCOUNT ]
   delete:
     tags:
       - User
@@ -119,7 +119,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_ACCOUNT ]
 
 /api/users/me/otp:
   post:
@@ -141,7 +141,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_ACCOUNT ]
   delete:
     tags:
       - User
@@ -155,7 +155,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_ACCOUNT ]
 
 /api/users/me/otp/confirm:
   post:
@@ -180,7 +180,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_ACCOUNT ]
 
 /api/users/me/export:
   get:
@@ -200,7 +200,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_ACCOUNT ]
 
 /api/users/{userMail}:
   get:
@@ -226,7 +226,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ admin ]
+      - bearer: [ MANAGE_ALL_USERS ]
   put:
     tags:
       - User
@@ -257,7 +257,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ admin ]
+      - bearer: [ MANAGE_ALL_USERS ]
   delete:
     tags:
       - User
@@ -277,7 +277,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ admin ]
+      - bearer: [ MANAGE_ALL_USERS ]
 
 /api/users:
   post:
@@ -326,4 +326,26 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ admin ]
+      - bearer: [ MANAGE_ALL_USERS ]
+
+/api/users/me/permissions:
+  get:
+    tags:
+      - User
+    summary: Returns all permissions granted to the current user.
+    operationId: getUserPermissions
+    responses:
+      "200":
+        description: List of permissions.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_OWN_ACCOUNT ]

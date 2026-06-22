@@ -52,14 +52,13 @@ class SessionServiceTest {
         val accessToken =
             SessionTestFactory.initAccessToken(
                 userId = user.id!!,
-                role = user.role,
                 refreshTokenId = refreshToken.id,
             )
 
         `when`(userService!!.get(email)).thenReturn(user)
         `when`(passwordService!!.testPassword(password, user.passwordSalt, user.password)).thenReturn(true)
         `when`(userRepository!!.save(user)).thenReturn(user)
-        `when`(refreshTokenService!!.create(user.id!!, user.role)).thenReturn(refreshToken)
+        `when`(refreshTokenService!!.create(user.id!!)).thenReturn(refreshToken)
         `when`(accessTokenService!!.create(refreshToken)).thenReturn(accessToken)
 
         // When
@@ -69,7 +68,7 @@ class SessionServiceTest {
         verify(userService!!).get(email)
         verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
         verify(userRepository!!).save(user)
-        verify(refreshTokenService!!).create(user.id!!, user.role)
+        verify(refreshTokenService!!).create(user.id!!)
         verify(accessTokenService!!).create(refreshToken)
 
         assertEquals(refreshToken, result.refreshToken)
@@ -146,7 +145,6 @@ class SessionServiceTest {
         val accessToken =
             SessionTestFactory.initAccessToken(
                 userId = user.id!!,
-                role = user.role,
                 refreshTokenId = refreshToken.id,
             )
 
@@ -154,7 +152,7 @@ class SessionServiceTest {
         `when`(passwordService!!.testPassword(password, user.passwordSalt, user.password)).thenReturn(true)
         `when`(otpService!!.validateTOTP("JBSWY3DPEHPK3PXP", otpCode)).thenReturn(true)
         `when`(userRepository!!.save(user)).thenReturn(user)
-        `when`(refreshTokenService!!.create(user.id!!, user.role)).thenReturn(refreshToken)
+        `when`(refreshTokenService!!.create(user.id!!)).thenReturn(refreshToken)
         `when`(accessTokenService!!.create(refreshToken)).thenReturn(accessToken)
 
         // When
@@ -165,7 +163,7 @@ class SessionServiceTest {
         verify(passwordService!!).testPassword(password, user.passwordSalt, user.password)
         verify(otpService!!).validateTOTP("JBSWY3DPEHPK3PXP", otpCode)
         verify(userRepository!!).save(user)
-        verify(refreshTokenService!!).create(user.id!!, user.role)
+        verify(refreshTokenService!!).create(user.id!!)
         verify(accessTokenService!!).create(refreshToken)
 
         assertEquals(refreshToken, result.refreshToken)
@@ -182,7 +180,6 @@ class SessionServiceTest {
         val accessToken =
             SessionTestFactory.initAccessToken(
                 userId = user.id!!,
-                role = user.role,
                 refreshTokenId = refreshTokenId,
             )
 

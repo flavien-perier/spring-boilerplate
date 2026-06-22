@@ -5,6 +5,7 @@ import io.flavien.demo.api.generated.dto.UserPageDto
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper
+import io.flavien.demo.domain.permission.service.PermissionService
 import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.service.UserService
 import io.mockk.every
@@ -33,6 +34,9 @@ class UserControllerTest {
 
     @Mock
     var userUpdateMapper: UserUpdateMapper? = null
+
+    @Mock
+    var permissionService: PermissionService? = null
 
     @Test
     fun `Test createUser`() {

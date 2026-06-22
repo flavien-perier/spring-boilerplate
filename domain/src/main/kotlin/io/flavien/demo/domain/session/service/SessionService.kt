@@ -60,7 +60,7 @@ class SessionService(
         userRepository.save(user)
         // Token writes target Redis and do not participate in the surrounding JPA transaction:
         // on a JPA rollback these tokens stay orphaned (TTL is the safeguard that eventually evicts them).
-        val refreshToken = refreshTokenService.create(user.id!!, user.role)
+        val refreshToken = refreshTokenService.create(user.id!!)
         val accessToken = accessTokenService.create(refreshToken)
         return Session(refreshToken, accessToken)
     }

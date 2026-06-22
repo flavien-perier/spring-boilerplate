@@ -1,5 +1,7 @@
 package io.flavien.demo.domain.user.service
 
+import io.flavien.demo.domain.group.service.GroupService
+import io.flavien.demo.domain.permission.service.PermissionService
 import io.flavien.demo.domain.session.entity.OtpPending
 import io.flavien.demo.domain.session.exception.InvalidOtpException
 import io.flavien.demo.domain.session.exception.OtpAlreadyConfiguredException
@@ -19,11 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
-import java.util.Optional
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class UserOtpTest {
@@ -53,6 +53,12 @@ class UserOtpTest {
 
     @Mock
     var otpPendingRepository: OtpPendingRepository? = null
+
+    @Mock
+    var groupService: GroupService? = null
+
+    @Mock
+    var permissionService: PermissionService? = null
 
     // -------------------------------------------------------------------------
     // setupOtp

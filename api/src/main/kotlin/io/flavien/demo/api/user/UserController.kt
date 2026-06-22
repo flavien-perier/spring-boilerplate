@@ -14,6 +14,7 @@ import io.flavien.demo.api.generated.dto.UserUpdateDto
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper
+import io.flavien.demo.domain.permission.service.PermissionService
 import io.flavien.demo.domain.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -23,6 +24,7 @@ class UserController(
     private val userService: UserService,
     private val userMapper: UserMapper,
     private val userUpdateMapper: UserUpdateMapper,
+    private val permissionService: PermissionService,
 ) : UserApi {
     override fun createUser(userCreationDto: UserCreationDto): ResponseEntity<Unit> {
         userService.create(userCreationDto.email, userCreationDto.password, userCreationDto.proofOfWork)
@@ -124,5 +126,10 @@ class UserController(
             )
 
         return ResponseEntity.ok(userPageDto)
+    }
+
+    override fun getUserPermissions(): ResponseEntity<List<String>> {
+        val permissions = permissionService.getGrantedPermissions(ContextUtil.userId)
+        return ResponseEntity.ok(permissions.map { it.name })
     }
 }

@@ -1,5 +1,14 @@
 package io.flavien.demo.domain.configuration
 
+import io.flavien.demo.domain.group.entity.Group
+import io.flavien.demo.domain.group.entity.UserGroup
+import io.flavien.demo.domain.group.model.id.UserGroupId
+import io.flavien.demo.domain.permission.entity.GroupPermission
+import io.flavien.demo.domain.permission.entity.Permission
+import io.flavien.demo.domain.permission.entity.UserPermission
+import io.flavien.demo.domain.permission.model.PermissionEnum
+import io.flavien.demo.domain.permission.model.id.GroupPermissionId
+import io.flavien.demo.domain.permission.model.id.UserPermissionId
 import io.flavien.demo.domain.tenant.model.DbDefinition
 import io.flavien.demo.domain.tenant.model.RedisDefinition
 import io.flavien.demo.domain.tenant.model.SmtpDefinition
@@ -24,6 +33,15 @@ class DomainRuntimeHints : RuntimeHintsRegistrar {
             RedisDefinition::class.java,
             SmtpDefinition::class.java,
             User::class.java,
+            Group::class.java,
+            UserGroup::class.java,
+            Permission::class.java,
+            UserPermission::class.java,
+            GroupPermission::class.java,
+            UserGroupId::class.java,
+            UserPermissionId::class.java,
+            GroupPermissionId::class.java,
+            PermissionEnum::class.java,
         ).forEach {
             hints.reflection().registerType(
                 it,

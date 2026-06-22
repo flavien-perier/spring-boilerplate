@@ -1,5 +1,7 @@
 package io.flavien.demo.domain.user.service
 
+import io.flavien.demo.domain.group.service.GroupService
+import io.flavien.demo.domain.permission.service.PermissionService
 import io.flavien.demo.domain.session.entity.OtpPending
 import io.flavien.demo.domain.session.exception.InvalidOtpException
 import io.flavien.demo.domain.session.exception.OtpAlreadyConfiguredException
@@ -13,7 +15,6 @@ import io.flavien.demo.domain.shared.util.SECURE_RANDOM
 import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.exception.UserAlreadyExistsException
 import io.flavien.demo.domain.user.exception.UserNotFoundException
-import io.flavien.demo.domain.user.model.UserRole
 import io.flavien.demo.domain.user.model.UserUpdate
 import io.flavien.demo.domain.user.repository.UserRepository
 import io.flavien.demo.library.common.RandomUtil
@@ -35,6 +36,8 @@ class UserService(
     private val passwordService: PasswordService,
     private val otpService: OtpService,
     private val otpPendingRepository: OtpPendingRepository,
+    private val groupService: GroupService,
+    private val permissionService: PermissionService,
 ) {
     @Transactional
     fun create(
@@ -54,12 +57,12 @@ class UserService(
                 password = passwordService.hashPassword(password, salt),
                 proofOfWork = proofOfWork,
                 passwordSalt = salt,
-                role = UserRole.USER,
                 enabled = false,
                 lastLogin = OffsetDateTime.now(),
             )
 
         val savedUser = userRepository.save(user)
+        groupService.assignDefaultGroup(savedUser)
         log.info("User $email has been created")
         userActivationService.sendActivationToken(savedUser)
 
@@ -147,10 +150,6 @@ class UserService(
             user.proofOfWork = it
         }
 
-        userUpdate.role?.let {
-            user.role = it
-        }
-
         userRepository.save(user)
 
         return user
@@ -233,6 +232,8 @@ class UserService(
 
     private fun delete(user: User) {
         val userId = user.id!!
+        groupService.deleteUserGroups(userId)
+        permissionService.deleteUserPermissions(userId)
         userRepository.delete(user)
         accessTokenService.deleteByUserId(userId)
         refreshTokenService.deleteByUserId(userId)

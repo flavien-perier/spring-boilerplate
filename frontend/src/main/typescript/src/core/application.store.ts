@@ -24,6 +24,7 @@ export const useApplicationStore = defineStore("application", {
     },
     initOk: false,
     accessToken: "",
+    permissions: [] as string[],
     notifications: [] as Notification[],
     lastNotificationId: 0,
     theme: (localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "light") as
@@ -41,6 +42,8 @@ export const useApplicationStore = defineStore("application", {
   }),
   getters: {
     isAuthenticated: (state) => state.user !== null && state.accessToken !== "",
+    hasPermission: (state) => (permission: string) =>
+      state.permissions.includes(permission),
   },
   actions: {
     toggleTheme() {
@@ -59,10 +62,7 @@ export const useApplicationStore = defineStore("application", {
           this.configuration = response.data;
         })
         .catch(() => {
-          this.sendNotification(
-            "danger",
-            "http.error.503"
-          );
+          this.sendNotification("danger", "http.error.503");
         });
 
       await this.renew(email);
@@ -136,7 +136,10 @@ export const useApplicationStore = defineStore("application", {
       const status: number = exception.response.status;
       const errorCode: string = getErrorCode(exception.response.data);
 
-      if (errorCode && this.$i18n.t(`http.error.${errorCode}`) !== `http.error.${errorCode}`) {
+      if (
+        errorCode &&
+        this.$i18n.t(`http.error.${errorCode}`) !== `http.error.${errorCode}`
+      ) {
         this.sendNotification("danger", `http.error.${errorCode}`);
         return;
       }
@@ -165,9 +168,19 @@ export const useApplicationStore = defineStore("application", {
 
       await userApi
         .getCurrentUser()
-        .then((response) => {
+        .then(async (response) => {
           this.user = response.data;
           this.accessToken = accessToken;
+          await this.loadPermissions();
+        })
+        .catch(this.axiosException);
+    },
+
+    async loadPermissions() {
+      await userApi
+        .getUserPermissions()
+        .then((response) => {
+          this.permissions = response.data;
         })
         .catch(this.axiosException);
     },
@@ -176,6 +189,7 @@ export const useApplicationStore = defineStore("application", {
       cookieUtil.clearAll();
       this.user = null;
       this.accessToken = "";
+      this.permissions = [];
       this.$router.push({ name: "home" });
       setAccessToken();
     },

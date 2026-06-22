@@ -11,9 +11,7 @@ import com.tngtech.archunit.lang.ArchCondition
 import com.tngtech.archunit.lang.ArchRule
 import com.tngtech.archunit.lang.ConditionEvents
 import com.tngtech.archunit.lang.SimpleConditionEvent
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*
 import io.flavien.demo.domain.shared.exception.FioException
 import io.flavien.demo.domain.tenant.TenantContext
 import io.flavien.demo.libtest.SpringModuleArchitectureTest
@@ -174,7 +172,7 @@ class ArchitectureTest : SpringModuleArchitectureTest() {
             .resideInAPackage("org.springframework.web..")
             .because(
                 "Only domain exceptions may carry HTTP status via HttpStatus; " +
-                        "controllers and servlet API belong in the api module",
+                    "controllers and servlet API belong in the api module",
             )
 
     @ArchTest
@@ -205,13 +203,13 @@ class ArchitectureTest : SpringModuleArchitectureTest() {
     val `only tenant infrastructure should manage the TenantContext lifecycle`: ArchRule =
         noClasses()
             .that()
-            .resideOutsideOfPackage("..domain.tenant..")
+            .resideOutsideOfPackages("..domain.tenant..", "..domain.permission.init..")
             .should()
             .callMethod(TenantContext::class.java, "set", String::class.java)
             .orShould()
             .callMethod(TenantContext::class.java, "clear")
             .because(
-                "Only entry points (HTTP filter, batch runner) own the tenant lifecycle — " +
+                "Only entry points (HTTP filter, batch runner, data initializer) own the tenant lifecycle — " +
                     "domain services must only read the current tenant",
             )
 
@@ -328,7 +326,7 @@ class ArchitectureTest : SpringModuleArchitectureTest() {
             .beAnnotatedWith("org.springframework.web.bind.annotation.ResponseStatus")
             .because(
                 "Domain exceptions declare their HTTP status through the FioException " +
-                        "constructor (HttpStatus), not via the @ResponseStatus annotation",
+                    "constructor (HttpStatus), not via the @ResponseStatus annotation",
             )
 
     @ArchTest

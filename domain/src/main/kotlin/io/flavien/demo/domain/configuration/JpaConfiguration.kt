@@ -1,10 +1,14 @@
 package io.flavien.demo.domain.configuration
 
+import io.flavien.demo.domain.group.entity.Group
+import io.flavien.demo.domain.group.entity.UserGroup
+import io.flavien.demo.domain.permission.entity.GroupPermission
+import io.flavien.demo.domain.permission.entity.Permission
+import io.flavien.demo.domain.permission.entity.UserPermission
 import io.flavien.demo.domain.tenant.configuration.SchemaMultiTenantConnectionProvider
 import io.flavien.demo.domain.tenant.configuration.TenantContextIdentifierResolver
 import io.flavien.demo.domain.tenant.repository.TenantRegistry
 import io.flavien.demo.domain.user.entity.User
-import io.flavien.demo.domain.user.repository.UserRepository
 import org.springframework.boot.persistence.autoconfigure.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,9 +27,9 @@ import java.sql.Connection
 import javax.sql.DataSource
 
 @Configuration
-@EntityScan(basePackageClasses = [User::class])
+@EntityScan(basePackages = ["io.flavien.demo.domain"])
 @EnableJpaRepositories(
-    basePackageClasses = [UserRepository::class],
+    basePackages = ["io.flavien.demo.domain"],
     bootstrapMode = BootstrapMode.LAZY,
 )
 class JpaConfiguration {
@@ -68,15 +72,21 @@ class JpaConfiguration {
             setPackagesToScan("io.flavien.demo.domain")
             setPersistenceUnitPostProcessors(
                 PersistenceUnitPostProcessor { pud ->
-                    pud.addManagedClassName(User::class.java.name)
+                    listOf(
+                        User::class.java,
+                        Group::class.java,
+                        UserGroup::class.java,
+                        Permission::class.java,
+                        UserPermission::class.java,
+                        GroupPermission::class.java,
+                    ).forEach { pud.addManagedClassName(it.name) }
                 },
             )
             setJpaPropertyMap(
                 mapOf(
                     "hibernate.multi_tenant_connection_provider" to provider,
                     "hibernate.tenant_identifier_resolver" to resolver,
-                    "hibernate.dialect" to "org.hibernate.dialect.PostgreSQLDialect",
-                    "hibernate.temp.use_jdbc_metadata_defaults" to "false",
+                    "hibernate.temp.allow_jdbc_metadata_access" to "false",
                 ),
             )
         }

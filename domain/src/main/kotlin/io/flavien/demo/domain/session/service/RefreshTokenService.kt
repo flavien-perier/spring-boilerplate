@@ -4,7 +4,6 @@ import io.flavien.demo.domain.session.entity.RefreshToken
 import io.flavien.demo.domain.session.exception.BadRefreshTokenException
 import io.flavien.demo.domain.session.repository.RefreshTokenRepository
 import io.flavien.demo.domain.shared.util.SECURE_RANDOM
-import io.flavien.demo.domain.user.model.UserRole
 import io.flavien.demo.library.common.RandomUtil
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
@@ -14,13 +13,10 @@ import java.util.UUID
 class RefreshTokenService(
     private val refreshTokenRepository: RefreshTokenRepository,
 ) {
-    fun create(
-        userId: Long,
-        role: UserRole,
-    ): RefreshToken {
+    fun create(userId: Long): RefreshToken {
         val id = RandomUtil.randomString(64, SECURE_RANDOM)
 
-        val refreshToken = RefreshToken(id, UUID.randomUUID(), userId, role, OffsetDateTime.now())
+        val refreshToken = RefreshToken(id, UUID.randomUUID(), userId, OffsetDateTime.now())
         refreshTokenRepository.save(refreshToken)
 
         return refreshToken

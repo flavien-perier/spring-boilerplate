@@ -1,10 +1,7 @@
 package io.flavien.demo.domain.user.entity
 
-import io.flavien.demo.domain.user.model.UserRole
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -24,9 +21,6 @@ data class User(
     var passwordSalt: String,
     @Column(name = "otp_secret", nullable = true)
     var otpSecret: String? = null,
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    var role: UserRole,
     @Column(name = "enabled", nullable = false)
     var enabled: Boolean,
     @Column(name = "last_login", nullable = false)

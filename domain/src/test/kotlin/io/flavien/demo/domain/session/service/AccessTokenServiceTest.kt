@@ -1,11 +1,11 @@
 package io.flavien.demo.domain.session.service
 
 import io.flavien.demo.domain.comparator.OffsetDateTimeTestComparator
+import io.flavien.demo.domain.permission.service.PermissionService
 import io.flavien.demo.domain.session.SessionTestFactory
 import io.flavien.demo.domain.session.entity.AccessToken
 import io.flavien.demo.domain.session.exception.BadAccessTokenException
 import io.flavien.demo.domain.session.repository.AccessTokenRepository
-import io.flavien.demo.domain.user.model.UserRole
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -31,6 +31,9 @@ class AccessTokenServiceTest {
     @Mock
     var refreshTokenService: RefreshTokenService? = null
 
+    @Mock
+    var permissionService: PermissionService? = null
+
     @Test
     fun `Should create an access token`() {
         // Given
@@ -48,7 +51,6 @@ class AccessTokenServiceTest {
                 SessionTestFactory.initAccessToken(
                     "test",
                     refreshToken.userId,
-                    refreshToken.role,
                     refreshToken.id,
                     OffsetDateTime.now(),
                 ),
@@ -63,7 +65,7 @@ class AccessTokenServiceTest {
         val tokenId = "test-token-id"
         val refreshTokenId = "test-refresh-token-id"
         val userId = 1L
-        val accessToken = SessionTestFactory.initAccessToken(tokenId, userId, UserRole.USER, refreshTokenId)
+        val accessToken = SessionTestFactory.initAccessToken(tokenId, userId, refreshTokenId)
 
         Mockito
             .`when`(accessTokenRepository!!.findById(tokenId))

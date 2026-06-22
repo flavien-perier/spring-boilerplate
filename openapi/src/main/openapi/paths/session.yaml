@@ -66,7 +66,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_SESSIONS ]
 
 /api/session/renew:
   post:
@@ -150,7 +150,7 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_SESSIONS ]
 
 /api/sessions/{sessionUuid}:
   delete:
@@ -170,4 +170,4 @@
       "500":
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
-      - bearer: [ user, admin ]
+      - bearer: [ MANAGE_OWN_SESSIONS ]

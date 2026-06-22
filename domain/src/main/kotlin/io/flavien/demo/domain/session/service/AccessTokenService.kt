@@ -1,5 +1,6 @@
 package io.flavien.demo.domain.session.service
 
+import io.flavien.demo.domain.permission.service.PermissionService
 import io.flavien.demo.domain.session.entity.AccessToken
 import io.flavien.demo.domain.session.entity.RefreshToken
 import io.flavien.demo.domain.session.exception.BadAccessTokenException
@@ -13,11 +14,13 @@ import java.time.OffsetDateTime
 class AccessTokenService(
     private val accessTokenRepository: AccessTokenRepository,
     private val refreshTokenService: RefreshTokenService,
+    private val permissionService: PermissionService,
 ) {
     fun create(refreshToken: RefreshToken): AccessToken {
         val id = RandomUtil.randomString(64, SECURE_RANDOM)
+        val permissions = permissionService.getGrantedPermissions(refreshToken.userId)
 
-        val accessToken = AccessToken(id, refreshToken.userId, refreshToken.role, refreshToken.id, OffsetDateTime.now())
+        val accessToken = AccessToken(id, refreshToken.userId, refreshToken.id, OffsetDateTime.now(), permissions)
         accessTokenRepository.save(accessToken)
 
         return accessToken

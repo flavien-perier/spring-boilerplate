@@ -1,7 +1,6 @@
 package io.flavien.demo.domain.session.entity
 
 import io.flavien.demo.domain.session.model.REFRESH_TOKEN_TTL_SECONDS
-import io.flavien.demo.domain.user.model.UserRole
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.index.Indexed
@@ -17,6 +16,5 @@ data class RefreshToken(
     val uuid: UUID,
     @Indexed
     val userId: Long,
-    val role: UserRole,
     val creationDate: OffsetDateTime,
 ) : Serializable

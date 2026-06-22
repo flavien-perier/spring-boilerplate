@@ -4,7 +4,6 @@ import io.flavien.demo.domain.session.SessionTestFactory
 import io.flavien.demo.domain.session.entity.RefreshToken
 import io.flavien.demo.domain.session.exception.BadRefreshTokenException
 import io.flavien.demo.domain.session.repository.RefreshTokenRepository
-import io.flavien.demo.domain.user.model.UserRole
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -32,10 +31,9 @@ class RefreshTokenServiceTest {
     fun `Should create an refresh token`() {
         // Given
         val userId = 1L
-        val role = UserRole.USER
 
         // When
-        val result = refreshTokenService!!.create(userId, role)
+        val result = refreshTokenService!!.create(userId)
 
         // Then
         val refreshTokenCaptor = ArgumentCaptor.forClass(RefreshToken::class.java)
@@ -43,10 +41,8 @@ class RefreshTokenServiceTest {
         val savedRefreshToken = refreshTokenCaptor.value
 
         assertEquals(userId, savedRefreshToken.userId)
-        assertEquals(role, savedRefreshToken.role)
 
         assertEquals(userId, result.userId)
-        assertEquals(role, result.role)
     }
 
     @Test

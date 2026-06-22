@@ -40,7 +40,7 @@ Unauthorized:
         $ref: "#/ProblemDetailDto"
 
 Forbidden:
-  description: Insufficient role.
+  description: Insufficient permission.
   content:
     application/problem+json:
       schema:

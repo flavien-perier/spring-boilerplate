@@ -1,6 +1,6 @@
 package io.flavien.demo.domain.session.entity
 
-import io.flavien.demo.domain.user.model.UserRole
+import io.flavien.demo.domain.permission.model.PermissionEnum
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.index.Indexed
@@ -13,7 +13,7 @@ data class AccessToken(
     val id: String,
     @Indexed
     val userId: Long,
-    val role: UserRole,
     val refreshTokenId: String,
     val creationDate: OffsetDateTime,
+    val permissions: Set<PermissionEnum> = emptySet(),
 ) : Serializable

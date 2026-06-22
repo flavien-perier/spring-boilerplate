@@ -1,7 +1,6 @@
 package io.flavien.demo.api.user
 
 import io.flavien.demo.api.generated.dto.ChangePasswordDto
-import io.flavien.demo.api.generated.dto.RoleDto
 import io.flavien.demo.api.generated.dto.UserCreationDto
 import io.flavien.demo.api.generated.dto.UserDto
 import io.flavien.demo.api.generated.dto.UserUpdateAdminDto
@@ -26,8 +25,7 @@ object UserDtoTestFactory {
         email: String = "perier@flavien.io",
         password: String = "newPassword",
         proofOfWork: String = "proofOfWork",
-        role: RoleDto = RoleDto.USER,
-    ): UserUpdateAdminDto = UserUpdateAdminDto(email, password, proofOfWork, role)
+    ): UserUpdateAdminDto = UserUpdateAdminDto(email, password, proofOfWork)
 
     fun initUserUpdateDto(
         email: String = "perier@flavien.io",

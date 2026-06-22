@@ -31,9 +31,6 @@
       <column name="otp_secret" type="VARCHAR(50)">
         <constraints nullable="true"/>
       </column>
-      <column name="role" type="VARCHAR(10)">
-        <constraints nullable="false"/>
-      </column>
       <column name="enabled" type="BOOLEAN">
         <constraints nullable="false"/>
       </column>
@@ -54,5 +51,131 @@
     <createIndex tableName="app_user" indexName="index_app_user_email">
       <column name="email"/>
     </createIndex>
+  </changeSet>
+
+  <changeSet id="1.0.0-create-table-app_group" author="perier@flavien.io">
+    <createTable tableName="app_group">
+      <column name="group_id" autoIncrement="true" type="BIGINT">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(100)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="parent_id" type="BIGINT">
+        <constraints nullable="true" foreignKeyName="fk_app_group_parent" referencedTableName="app_group"
+                     referencedColumnNames="group_id"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="1.0.0-create-table-user_group" author="perier@flavien.io">
+    <createTable tableName="user_group">
+      <column name="user_id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_group_user"
+                     referencedTableName="app_user" referencedColumnNames="user_id"/>
+      </column>
+      <column name="group_id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_group_group"
+                     referencedTableName="app_group" referencedColumnNames="group_id"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="1.0.0-create-table-permission" author="perier@flavien.io">
+    <createTable tableName="permission">
+      <column name="name" type="VARCHAR(50)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="1.0.0-create-table-user_permission" author="perier@flavien.io">
+    <createTable tableName="user_permission">
+      <column name="user_id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_permission_user"
+                     referencedTableName="app_user" referencedColumnNames="user_id"/>
+      </column>
+      <column name="permission_name" type="VARCHAR(50)">
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_permission_permission"
+                     referencedTableName="permission" referencedColumnNames="name"/>
+      </column>
+      <column name="allow" type="BOOLEAN" defaultValueBoolean="true">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="1.0.0-create-table-group_permission" author="perier@flavien.io">
+    <createTable tableName="group_permission">
+      <column name="group_id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_group_permission_group"
+                     referencedTableName="app_group" referencedColumnNames="group_id"/>
+      </column>
+      <column name="permission_name" type="VARCHAR(50)">
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_group_permission_permission"
+                     referencedTableName="permission" referencedColumnNames="name"/>
+      </column>
+      <column name="allow" type="BOOLEAN" defaultValueBoolean="true">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="1.0.0-insert-permissions" author="perier@flavien.io">
+    <insert tableName="permission">
+      <column name="name" value="MANAGE_OWN_ACCOUNT"/>
+    </insert>
+    <insert tableName="permission">
+      <column name="name" value="MANAGE_OWN_SESSIONS"/>
+    </insert>
+    <insert tableName="permission">
+      <column name="name" value="MANAGE_ALL_USERS"/>
+    </insert>
+  </changeSet>
+
+  <changeSet id="1.0.0-insert-default-user" author="perier@flavien.io">
+    <insert tableName="app_user">
+      <column name="email" value="perier@flavien.io"/>
+      <column name="password" value="_"/>
+      <column name="proof_of_work" value="_"/>
+      <column name="password_salt" value="_"/>
+      <column name="enabled" valueBoolean="true"/>
+      <column name="last_login" valueComputed="CURRENT_TIMESTAMP"/>
+    </insert>
+  </changeSet>
+
+  <changeSet id="1.0.0-insert-default-groups" author="perier@flavien.io">
+    <insert tableName="app_group">
+      <column name="name" value="USER"/>
+    </insert>
+    <insert tableName="app_group">
+      <column name="name" value="ADMIN"/>
+      <column name="parent_id" valueComputed="(SELECT group_id FROM app_group WHERE name = 'USER')"/>
+    </insert>
+  </changeSet>
+
+  <changeSet id="1.0.0-insert-default-group-permission" author="perier@flavien.io">
+    <insert tableName="group_permission">
+      <column name="group_id" valueComputed="(SELECT group_id FROM app_group WHERE name = 'USER')"/>
+      <column name="permission_name" value="MANAGE_OWN_ACCOUNT"/>
+      <column name="allow" valueBoolean="true"/>
+    </insert>
+    <insert tableName="group_permission">
+      <column name="group_id" valueComputed="(SELECT group_id FROM app_group WHERE name = 'USER')"/>
+      <column name="permission_name" value="MANAGE_OWN_SESSIONS"/>
+      <column name="allow" valueBoolean="true"/>
+    </insert>
+    <insert tableName="group_permission">
+      <column name="group_id" valueComputed="(SELECT group_id FROM app_group WHERE name = 'ADMIN')"/>
+      <column name="permission_name" value="MANAGE_ALL_USERS"/>
+      <column name="allow" valueBoolean="true"/>
+    </insert>
+  </changeSet>
+
+  <changeSet id="1.0.0-insert-default-user-group" author="perier@flavien.io">
+    <insert tableName="user_group">
+      <column name="user_id" valueComputed="(SELECT user_id FROM app_user WHERE email = 'perier@flavien.io')"/>
+      <column name="group_id" valueComputed="(SELECT group_id FROM app_group WHERE name = 'ADMIN')"/>
+    </insert>
   </changeSet>
 </databaseChangeLog>

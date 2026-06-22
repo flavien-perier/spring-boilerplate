@@ -183,10 +183,6 @@ class OwnAccountManagementE2ETest {
             .isNotEmpty()
             .jsonPath("$.email")
             .isEqualTo(userEmail)
-            .jsonPath("$.role")
-            .isNotEmpty()
-            .jsonPath("$.role")
-            .isEqualTo("USER")
     }
 
     @Test
@@ -211,10 +207,6 @@ class OwnAccountManagementE2ETest {
             .isNotEmpty()
             .jsonPath("$.email")
             .isEqualTo(userUpdatedEmail)
-            .jsonPath("$.role")
-            .isNotEmpty()
-            .jsonPath("$.role")
-            .isEqualTo("USER")
     }
 
     @Test
@@ -253,10 +245,6 @@ class OwnAccountManagementE2ETest {
             .isNotEmpty()
             .jsonPath("$.email")
             .isEqualTo(userUpdatedEmail)
-            .jsonPath("$.role")
-            .isNotEmpty()
-            .jsonPath("$.role")
-            .isEqualTo("USER")
     }
 
     @Test

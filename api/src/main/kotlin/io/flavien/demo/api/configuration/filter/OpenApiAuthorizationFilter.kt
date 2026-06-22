@@ -1,6 +1,8 @@
 package io.flavien.demo.api.configuration.filter
 
 import io.flavien.demo.api.session.util.ContextUtil
+import io.flavien.demo.domain.permission.exception.BadPermissionException
+import io.flavien.demo.domain.permission.model.PermissionEnum
 import io.flavien.demo.domain.session.exception.AuthenticationFailedException
 import io.flavien.demo.domain.session.service.AccessTokenService
 import io.flavien.demo.domain.shared.util.SECURE_RANDOM
@@ -88,20 +90,22 @@ class OpenApiAuthorizationFilter(
         val bearer = authorizationHeader.removePrefix("Bearer ")
         val accessToken = accessTokenService.get(bearer)
 
-        val hasRole =
-            securityRequirements
-                .filter { it.key == "bearer" }
-                .flatMap { it.value }
-                .contains(accessToken.role.name.lowercase())
-
-        if (!hasRole) {
-            throw AuthenticationFailedException()
-        }
+        securityRequirements
+            .filter { it.key == "bearer" }
+            .flatMap { it.value }
+            .map { scope -> toPermission(scope) }
+            .forEach { permission ->
+                if (permission !in accessToken.permissions) {
+                    throw BadPermissionException(permission)
+                }
+            }
 
         ContextUtil.userId = accessToken.userId
-        ContextUtil.userRole = accessToken.role
         ContextUtil.refreshTokenId = accessToken.refreshTokenId
     }
+
+    private fun toPermission(scope: String) =
+        PermissionEnum.entries.firstOrNull { it.name == scope } ?: throw AuthenticationFailedException()
 
     private fun getOperation(
         path: PathItem,
