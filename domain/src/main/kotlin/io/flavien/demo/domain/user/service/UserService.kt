@@ -150,6 +150,10 @@ class UserService(
             user.proofOfWork = it
         }
 
+        userUpdate.enabled?.let {
+            user.enabled = it
+        }
+
         userRepository.save(user)
 
         return user

@@ -32,10 +32,11 @@ object UserTestFactory {
     }
 
     fun initUserUpdate(
-        email: String = "perier@flavien.io",
-        password: String = "newPassword",
-        proofOfWork: String = "proofOfWork",
-    ) = UserUpdate(email, password, proofOfWork)
+        email: String? = "perier@flavien.io",
+        password: String? = "newPassword",
+        proofOfWork: String? = "proofOfWork",
+        enabled: Boolean? = null,
+    ) = UserUpdate(email, password, proofOfWork, enabled)
 
     fun initUserActivation(
         token: String = "activationToken",

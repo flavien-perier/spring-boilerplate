@@ -18,6 +18,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faHome,
   faUser,
+  faUsers,
   faFlag,
   faGear,
   faTrash,
@@ -48,6 +49,7 @@ import type { IconSize } from "@/model/icon-size";
 library.add(
   faHome,
   faUser,
+  faUsers,
   faFlag,
   faGear,
   faTrash,

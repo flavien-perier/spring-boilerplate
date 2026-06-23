@@ -1,6 +1,7 @@
 import {
-  Configuration,
   ApplicationApiFactory,
+  Configuration,
+  GroupApiFactory,
   SessionApiFactory,
   UserApiFactory,
 } from "@generated/api";
@@ -30,6 +31,7 @@ const applicationApi = ApplicationApiFactory(
 );
 const userApi = UserApiFactory(configuration, BASE_PATH, axiosInstance);
 const sessionApi = SessionApiFactory(configuration, BASE_PATH, axiosInstance);
+const groupApi = GroupApiFactory(configuration, BASE_PATH, axiosInstance);
 
 function setAccessToken(accessToken?: string) {
   if (accessToken) {
@@ -68,7 +70,7 @@ axiosRetry(axiosInstance, {
   },
 });
 
-export { applicationApi, userApi, sessionApi, setAccessToken };
+export { applicationApi, userApi, sessionApi, groupApi, setAccessToken };
 
 export function getErrorCode(data: unknown): string {
   const type = (data as Record<string, unknown>)?.type;

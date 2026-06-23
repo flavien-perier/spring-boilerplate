@@ -69,3 +69,25 @@ sortOrder:
   schema:
     type: string
     enum: [ asc, desc ]
+
+groupId:
+  name: groupId
+  in: path
+  description: The group identifier.
+  required: true
+  schema:
+    type: integer
+    format: int64
+    minimum: 1
+    example: 1
+
+permissionName:
+  name: permission
+  in: path
+  description: The permission name.
+  required: true
+  schema:
+    type: string
+    maxLength: 100
+    pattern: ^[A-Z_]+$
+    example: MANAGE_ALL_USERS

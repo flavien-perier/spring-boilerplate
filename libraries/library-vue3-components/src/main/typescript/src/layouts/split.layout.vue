@@ -1,5 +1,5 @@
 <template>
-  <div class="split-layout">
+  <div class="split-layout" :class="`split-layout--${align}`">
     <div class="split-layout__left">
       <slot name="left" />
     </div>
@@ -11,6 +11,15 @@
 
 <script setup lang="ts">
 defineOptions({ name: "FioSplitLayout" });
+
+withDefaults(
+  defineProps<{
+    align?: "center" | "start" | "stretch";
+  }>(),
+  {
+    align: "center",
+  }
+);
 </script>
 
 <style scoped lang="scss">
@@ -23,8 +32,25 @@ defineOptions({ name: "FioSplitLayout" });
 
   @media (min-width: $breakpoint-md) {
     flex-direction: row;
-    gap: 2rem;
-    align-items: center;
+    gap: $margin-xl;
+  }
+
+  &--center {
+    @media (min-width: $breakpoint-md) {
+      align-items: center;
+    }
+  }
+
+  &--start {
+    @media (min-width: $breakpoint-md) {
+      align-items: flex-start;
+    }
+  }
+
+  &--stretch {
+    @media (min-width: $breakpoint-md) {
+      align-items: stretch;
+    }
   }
 
   &__left,

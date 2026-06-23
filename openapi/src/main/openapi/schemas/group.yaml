@@ -1,0 +1,48 @@
+GroupDto:
+  type: object
+  description: A group of users.
+  required:
+    - id
+    - name
+  properties:
+    id:
+      type: integer
+      format: int64
+      description: The group identifier.
+    name:
+      type: string
+      maxLength: 100
+      description: The group name.
+    parentId:
+      type: integer
+      format: int64
+      description: The parent group identifier, if any.
+    parentName:
+      type: string
+      maxLength: 100
+      description: The parent group name, if any.
+
+GroupCreationDto:
+  type: object
+  description: Information to create a group.
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      maxLength: 100
+    parentId:
+      type: integer
+      format: int64
+
+GroupUpdateDto:
+  type: object
+  description: Information to update a group.
+  properties:
+    name:
+      type: string
+      maxLength: 100
+    parentId:
+      type: integer
+      format: int64
+      description: Send null to remove the current parent.

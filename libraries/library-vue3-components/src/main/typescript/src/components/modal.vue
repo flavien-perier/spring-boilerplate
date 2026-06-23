@@ -6,7 +6,9 @@
         <fio-icon icon="xmark" clickable class="fio-modal__close" @click="emit('close')"/>
       </div>
       <div class="fio-modal__body">
-        <p>{{ content }}</p>
+        <slot>
+          <p>{{ content }}</p>
+        </slot>
       </div>
       <div class="fio-modal__footer" v-if="rejectMessage || resolveMessage">
         <fio-input-button
@@ -19,6 +21,7 @@
         <fio-input-button
           v-if="resolveMessage"
           :label="resolveMessage"
+          :disabled="resolveDisabled"
           size="s"
           @click="emit('resolve')"
         />
@@ -39,13 +42,16 @@ withDefaults(
   defineProps<{
     show: boolean;
     title: string;
-    content: string;
+    content?: string;
     rejectMessage?: string;
     resolveMessage?: string;
+    resolveDisabled?: boolean;
   }>(),
   {
+    content: "",
     rejectMessage: "",
     resolveMessage: "",
+    resolveDisabled: false,
   }
 );
 

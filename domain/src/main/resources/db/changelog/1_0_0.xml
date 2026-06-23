@@ -178,4 +178,32 @@
       <column name="group_id" valueComputed="(SELECT group_id FROM app_group WHERE name = 'ADMIN')"/>
     </insert>
   </changeSet>
+
+  <changeSet id="1.0.0-insert-permission-manage-all-groups" author="perier@flavien.io">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(*) FROM permission WHERE name = 'MANAGE_ALL_GROUPS'
+      </sqlCheck>
+    </preConditions>
+
+    <insert tableName="permission">
+      <column name="name" value="MANAGE_ALL_GROUPS"/>
+    </insert>
+  </changeSet>
+
+  <changeSet id="1.0.0-grant-manage-all-groups-to-admin" author="perier@flavien.io">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(*) FROM group_permission
+        WHERE permission_name = 'MANAGE_ALL_GROUPS'
+          AND group_id = (SELECT group_id FROM app_group WHERE name = 'ADMIN')
+      </sqlCheck>
+    </preConditions>
+
+    <insert tableName="group_permission">
+      <column name="group_id" valueComputed="(SELECT group_id FROM app_group WHERE name = 'ADMIN')"/>
+      <column name="permission_name" value="MANAGE_ALL_GROUPS"/>
+      <column name="allow" valueBoolean="true"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>

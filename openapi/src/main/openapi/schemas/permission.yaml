@@ -1,0 +1,30 @@
+PermissionSettingDto:
+  type: object
+  description: A permission setting (allow / deny / inherited).
+  required:
+    - permission
+    - locked
+  properties:
+    permission:
+      type: string
+      maxLength: 100
+      description: The permission name.
+    allow:
+      type: boolean
+      description: Explicit override set at this level; omitted/null when unset.
+    locked:
+      type: boolean
+      description: Enforced by a higher-priority source (an ancestor group, or any group for a user) and read-only at this level.
+    inheritedAllow:
+      type: boolean
+      description: The enforced value to display when locked.
+
+PermissionUpdateDto:
+  type: object
+  description: Set a permission override.
+  required:
+    - allow
+  properties:
+    allow:
+      type: boolean
+      description: true=granted, false=denied.

@@ -14,5 +14,21 @@ export default {
       },
       component: () => import("@/admin/admin-users/admin-users.view.vue"),
     },
+    {
+      path: "groups",
+      name: "admin-groups",
+      meta: {
+        authenticated: true,
+      },
+      component: () => import("@/admin/admin-groups/admin-groups.view.vue"),
+    },
+    {
+      path: "users/:userMail",
+      name: "admin-user",
+      meta: {
+        authenticated: true,
+      },
+      component: () => import("@/admin/admin-user/admin-user.view.vue"),
+    },
   ],
 };

@@ -349,3 +349,202 @@
         $ref: "../components/errors.yaml#/InternalServerError"
     security:
       - bearer: [ MANAGE_OWN_ACCOUNT ]
+
+/api/users/{userMail}/permissions:
+  get:
+    tags:
+      - User
+    summary: Returns the permission overrides of a user.
+    operationId: getUserPermissionOverrides
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+    responses:
+      "200":
+        description: List of permission settings.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/permission.yaml#/PermissionSettingDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_USERS ]
+
+/api/users/{userMail}/permissions/{permission}:
+  put:
+    tags:
+      - User
+    summary: Set a permission override on a user.
+    operationId: setUserPermission
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+      - $ref: "../components/parameters.yaml#/permissionName"
+    requestBody:
+      description: The permission override.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/permission.yaml#/PermissionUpdateDto"
+    responses:
+      "204":
+        description: The permission has been set.
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_USERS ]
+  delete:
+    tags:
+      - User
+    summary: Remove a permission override from a user.
+    operationId: removeUserPermission
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+      - $ref: "../components/parameters.yaml#/permissionName"
+    responses:
+      "204":
+        description: The permission override has been removed.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_USERS ]
+
+/api/users/{userMail}/groups:
+  get:
+    tags:
+      - User
+    summary: Returns the groups of a user.
+    operationId: getUserGroups
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+    responses:
+      "200":
+        description: List of groups.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/group.yaml#/GroupDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_USERS ]
+
+/api/users/{userMail}/groups/{groupId}:
+  put:
+    tags:
+      - User
+    summary: Add a user to a group.
+    operationId: addUserToGroup
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+      - $ref: "../components/parameters.yaml#/groupId"
+    responses:
+      "204":
+        description: The user has been added to the group.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "409":
+        $ref: "../components/errors.yaml#/Conflict"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_USERS ]
+  delete:
+    tags:
+      - User
+    summary: Remove a user from a group.
+    operationId: removeUserFromGroup
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+      - $ref: "../components/parameters.yaml#/groupId"
+    responses:
+      "204":
+        description: The user has been removed from the group.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_USERS ]
+
+/api/users/{userMail}/otp:
+  delete:
+    tags:
+      - User
+    summary: Disable OTP 2FA for a user (admin operation).
+    operationId: disableUserOtp
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+    responses:
+      "204":
+        description: OTP disabled.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_USERS ]
+
+/api/users/{userMail}/reset-password:
+  post:
+    tags:
+      - User
+    summary: Send a password reset email to a user (admin operation).
+    operationId: sendUserPasswordReset
+    parameters:
+      - $ref: "../components/parameters.yaml#/userMail"
+    responses:
+      "204":
+        description: The reset email has been sent.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_USERS ]

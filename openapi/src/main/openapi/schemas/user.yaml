@@ -63,6 +63,7 @@ UserDto:
   required:
     - email
     - otpEnabled
+    - enabled
   properties:
     email:
       $ref: "common.yaml#/email"
@@ -73,6 +74,9 @@ UserDto:
     otpEnabled:
       type: boolean
       description: Whether OTP 2FA is active for this user.
+    enabled:
+      type: boolean
+      description: Whether the account is enabled.
 
 UserExportDto:
   type: object
@@ -116,6 +120,8 @@ UserUpdateAdminDto:
       $ref: "common.yaml#/password"
     proofOfWork:
       $ref: "common.yaml#/proofOfWork"
+    enabled:
+      type: boolean
 
 UserPageDto:
   type: object

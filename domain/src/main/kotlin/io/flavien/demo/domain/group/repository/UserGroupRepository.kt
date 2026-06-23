@@ -14,4 +14,8 @@ interface UserGroupRepository : JpaRepository<UserGroup, UserGroupId> {
     @Modifying
     @Query("DELETE FROM user_group ug WHERE ug.user.id = :userId")
     fun deleteByUserId(userId: Long)
+
+    @Modifying
+    @Query("DELETE FROM user_group ug WHERE ug.group.id = :groupId")
+    fun deleteByGroupId(groupId: Long)
 }

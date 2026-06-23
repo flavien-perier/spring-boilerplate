@@ -12,6 +12,8 @@ import Table from "./components/table.vue";
 import InputText from "./components/inputs/input-text.vue";
 import InputCheckbox from "./components/inputs/input-checkbox.vue";
 import InputToggle from "./components/inputs/input-toggle.vue";
+import InputSelect from "./components/inputs/input-select.vue";
+import PermissionSetting from "./components/permission-setting.vue";
 import Markdown from "./components/markdown.vue";
 import InputMarkdown from "./components/inputs/input-markdown.vue";
 import TopNavLayout from "./layouts/top-nav.layout.vue";
@@ -22,8 +24,8 @@ import PageView from "./layouts/page-view.layout.vue";
 import SplitLayout from "./layouts/split.layout.vue";
 
 import { passwordUtil } from "@/utils/password-util";
-import {downloadUtil} from "@/utils/download-util";
-import {markdownUtil} from "@/utils/markdown-util";
+import { downloadUtil } from "@/utils/download-util";
+import { markdownUtil } from "@/utils/markdown-util";
 
 import type { App } from "vue";
 
@@ -42,6 +44,8 @@ export default {
     app.component("fio-input-text", InputText);
     app.component("fio-input-checkbox", InputCheckbox);
     app.component("fio-input-toggle", InputToggle);
+    app.component("fio-input-select", InputSelect);
+    app.component("fio-permission-setting", PermissionSetting);
     app.component("fio-markdown", Markdown);
     app.component("fio-input-markdown", InputMarkdown);
     app.component("fio-top-nav-layout", TopNavLayout);
@@ -53,9 +57,9 @@ export default {
   },
 };
 
-export {passwordUtil, downloadUtil, markdownUtil};
+export { passwordUtil, downloadUtil, markdownUtil };
 
-export type {MarkdownOptions} from "@/utils/markdown-util";
+export type { MarkdownOptions } from "@/utils/markdown-util";
 
 export type {
   Icon,
@@ -71,6 +75,8 @@ export type {
   InputText,
   InputCheckbox,
   InputToggle,
+  InputSelect,
+  PermissionSetting,
   Markdown,
   InputMarkdown,
   TopNavLayout,
@@ -82,6 +88,7 @@ export type {
 };
 
 export type { TabElement } from "./model/tab-element";
+export type { SelectOption } from "./components/inputs/input-select.vue";
 export type { NavbarElement } from "./model/navbar-element";
 export type { IconColor } from "./model/icon-color";
 export type { IconSize } from "./model/icon-size";

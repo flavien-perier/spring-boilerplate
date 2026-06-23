@@ -22,14 +22,14 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
-import {RouterView, useRouter} from "vue-router";
-import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
-import {useApplicationStore} from "@/core/application.store";
+import { computed } from "vue";
+import { RouterView, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
+import { useApplicationStore } from "@/core/application.store";
 import Modal from "@/core/component/modal.component.vue";
 import Notification from "@/core/component/notification.component.vue";
-import type {NavbarElement} from "@generated/component-library";
+import type { NavbarElement } from "@generated/component-library";
 
 const router = useRouter();
 const i18n = useI18n();
@@ -45,7 +45,8 @@ const navbarElements = computed<NavbarElement[]>(() => [
     faIcon: "home",
     action: () => router.push({ name: "home" }),
   },
-  ...(applicationStore.hasPermission("MANAGE_ALL_USERS")
+  ...(applicationStore.hasPermission("MANAGE_ALL_USERS") ||
+  applicationStore.hasPermission("MANAGE_ALL_GROUPS")
     ? [
         {
           i18nKey: "menu.administration",

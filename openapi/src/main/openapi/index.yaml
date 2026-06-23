@@ -16,6 +16,8 @@ tags:
     description: User session management.
   - name: User
     description: User account management.
+  - name: Group
+    description: Group and permission management.
 
 paths:
   /api/conf:
@@ -54,6 +56,26 @@ paths:
     $ref: "paths/user.yaml#/~1api~1users~1%7BuserMail%7D"
   /api/users:
     $ref: "paths/user.yaml#/~1api~1users"
+  /api/groups:
+    $ref: "paths/group.yaml#/~1api~1groups"
+  /api/groups/{groupId}:
+    $ref: "paths/group.yaml#/~1api~1groups~1%7BgroupId%7D"
+  /api/groups/{groupId}/permissions:
+    $ref: "paths/group.yaml#/~1api~1groups~1%7BgroupId%7D~1permissions"
+  /api/groups/{groupId}/permissions/{permission}:
+    $ref: "paths/group.yaml#/~1api~1groups~1%7BgroupId%7D~1permissions~1%7Bpermission%7D"
+  /api/users/{userMail}/permissions:
+    $ref: "paths/user.yaml#/~1api~1users~1%7BuserMail%7D~1permissions"
+  /api/users/{userMail}/permissions/{permission}:
+    $ref: "paths/user.yaml#/~1api~1users~1%7BuserMail%7D~1permissions~1%7Bpermission%7D"
+  /api/users/{userMail}/groups:
+    $ref: "paths/user.yaml#/~1api~1users~1%7BuserMail%7D~1groups"
+  /api/users/{userMail}/groups/{groupId}:
+    $ref: "paths/user.yaml#/~1api~1users~1%7BuserMail%7D~1groups~1%7BgroupId%7D"
+  /api/users/{userMail}/otp:
+    $ref: "paths/user.yaml#/~1api~1users~1%7BuserMail%7D~1otp"
+  /api/users/{userMail}/reset-password:
+    $ref: "paths/user.yaml#/~1api~1users~1%7BuserMail%7D~1reset-password"
 
 components:
   securitySchemes:

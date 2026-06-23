@@ -8,4 +8,8 @@ import java.util.Optional
 @Repository
 interface GroupRepository : JpaRepository<Group, Long> {
     fun findByName(name: String): Optional<Group>
+
+    fun existsByName(name: String): Boolean
+
+    fun existsByParentId(parentId: Long): Boolean
 }
