@@ -5,6 +5,7 @@ import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.entity.UserActivation
 import io.flavien.demo.domain.user.model.UserUpdate
 import java.time.OffsetDateTime
+import java.util.UUID
 
 object UserTestFactory {
     fun initUser(
@@ -14,7 +15,7 @@ object UserTestFactory {
         passwordSalt: String = "salt",
         enabled: Boolean = true,
         lastLogin: OffsetDateTime = OffsetDateTime.now(),
-        id: Long? = null,
+        id: UUID? = null,
     ): User {
         val user =
             User(
@@ -40,11 +41,11 @@ object UserTestFactory {
 
     fun initUserActivation(
         token: String = "activationToken",
-        userId: Long = 1L,
+        userId: String = "user-1",
     ) = UserActivation(token, userId)
 
     fun initForgotPassword(
         token: String = "forgotPasswordToken",
-        userId: Long = 1L,
+        userId: String = "user-1",
     ) = ForgotPassword(token, userId)
 }

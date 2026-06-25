@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.servlet.HandlerExceptionResolver
 import java.io.IOException
+import java.util.UUID
 
 @Component
 class OpenApiAuthorizationFilter(
@@ -51,7 +52,6 @@ class OpenApiAuthorizationFilter(
         } catch (exception: Exception) {
             log.warn("Authentication failed : ${exception.message}")
 
-            // Waits a random amount of time to avoid time-based discovery attacks
             Thread.sleep(SECURE_RANDOM.nextLong(100))
 
             handlerExceptionResolver.resolveException(httpServletRequest, httpServletResponse, null, exception)
@@ -100,7 +100,7 @@ class OpenApiAuthorizationFilter(
                 }
             }
 
-        ContextUtil.userId = accessToken.userId
+        ContextUtil.userId = UUID.fromString(accessToken.userId)
         ContextUtil.refreshTokenId = accessToken.refreshTokenId
     }
 

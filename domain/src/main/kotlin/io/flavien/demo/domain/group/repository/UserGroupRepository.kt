@@ -6,16 +6,17 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
 interface UserGroupRepository : JpaRepository<UserGroup, UserGroupId> {
-    fun findByUserId(userId: Long): List<UserGroup>
+    fun findByUserId(userId: UUID): List<UserGroup>
 
     @Modifying
     @Query("DELETE FROM user_group ug WHERE ug.user.id = :userId")
-    fun deleteByUserId(userId: Long)
+    fun deleteByUserId(userId: UUID)
 
     @Modifying
     @Query("DELETE FROM user_group ug WHERE ug.group.id = :groupId")
-    fun deleteByGroupId(groupId: Long)
+    fun deleteByGroupId(groupId: UUID)
 }

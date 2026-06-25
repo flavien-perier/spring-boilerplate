@@ -15,6 +15,6 @@ data class RefreshToken(
     @Indexed
     val uuid: UUID,
     @Indexed
-    val userId: Long,
+    val userId: String,
     val creationDate: OffsetDateTime,
 ) : Serializable

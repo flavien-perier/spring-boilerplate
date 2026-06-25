@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { computed, useId, watch } from "vue";
+import type { InputComponent } from "./model/input-component";
 
 defineOptions({
   name: "FioInputText",
@@ -24,21 +25,29 @@ defineOptions({
 
 const inputId = useId();
 
-const props = defineProps<{
-  placeholder?: string;
-  pattern?: RegExp;
-  label?: string;
-  maxLength?: number;
-  allowedCharacters?: RegExp;
-  disabled?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<
+    InputComponent<string> & {
+      placeholder?: string;
+      pattern?: RegExp;
+      label?: string;
+      maxLength?: number;
+      allowedCharacters?: RegExp;
+    }
+  >(),
+  { modelValue: "", disabled: false }
+);
 
 const emit = defineEmits<{
+  "update:modelValue": [value: string];
   input: [event: Event];
   "update:isValid": [value: boolean];
 }>();
 
-const value = defineModel<string>({ default: "" });
+const value = computed<string>({
+  get: () => props.modelValue,
+  set: (newValue) => emit("update:modelValue", newValue),
+});
 
 const safePattern = computed(() => {
   if (!props.pattern) return null;

@@ -11,7 +11,7 @@ object SessionTestFactory {
     fun initRefreshToken(
         id: String = "test",
         uuid: UUID = UUID.randomUUID(),
-        userId: Long = 1,
+        userId: String = "user-1",
         creationDate: OffsetDateTime = OffsetDateTime.now(),
     ) = RefreshToken(
         id,
@@ -22,7 +22,7 @@ object SessionTestFactory {
 
     fun initAccessToken(
         id: String = "accessTokenId",
-        userId: Long = 1L,
+        userId: String = "user-1",
         refreshTokenId: String = "refreshTokenId",
         creationDate: OffsetDateTime = OffsetDateTime.now(),
         permissions: Set<PermissionEnum> = emptySet(),

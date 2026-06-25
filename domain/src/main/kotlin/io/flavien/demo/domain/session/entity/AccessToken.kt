@@ -12,7 +12,7 @@ data class AccessToken(
     @Id
     val id: String,
     @Indexed
-    val userId: Long,
+    val userId: String,
     val refreshTokenId: String,
     val creationDate: OffsetDateTime,
     val permissions: Set<PermissionEnum> = emptySet(),

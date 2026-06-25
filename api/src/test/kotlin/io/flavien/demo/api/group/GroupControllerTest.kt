@@ -13,6 +13,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class GroupControllerTest {
@@ -28,28 +29,41 @@ class GroupControllerTest {
     @Mock
     var groupMapper: GroupMapper? = null
 
+    companion object {
+        private val GROUP_ID = UUID.fromString("00000000-0000-7000-8000-000000000001")
+        private val GROUP_1_STR = GROUP_ID.toString()
+    }
+
     @Test
     fun `Test createGroup`() {
         val dto = GroupDtoTestFactory.initGroupCreationDto()
-        val group = GroupTestFactory.initGroup(id = 1L, name = "GROUP")
-        val groupDto = GroupDtoTestFactory.initGroupDto(id = 1L, name = "GROUP")
+        val group = GroupTestFactory.initGroup(name = "GROUP")
+        val groupDto = GroupDtoTestFactory.initGroupDto(name = "GROUP")
 
-        Mockito.`when`(groupService!!.create(dto.name, dto.parentId)).thenReturn(group)
+        Mockito.`when`(groupService!!.create(dto.name, dto.parentId?.let { UUID.fromString(it) })).thenReturn(group)
         Mockito.`when`(groupMapper!!.toGroupDto(group)).thenReturn(groupDto)
 
         val response = groupController!!.createGroup(dto)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body).isEqualTo(groupDto)
-        Mockito.verify(groupService!!).create(dto.name, dto.parentId)
+        Mockito.verify(groupService!!).create(dto.name, dto.parentId?.let { UUID.fromString(it) })
     }
 
     @Test
     fun `Test findGroups`() {
-        val group1 = GroupTestFactory.initGroup(id = 1L, name = "G1")
-        val group2 = GroupTestFactory.initGroup(id = 2L, name = "G2")
-        val dto1 = GroupDtoTestFactory.initGroupDto(id = 1L, name = "G1")
-        val dto2 = GroupDtoTestFactory.initGroupDto(id = 2L, name = "G2")
+        val group1 =
+            GroupTestFactory.initGroup(
+                id = UUID.fromString("00000000-0000-7000-8000-000000000001"),
+                name = "G1",
+            )
+        val group2 =
+            GroupTestFactory.initGroup(
+                id = UUID.fromString("00000000-0000-7000-8000-000000000002"),
+                name = "G2",
+            )
+        val dto1 = GroupDtoTestFactory.initGroupDto(name = "G1")
+        val dto2 = GroupDtoTestFactory.initGroupDto(name = "G2")
 
         Mockito.`when`(groupService!!.findAll()).thenReturn(listOf(group1, group2))
         Mockito.`when`(groupMapper!!.toGroupDto(group1)).thenReturn(dto1)
@@ -63,13 +77,13 @@ class GroupControllerTest {
 
     @Test
     fun `Test getGroup`() {
-        val group = GroupTestFactory.initGroup(id = 1L, name = "GROUP")
-        val dto = GroupDtoTestFactory.initGroupDto(id = 1L, name = "GROUP")
+        val group = GroupTestFactory.initGroup(name = "GROUP")
+        val dto = GroupDtoTestFactory.initGroupDto(name = "GROUP")
 
-        Mockito.`when`(groupService!!.get(1L)).thenReturn(group)
+        Mockito.`when`(groupService!!.getById(GROUP_ID)).thenReturn(group)
         Mockito.`when`(groupMapper!!.toGroupDto(group)).thenReturn(dto)
 
-        val response = groupController!!.getGroup(1L)
+        val response = groupController!!.getGroup(GROUP_1_STR)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body).isEqualTo(dto)
@@ -78,13 +92,16 @@ class GroupControllerTest {
     @Test
     fun `Test updateGroup`() {
         val updateDto = GroupDtoTestFactory.initGroupUpdateDto(name = "UPDATED")
-        val group = GroupTestFactory.initGroup(id = 1L, name = "UPDATED")
-        val dto = GroupDtoTestFactory.initGroupDto(id = 1L, name = "UPDATED")
+        val group = GroupTestFactory.initGroup(name = "UPDATED")
+        val dto = GroupDtoTestFactory.initGroupDto(name = "UPDATED")
 
-        Mockito.`when`(groupService!!.update(1L, updateDto.name, updateDto.parentId)).thenReturn(group)
+        Mockito
+            .`when`(
+                groupService!!.update(GROUP_ID, updateDto.name, updateDto.parentId?.let { UUID.fromString(it) }),
+            ).thenReturn(group)
         Mockito.`when`(groupMapper!!.toGroupDto(group)).thenReturn(dto)
 
-        val response = groupController!!.updateGroup(1L, updateDto)
+        val response = groupController!!.updateGroup(GROUP_1_STR, updateDto)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body).isEqualTo(dto)
@@ -92,10 +109,10 @@ class GroupControllerTest {
 
     @Test
     fun `Test deleteGroup`() {
-        val response = groupController!!.deleteGroup(1L)
+        val response = groupController!!.deleteGroup(GROUP_1_STR)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(groupService!!).delete(1L)
+        Mockito.verify(groupService!!).delete(GROUP_ID)
     }
 
     @Test
@@ -106,9 +123,9 @@ class GroupControllerTest {
                 PermissionSetting(PermissionEnum.MANAGE_ALL_GROUPS, null),
             )
 
-        Mockito.`when`(permissionService!!.getGroupPermissions(1L)).thenReturn(settings)
+        Mockito.`when`(permissionService!!.getGroupPermissions(GROUP_ID)).thenReturn(settings)
 
-        val response = groupController!!.getGroupPermissions(1L)
+        val response = groupController!!.getGroupPermissions(GROUP_1_STR)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body).hasSize(2)
@@ -122,17 +139,17 @@ class GroupControllerTest {
     fun `Test setGroupPermission`() {
         val updateDto = GroupDtoTestFactory.initPermissionUpdateDto(allow = true)
 
-        val response = groupController!!.setGroupPermission(1L, "MANAGE_ALL_USERS", updateDto)
+        val response = groupController!!.setGroupPermission(GROUP_1_STR, "MANAGE_ALL_USERS", updateDto)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(permissionService!!).setGroupPermission(1L, PermissionEnum.MANAGE_ALL_USERS, true)
+        Mockito.verify(permissionService!!).setGroupPermission(GROUP_ID, PermissionEnum.MANAGE_ALL_USERS, true)
     }
 
     @Test
     fun `Test removeGroupPermission`() {
-        val response = groupController!!.removeGroupPermission(1L, "MANAGE_ALL_USERS")
+        val response = groupController!!.removeGroupPermission(GROUP_1_STR, "MANAGE_ALL_USERS")
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(permissionService!!).removeGroupPermission(1L, PermissionEnum.MANAGE_ALL_USERS)
+        Mockito.verify(permissionService!!).removeGroupPermission(GROUP_ID, PermissionEnum.MANAGE_ALL_USERS)
     }
 }

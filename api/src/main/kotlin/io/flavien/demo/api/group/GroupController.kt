@@ -12,6 +12,7 @@ import io.flavien.demo.domain.permission.model.PermissionEnum
 import io.flavien.demo.domain.permission.service.PermissionService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import java.util.UUID
 
 @Controller
 class GroupController(
@@ -20,7 +21,8 @@ class GroupController(
     private val groupMapper: GroupMapper,
 ) : GroupApi {
     override fun createGroup(groupCreationDto: GroupCreationDto): ResponseEntity<GroupDto> {
-        val group = groupService.create(groupCreationDto.name, groupCreationDto.parentId)
+        val parentId = groupCreationDto.parentId?.let { UUID.fromString(it) }
+        val group = groupService.create(groupCreationDto.name, parentId)
         return ResponseEntity.ok(groupMapper.toGroupDto(group))
     }
 
@@ -29,26 +31,28 @@ class GroupController(
         return ResponseEntity.ok(groups.map { groupMapper.toGroupDto(it) })
     }
 
-    override fun getGroup(groupId: Long): ResponseEntity<GroupDto> {
-        val group = groupService.get(groupId)
+    override fun getGroup(groupId: String): ResponseEntity<GroupDto> {
+        val group = groupService.getById(UUID.fromString(groupId))
         return ResponseEntity.ok(groupMapper.toGroupDto(group))
     }
 
     override fun updateGroup(
-        groupId: Long,
+        groupId: String,
         groupUpdateDto: GroupUpdateDto,
     ): ResponseEntity<GroupDto> {
-        val group = groupService.update(groupId, groupUpdateDto.name, groupUpdateDto.parentId)
+        val id = UUID.fromString(groupId)
+        val parentId = groupUpdateDto.parentId?.let { UUID.fromString(it) }
+        val group = groupService.update(id, groupUpdateDto.name, parentId)
         return ResponseEntity.ok(groupMapper.toGroupDto(group))
     }
 
-    override fun deleteGroup(groupId: Long): ResponseEntity<Unit> {
-        groupService.delete(groupId)
+    override fun deleteGroup(groupId: String): ResponseEntity<Unit> {
+        groupService.delete(UUID.fromString(groupId))
         return ResponseEntity.noContent().build()
     }
 
-    override fun getGroupPermissions(groupId: Long): ResponseEntity<List<PermissionSettingDto>> {
-        val settings = permissionService.getGroupPermissions(groupId)
+    override fun getGroupPermissions(groupId: String): ResponseEntity<List<PermissionSettingDto>> {
+        val settings = permissionService.getGroupPermissions(UUID.fromString(groupId))
         return ResponseEntity.ok(
             settings.map {
                 PermissionSettingDto(
@@ -62,21 +66,21 @@ class GroupController(
     }
 
     override fun setGroupPermission(
-        groupId: Long,
+        groupId: String,
         permission: String,
         permissionUpdateDto: PermissionUpdateDto,
     ): ResponseEntity<Unit> {
         val permissionEnum = PermissionEnum.fromName(permission)
-        permissionService.setGroupPermission(groupId, permissionEnum, permissionUpdateDto.allow)
+        permissionService.setGroupPermission(UUID.fromString(groupId), permissionEnum, permissionUpdateDto.allow)
         return ResponseEntity.noContent().build()
     }
 
     override fun removeGroupPermission(
-        groupId: Long,
+        groupId: String,
         permission: String,
     ): ResponseEntity<Unit> {
         val permissionEnum = PermissionEnum.fromName(permission)
-        permissionService.removeGroupPermission(groupId, permissionEnum)
+        permissionService.removeGroupPermission(UUID.fromString(groupId), permissionEnum)
         return ResponseEntity.noContent().build()
     }
 }

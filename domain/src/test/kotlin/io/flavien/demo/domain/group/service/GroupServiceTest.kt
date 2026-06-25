@@ -22,6 +22,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class GroupServiceTest {
@@ -40,10 +41,15 @@ class GroupServiceTest {
     @Mock
     var userRepository: UserRepository? = null
 
+    private val userId = UUID.fromString("00000000-0000-0000-0000-00000000000a")
+    private val group1Id = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    private val group2Id = UUID.fromString("00000000-0000-0000-0000-000000000002")
+    private val group10Id = UUID.fromString("00000000-0000-0000-0000-000000000010")
+
     @Test
     fun `Should assign the default group when the user has none`() {
-        val user = UserTestFactory.initUser(id = 1L)
-        val group = GroupTestFactory.initGroup(id = 10L, name = "USER")
+        val user = UserTestFactory.initUser(id = userId)
+        val group = GroupTestFactory.initGroup(id = group10Id, name = "USER")
 
         Mockito
             .`when`(groupRepository!!.findByName("USER"))
@@ -61,8 +67,8 @@ class GroupServiceTest {
 
     @Test
     fun `Should not re-assign the default group when already present`() {
-        val user = UserTestFactory.initUser(id = 1L)
-        val group = GroupTestFactory.initGroup(id = 10L, name = "USER")
+        val user = UserTestFactory.initUser(id = userId)
+        val group = GroupTestFactory.initGroup(id = group10Id, name = "USER")
 
         Mockito
             .`when`(groupRepository!!.findByName("USER"))
@@ -80,7 +86,7 @@ class GroupServiceTest {
 
     @Test
     fun `Should fail when the default group is missing`() {
-        val user = UserTestFactory.initUser(id = 1L)
+        val user = UserTestFactory.initUser(id = userId)
 
         Mockito
             .`when`(groupRepository!!.findByName("USER"))
@@ -96,48 +102,48 @@ class GroupServiceTest {
 
     @Test
     fun `Should find all groups`() {
-        val group1 = GroupTestFactory.initGroup(id = 1L, name = "G1")
-        val group2 = GroupTestFactory.initGroup(id = 2L, name = "G2")
+        val g1 = GroupTestFactory.initGroup(id = group1Id, name = "G1")
+        val g2 = GroupTestFactory.initGroup(id = group2Id, name = "G2")
 
-        Mockito.`when`(groupRepository!!.findAll()).thenReturn(listOf(group1, group2))
+        Mockito.`when`(groupRepository!!.findAll()).thenReturn(listOf(g1, g2))
 
         val result = groupService!!.findAll()
 
-        assertThat(result).containsExactly(group1, group2)
+        assertThat(result).containsExactly(g1, g2)
     }
 
     @Test
     fun `Should get group by id`() {
-        val group = GroupTestFactory.initGroup(id = 1L, name = "G")
+        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(group))
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(group))
 
-        val result = groupService!!.get(1L)
+        val result = groupService!!.getById(group1Id)
 
         assertThat(result).isEqualTo(group)
     }
 
     @Test
     fun `Should throw GroupNotFoundException when group not found`() {
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.empty())
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.empty())
 
         assertThrows(GroupNotFoundException::class.java) {
-            groupService!!.get(1L)
+            groupService!!.getById(group1Id)
         }
     }
 
     @Test
     fun `Should create a group`() {
-        val saved = GroupTestFactory.initGroup(id = 1L, name = "NEW")
-        val parent = GroupTestFactory.initGroup(id = 10L, name = "PARENT")
+        val saved = GroupTestFactory.initGroup(id = group1Id, name = "NEW")
+        val parent = GroupTestFactory.initGroup(id = group10Id, name = "PARENT")
 
         Mockito.`when`(groupRepository!!.existsByName("NEW")).thenReturn(false)
-        Mockito.`when`(groupRepository!!.findById(10L)).thenReturn(Optional.of(parent))
+        Mockito.`when`(groupRepository!!.findById(group10Id)).thenReturn(Optional.of(parent))
         Mockito.`when`(groupRepository!!.save(any())).thenReturn(saved)
 
-        val result = groupService!!.create("NEW", 10L)
+        val result = groupService!!.create("NEW", group10Id)
 
-        assertThat(result.id).isEqualTo(1L)
+        assertThat(result.id).isEqualTo(group1Id)
         assertThat(result.name).isEqualTo("NEW")
         Mockito.verify(groupRepository!!).existsByName("NEW")
     }
@@ -153,158 +159,158 @@ class GroupServiceTest {
 
     @Test
     fun `Should update a group name`() {
-        val existing = GroupTestFactory.initGroup(id = 1L, name = "OLD")
-        val updated = GroupTestFactory.initGroup(id = 1L, name = "NEW")
+        val existing = GroupTestFactory.initGroup(id = group1Id, name = "OLD")
+        val updated = GroupTestFactory.initGroup(id = group1Id, name = "NEW")
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(existing))
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(existing))
         Mockito.`when`(groupRepository!!.existsByName("NEW")).thenReturn(false)
         Mockito.`when`(groupRepository!!.save(any())).thenReturn(updated)
 
-        val result = groupService!!.update(1L, "NEW", null)
+        val result = groupService!!.update(group1Id, "NEW", null)
 
         assertThat(result.name).isEqualTo("NEW")
     }
 
     @Test
     fun `Should remove the parent when parentId is null`() {
-        val parent = GroupTestFactory.initGroup(id = 10L, name = "PARENT")
-        val existing = GroupTestFactory.initGroup(id = 1L, name = "CHILD", parent = parent)
+        val parent = GroupTestFactory.initGroup(id = group10Id, name = "PARENT")
+        val existing = GroupTestFactory.initGroup(id = group1Id, name = "CHILD", parent = parent)
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(existing))
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(existing))
         Mockito.`when`(groupRepository!!.save(any())).thenReturn(existing)
 
-        groupService!!.update(1L, null, null)
+        groupService!!.update(group1Id, null, null)
 
         assertThat(existing.parent).isNull()
     }
 
     @Test
     fun `Should fail to update with duplicate name`() {
-        val existing = GroupTestFactory.initGroup(id = 1L, name = "OLD")
+        val existing = GroupTestFactory.initGroup(id = group1Id, name = "OLD")
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(existing))
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(existing))
         Mockito.`when`(groupRepository!!.existsByName("DUP")).thenReturn(true)
 
         assertThrows(GroupAlreadyExistsException::class.java) {
-            groupService!!.update(1L, "DUP", null)
+            groupService!!.update(group1Id, "DUP", null)
         }
     }
 
     @Test
     fun `Should reject setting parentId to itself`() {
-        val group = GroupTestFactory.initGroup(id = 1L, name = "G")
+        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(group))
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(group))
 
         assertThrows(GroupHierarchyException::class.java) {
-            groupService!!.update(1L, null, 1L)
+            groupService!!.update(group1Id, null, group1Id)
         }
     }
 
     @Test
     fun `Should reject setting parentId to a descendant`() {
-        val grandchild = GroupTestFactory.initGroup(id = 1L, name = "GC")
-        val child = GroupTestFactory.initGroup(id = 2L, name = "C", parent = grandchild)
+        val grandchild = GroupTestFactory.initGroup(id = group1Id, name = "GC")
+        val child = GroupTestFactory.initGroup(id = group2Id, name = "C", parent = grandchild)
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(grandchild))
-        Mockito.`when`(groupRepository!!.findById(2L)).thenReturn(Optional.of(child))
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(grandchild))
+        Mockito.`when`(groupRepository!!.findById(group2Id)).thenReturn(Optional.of(child))
 
         assertThrows(GroupHierarchyException::class.java) {
-            groupService!!.update(1L, null, 2L)
+            groupService!!.update(group1Id, null, group2Id)
         }
     }
 
     @Test
     fun `Should delete a group`() {
-        val group = GroupTestFactory.initGroup(id = 1L, name = "CUSTOM")
+        val group = GroupTestFactory.initGroup(id = group1Id, name = "CUSTOM")
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(group))
-        Mockito.`when`(groupRepository!!.existsByParentId(1L)).thenReturn(false)
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(group))
+        Mockito.`when`(groupRepository!!.existsByParentId(group1Id)).thenReturn(false)
 
-        groupService!!.delete(1L)
+        groupService!!.delete(group1Id)
 
-        Mockito.verify(groupPermissionRepository!!).deleteByGroupId(1L)
-        Mockito.verify(userGroupRepository!!).deleteByGroupId(1L)
-        Mockito.verify(groupRepository!!).deleteById(1L)
+        Mockito.verify(groupPermissionRepository!!).deleteByGroupId(group1Id)
+        Mockito.verify(userGroupRepository!!).deleteByGroupId(group1Id)
+        Mockito.verify(groupRepository!!).deleteById(group1Id)
     }
 
     @Test
     fun `Should reject delete of protected USER group`() {
-        val group = GroupTestFactory.initGroup(id = 1L, name = "USER")
+        val group = GroupTestFactory.initGroup(id = group1Id, name = "USER")
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(group))
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(group))
 
         assertThrows(ProtectedGroupException::class.java) {
-            groupService!!.delete(1L)
+            groupService!!.delete(group1Id)
         }
     }
 
     @Test
     fun `Should reject delete of protected ADMIN group`() {
-        val group = GroupTestFactory.initGroup(id = 1L, name = "ADMIN")
+        val group = GroupTestFactory.initGroup(id = group1Id, name = "ADMIN")
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(group))
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(group))
 
         assertThrows(ProtectedGroupException::class.java) {
-            groupService!!.delete(1L)
+            groupService!!.delete(group1Id)
         }
     }
 
     @Test
     fun `Should reject delete of group with children`() {
-        val group = GroupTestFactory.initGroup(id = 1L, name = "PARENT")
+        val group = GroupTestFactory.initGroup(id = group1Id, name = "PARENT")
 
-        Mockito.`when`(groupRepository!!.findById(1L)).thenReturn(Optional.of(group))
-        Mockito.`when`(groupRepository!!.existsByParentId(1L)).thenReturn(true)
+        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(group))
+        Mockito.`when`(groupRepository!!.existsByParentId(group1Id)).thenReturn(true)
 
         assertThrows(GroupHierarchyException::class.java) {
-            groupService!!.delete(1L)
+            groupService!!.delete(group1Id)
         }
     }
 
     @Test
     fun `Should add user to group`() {
-        val user = UserTestFactory.initUser(id = 1L)
-        val group = GroupTestFactory.initGroup(id = 10L, name = "G")
+        val user = UserTestFactory.initUser(id = userId)
+        val group = GroupTestFactory.initGroup(id = group10Id, name = "G")
 
-        Mockito.`when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
-        Mockito.`when`(groupRepository!!.findById(10L)).thenReturn(Optional.of(group))
-        Mockito.`when`(userGroupRepository!!.existsById(UserGroupId(1L, 10L))).thenReturn(false)
+        Mockito.`when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
+        Mockito.`when`(groupRepository!!.findById(group10Id)).thenReturn(Optional.of(group))
+        Mockito.`when`(userGroupRepository!!.existsById(UserGroupId(userId, group10Id))).thenReturn(false)
 
-        groupService!!.addUserToGroup(1L, 10L)
+        groupService!!.addUserToGroup(userId, group10Id)
 
         Mockito.verify(userGroupRepository!!).save(UserGroup(user, group))
     }
 
     @Test
     fun `Should not duplicate user group membership`() {
-        val user = UserTestFactory.initUser(id = 1L)
-        val group = GroupTestFactory.initGroup(id = 10L, name = "G")
+        val user = UserTestFactory.initUser(id = userId)
+        val group = GroupTestFactory.initGroup(id = group10Id, name = "G")
 
-        Mockito.`when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
-        Mockito.`when`(groupRepository!!.findById(10L)).thenReturn(Optional.of(group))
-        Mockito.`when`(userGroupRepository!!.existsById(UserGroupId(1L, 10L))).thenReturn(true)
+        Mockito.`when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
+        Mockito.`when`(groupRepository!!.findById(group10Id)).thenReturn(Optional.of(group))
+        Mockito.`when`(userGroupRepository!!.existsById(UserGroupId(userId, group10Id))).thenReturn(true)
 
-        groupService!!.addUserToGroup(1L, 10L)
+        groupService!!.addUserToGroup(userId, group10Id)
 
         Mockito.verify(userGroupRepository!!, Mockito.never()).save(any())
     }
 
     @Test
     fun `Should remove user from group`() {
-        groupService!!.removeUserFromGroup(1L, 10L)
+        groupService!!.removeUserFromGroup(userId, group10Id)
 
-        Mockito.verify(userGroupRepository!!).deleteById(UserGroupId(1L, 10L))
+        Mockito.verify(userGroupRepository!!).deleteById(UserGroupId(userId, group10Id))
     }
 
     @Test
     fun `Should get user groups`() {
-        val group1 = GroupTestFactory.initGroup(id = 1L, name = "G1")
+        val group1 = GroupTestFactory.initGroup(id = group1Id, name = "G1")
         val userGroup = GroupTestFactory.initUserGroup(group = group1)
 
-        Mockito.`when`(userGroupRepository!!.findByUserId(1L)).thenReturn(listOf(userGroup))
+        Mockito.`when`(userGroupRepository!!.findByUserId(userId)).thenReturn(listOf(userGroup))
 
-        val result = groupService!!.getUserGroups(1L)
+        val result = groupService!!.getUserGroups(userId)
 
         assertThat(result).containsExactly(group1)
     }

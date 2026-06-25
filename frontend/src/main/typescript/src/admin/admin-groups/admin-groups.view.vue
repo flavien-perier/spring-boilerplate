@@ -56,18 +56,14 @@
           />
         </div>
 
-        <fio-permission-setting
+        <fio-input-tri-toggle
           v-for="setting in permissions"
           :key="setting.permission"
-          v-model:override="overrideFlags[setting.permission]"
-          v-model:allow="allowFlags[setting.permission]"
-          :permission="setting.permission"
-          :override-label="$t('field.override')"
-          :allow-label="$t('field.allow')"
-          :deny-label="$t('field.deny')"
-          :locked="setting.locked"
+          v-model="triValues[setting.permission]"
+          :label="setting.permission"
+          :disabled="setting.locked"
           class="mb-xs"
-          @change="onPermissionChange"
+          @change="onPermissionChange(setting.permission, $event)"
         />
 
         <fio-input-button
@@ -169,35 +165,23 @@ const nonDescendantOptions = computed<SelectOption[]>(() =>
   }))
 );
 
-const overrideFlags = reactive<Record<string, boolean>>({});
-const allowFlags = reactive<Record<string, boolean>>({});
+const triValues = reactive<Record<string, boolean | null>>({});
 
 watch(permissions, (newPermissions) => {
   newPermissions.forEach((setting) => {
     if (setting.locked) {
-      overrideFlags[setting.permission] = true;
-      allowFlags[setting.permission] = setting.inheritedAllow ?? false;
+      triValues[setting.permission] = setting.inheritedAllow ?? false;
     } else {
-      overrideFlags[setting.permission] =
-        setting.allow !== undefined && setting.allow !== null;
-      allowFlags[setting.permission] = setting.allow ?? false;
+      triValues[setting.permission] = setting.allow ?? null;
     }
   });
 });
 
-function onPermissionChange({
-  permission,
-  override,
-  allow,
-}: {
-  permission: string;
-  override: boolean;
-  allow: boolean;
-}) {
-  if (override) {
-    adminGroupsStore.setGroupPermission(permission, allow);
-  } else {
+function onPermissionChange(permission: string, value: boolean | null) {
+  if (value === null) {
     adminGroupsStore.removeGroupPermission(permission);
+  } else {
+    adminGroupsStore.setGroupPermission(permission, value);
   }
 }
 </script>

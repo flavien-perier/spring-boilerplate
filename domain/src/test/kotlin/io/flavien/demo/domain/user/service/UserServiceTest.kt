@@ -20,6 +20,7 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class UserServiceTest {
@@ -56,17 +57,19 @@ class UserServiceTest {
     @Mock
     var permissionService: PermissionService? = null
 
+    private val userId = UUID.fromString("00000000-0000-0000-0000-00000000000a")
+
     // -------------------------------------------------------------------------
     // update
     // -------------------------------------------------------------------------
 
     @Test
     fun `update - should enable user when enabled is true`() {
-        val user = UserTestFactory.initUser(enabled = false).copy(id = 1L)
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
+        val user = UserTestFactory.initUser(enabled = false).copy(id = userId)
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
         `when`(userRepository!!.save(any(User::class.java))).thenReturn(user)
 
-        userService!!.update(1L, UserTestFactory.initUserUpdate(email = null, password = null, proofOfWork = null, enabled = true))
+        userService!!.updateById(userId, UserTestFactory.initUserUpdate(email = null, password = null, proofOfWork = null, enabled = true))
 
         verify(userRepository!!).save(
             org.mockito.ArgumentMatchers.argThat { u: User -> u.enabled },
@@ -75,11 +78,11 @@ class UserServiceTest {
 
     @Test
     fun `update - should disable user when enabled is false`() {
-        val user = UserTestFactory.initUser(enabled = true).copy(id = 1L)
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
+        val user = UserTestFactory.initUser(enabled = true).copy(id = userId)
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
         `when`(userRepository!!.save(any(User::class.java))).thenReturn(user)
 
-        userService!!.update(1L, UserTestFactory.initUserUpdate(email = null, password = null, proofOfWork = null, enabled = false))
+        userService!!.updateById(userId, UserTestFactory.initUserUpdate(email = null, password = null, proofOfWork = null, enabled = false))
 
         verify(userRepository!!).save(
             org.mockito.ArgumentMatchers.argThat { u: User -> !u.enabled },
@@ -88,13 +91,13 @@ class UserServiceTest {
 
     @Test
     fun `update - should not change enabled when enabled is null`() {
-        val user = UserTestFactory.initUser(enabled = true).copy(id = 1L)
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
+        val user = UserTestFactory.initUser(enabled = true).copy(id = userId)
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
         `when`(userRepository!!.save(any(User::class.java))).thenReturn(user)
 
         val result =
-            userService!!.update(
-                1L,
+            userService!!.updateById(
+                userId,
                 UserTestFactory.initUserUpdate(email = null, password = null, proofOfWork = null, enabled = null),
             )
 

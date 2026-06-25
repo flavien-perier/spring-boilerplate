@@ -14,6 +14,7 @@ import org.springframework.mail.SimpleMailMessage
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
+import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -26,7 +27,7 @@ class ForgotPasswordService(
     fun sendForgotPasswordToken(user: User) {
         val forgotPasswordToken = RandomUtil.randomString(64, SECURE_RANDOM)
 
-        val forgotPassword = ForgotPassword(forgotPasswordToken, user.id!!)
+        val forgotPassword = ForgotPassword(forgotPasswordToken, user.id!!.toString())
         forgotPasswordRepository.save(forgotPassword)
 
         val smtp = registry.get(TenantContext.require()).smtp
@@ -53,8 +54,8 @@ class ForgotPasswordService(
         return forgotPassword
     }
 
-    fun deleteByUserId(userId: Long) {
-        forgotPasswordRepository.deleteByUserId(userId)
+    fun deleteByUserId(userId: UUID) {
+        forgotPasswordRepository.deleteByUserId(userId.toString())
     }
 
     companion object {

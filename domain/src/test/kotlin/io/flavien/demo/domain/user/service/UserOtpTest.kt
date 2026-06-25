@@ -21,9 +21,13 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.any
+import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class UserOtpTest {
@@ -60,36 +64,34 @@ class UserOtpTest {
     @Mock
     var permissionService: PermissionService? = null
 
+    private val userId = UUID.fromString("00000000-0000-0000-0000-00000000000a")
+    private val userIdStr = userId.toString()
+
     // -------------------------------------------------------------------------
     // setupOtp
     // -------------------------------------------------------------------------
 
     @Test
     fun `setupOtp - should generate secret and return provisioning URI`() {
-        // Given
-        val user = UserTestFactory.initUser().copy(id = 1L)
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
-        `when`(otpPendingRepository!!.existsById("1")).thenReturn(false)
+        val user = UserTestFactory.initUser().copy(id = userId)
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
+        `when`(otpPendingRepository!!.existsById(userIdStr)).thenReturn(false)
         `when`(otpService!!.generateSecret()).thenReturn("JBSWY3DPEHPK3PXP")
-        val pending = OtpPending("1", "JBSWY3DPEHPK3PXP")
+        val pending = OtpPending(userIdStr, "JBSWY3DPEHPK3PXP")
         `when`(otpPendingRepository!!.save(any(OtpPending::class.java))).thenReturn(pending)
 
-        // When
-        val result = userService!!.setupOtp(1L)
+        val result = userService!!.setupOtp(userId)
 
-        // Then
         assertThat(result).contains("secret=JBSWY3DPEHPK3PXP")
-        verify(otpPendingRepository!!).save(OtpPending("1", "JBSWY3DPEHPK3PXP"))
+        verify(otpPendingRepository!!).save(OtpPending(userIdStr, "JBSWY3DPEHPK3PXP"))
     }
 
     @Test
     fun `setupOtp - should throw OtpAlreadyConfiguredException when OTP active in DB`() {
-        // Given
-        val user = UserTestFactory.initUser().copy(id = 1L, otpSecret = "EXISTINGSECRET")
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
+        val user = UserTestFactory.initUser().copy(id = userId, otpSecret = "EXISTINGSECRET")
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
 
-        // When/Then
-        assertThatThrownBy { userService!!.setupOtp(1L) }
+        assertThatThrownBy { userService!!.setupOtp(userId) }
             .isInstanceOf(OtpAlreadyConfiguredException::class.java)
 
         verify(otpPendingRepository!!, never()).existsById(any())
@@ -98,16 +100,14 @@ class UserOtpTest {
 
     @Test
     fun `setupOtp - should throw OtpAlreadyConfiguredException when pending in Redis`() {
-        // Given
-        val user = UserTestFactory.initUser().copy(id = 1L)
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
-        `when`(otpPendingRepository!!.existsById("1")).thenReturn(true)
+        val user = UserTestFactory.initUser().copy(id = userId)
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
+        `when`(otpPendingRepository!!.existsById(userIdStr)).thenReturn(true)
 
-        // When/Then
-        assertThatThrownBy { userService!!.setupOtp(1L) }
+        assertThatThrownBy { userService!!.setupOtp(userId) }
             .isInstanceOf(OtpAlreadyConfiguredException::class.java)
 
-        verify(otpPendingRepository!!).existsById("1")
+        verify(otpPendingRepository!!).existsById(userIdStr)
         verify(otpPendingRepository!!, never()).save(any(OtpPending::class.java))
     }
 
@@ -117,49 +117,42 @@ class UserOtpTest {
 
     @Test
     fun `confirmOtp - should save secret to DB and delete from Redis`() {
-        // Given
-        val pending = OtpPending("1", "JBSWY3DPEHPK3PXP")
-        val user = UserTestFactory.initUser().copy(id = 1L)
-        `when`(otpPendingRepository!!.findById("1")).thenReturn(Optional.of(pending))
+        val pending = OtpPending(userIdStr, "JBSWY3DPEHPK3PXP")
+        val user = UserTestFactory.initUser().copy(id = userId)
+        `when`(otpPendingRepository!!.findById(userIdStr)).thenReturn(Optional.of(pending))
         `when`(otpService!!.validateTOTP("JBSWY3DPEHPK3PXP", "123456")).thenReturn(true)
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
         `when`(userRepository!!.save(any(User::class.java))).thenReturn(user)
 
-        // When
-        userService!!.confirmOtp(1L, "123456")
+        userService!!.confirmOtp(userId, "123456")
 
-        // Then
         verify(userRepository!!).save(
             org.mockito.ArgumentMatchers.argThat { u: User -> u.otpSecret == "JBSWY3DPEHPK3PXP" },
         )
-        verify(otpPendingRepository!!).deleteById("1")
+        verify(otpPendingRepository!!).deleteById(userIdStr)
     }
 
     @Test
     fun `confirmOtp - should throw OtpNotPendingException when no pending entry`() {
-        // Given
-        `when`(otpPendingRepository!!.findById("1")).thenReturn(Optional.empty())
+        `when`(otpPendingRepository!!.findById(userIdStr)).thenReturn(Optional.empty())
 
-        // When/Then
-        assertThatThrownBy { userService!!.confirmOtp(1L, "123456") }
+        assertThatThrownBy { userService!!.confirmOtp(userId, "123456") }
             .isInstanceOf(OtpNotPendingException::class.java)
 
-        verify(otpPendingRepository!!).findById("1")
+        verify(otpPendingRepository!!).findById(userIdStr)
         verify(userRepository!!, never()).save(any(User::class.java))
     }
 
     @Test
     fun `confirmOtp - should throw InvalidOtpException when OTP code is invalid`() {
-        // Given
-        val pending = OtpPending("1", "JBSWY3DPEHPK3PXP")
-        `when`(otpPendingRepository!!.findById("1")).thenReturn(Optional.of(pending))
+        val pending = OtpPending(userIdStr, "JBSWY3DPEHPK3PXP")
+        `when`(otpPendingRepository!!.findById(userIdStr)).thenReturn(Optional.of(pending))
         `when`(otpService!!.validateTOTP("JBSWY3DPEHPK3PXP", "000000")).thenReturn(false)
 
-        // When/Then
-        assertThatThrownBy { userService!!.confirmOtp(1L, "000000") }
+        assertThatThrownBy { userService!!.confirmOtp(userId, "000000") }
             .isInstanceOf(InvalidOtpException::class.java)
 
-        verify(otpPendingRepository!!).findById("1")
+        verify(otpPendingRepository!!).findById(userIdStr)
         verify(otpService!!).validateTOTP("JBSWY3DPEHPK3PXP", "000000")
         verify(userRepository!!, never()).save(any(User::class.java))
     }
@@ -170,32 +163,26 @@ class UserOtpTest {
 
     @Test
     fun `disableOtp - should clear OTP secret from DB and cleanup Redis`() {
-        // Given
-        val user = UserTestFactory.initUser().copy(id = 1L, otpSecret = "JBSWY3DPEHPK3PXP")
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
+        val user = UserTestFactory.initUser().copy(id = userId, otpSecret = "JBSWY3DPEHPK3PXP")
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
         `when`(userRepository!!.save(any(User::class.java))).thenReturn(user)
 
-        // When
-        userService!!.disableOtp(1L)
+        userService!!.disableOtp(userId)
 
-        // Then
         verify(userRepository!!).save(
             org.mockito.ArgumentMatchers.argThat { u: User -> u.otpSecret == null },
         )
-        verify(otpPendingRepository!!).deleteById("1")
+        verify(otpPendingRepository!!).deleteById(userIdStr)
     }
 
     @Test
     fun `disableOtp - should be idempotent when OTP not active`() {
-        // Given
-        val user = UserTestFactory.initUser().copy(id = 1L)
-        `when`(userRepository!!.getUserById(1L)).thenReturn(Optional.of(user))
+        val user = UserTestFactory.initUser().copy(id = userId)
+        `when`(userRepository!!.getUserById(userId)).thenReturn(Optional.of(user))
 
-        // When
-        userService!!.disableOtp(1L)
+        userService!!.disableOtp(userId)
 
-        // Then
         verify(userRepository!!, never()).save(any(User::class.java))
-        verify(otpPendingRepository!!).deleteById("1")
+        verify(otpPendingRepository!!).deleteById(userIdStr)
     }
 }

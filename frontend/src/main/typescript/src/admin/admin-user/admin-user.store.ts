@@ -127,10 +127,10 @@ export const useAdminUserStore = defineStore("admin-user", {
         })
         .catch(applicationStore.axiosException);
     },
-    isUserInGroup(groupId: number): boolean {
+    isUserInGroup(groupId: string): boolean {
       return this.userGroups.some((g) => g.id === groupId);
     },
-    toggleUserGroup(groupId: number) {
+    toggleUserGroup(groupId: string) {
       if (this.isUserInGroup(groupId)) {
         userApi
           .removeUserFromGroup(this.userMail, groupId)

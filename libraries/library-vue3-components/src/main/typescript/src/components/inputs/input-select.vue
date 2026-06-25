@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { useId } from "vue";
+import type { InputComponent } from "./model/input-component";
 
 defineOptions({
   name: "FioInputSelect",
@@ -38,25 +39,27 @@ export interface SelectOption {
 const inputId = useId();
 
 const {
+  modelValue = null,
   label,
   nullOption,
   options,
   disabled = false,
-} = defineProps<{
-  label?: string;
-  nullOption?: string;
-  options: SelectOption[];
-  disabled?: boolean;
+} = defineProps<
+  InputComponent<string | null> & {
+    nullOption?: string;
+    options: SelectOption[];
+  }
+>();
+
+const emit = defineEmits<{
+  "update:modelValue": [value: string | null];
+  change: [event: Event];
 }>();
-
-const modelValue = defineModel<string | null>({ default: null });
-
-const emit = defineEmits<{ change: [event: Event] }>();
 
 function handleChange(event: Event) {
   const target = event.target as HTMLSelectElement;
   const selected = options.find((option) => option.value === target.value);
-  modelValue.value = selected ? selected.value : null;
+  emit("update:modelValue", selected ? selected.value : null);
   emit("change", event);
 }
 </script>

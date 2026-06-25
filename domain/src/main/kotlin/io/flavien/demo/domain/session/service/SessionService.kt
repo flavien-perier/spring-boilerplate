@@ -30,7 +30,7 @@ class SessionService(
         proofOfWork: String,
         otp: String? = null,
     ): Session {
-        val user = userService.get(email)
+        val user = userService.getByEmail(email)
 
         if (!user.enabled) {
             throw UserIsDisabledException(email)
@@ -58,8 +58,6 @@ class SessionService(
 
         user.lastLogin = OffsetDateTime.now()
         userRepository.save(user)
-        // Token writes target Redis and do not participate in the surrounding JPA transaction:
-        // on a JPA rollback these tokens stay orphaned (TTL is the safeguard that eventually evicts them).
         val refreshToken = refreshTokenService.create(user.id!!)
         val accessToken = accessTokenService.create(refreshToken)
         return Session(refreshToken, accessToken)
@@ -70,9 +68,9 @@ class SessionService(
         refreshToken: String,
     ): Session {
         val refreshTokenObject = refreshTokenService.get(refreshToken)
-        val user = userService.get(userEmail)
+        val user = userService.getByEmail(userEmail)
 
-        if (refreshTokenObject.userId != user.id) {
+        if (refreshTokenObject.userId != user.id.toString()) {
             throw BadRefreshTokenException()
         }
 

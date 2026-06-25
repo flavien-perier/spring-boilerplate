@@ -9,6 +9,7 @@ import io.flavien.demo.domain.shared.util.SECURE_RANDOM
 import io.flavien.demo.library.common.RandomUtil
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
+import java.util.UUID
 
 @Service
 class AccessTokenService(
@@ -18,7 +19,7 @@ class AccessTokenService(
 ) {
     fun create(refreshToken: RefreshToken): AccessToken {
         val id = RandomUtil.randomString(64, SECURE_RANDOM)
-        val permissions = permissionService.getGrantedPermissions(refreshToken.userId)
+        val permissions = permissionService.getGrantedPermissions(UUID.fromString(refreshToken.userId))
 
         val accessToken = AccessToken(id, refreshToken.userId, refreshToken.id, OffsetDateTime.now(), permissions)
         accessTokenRepository.save(accessToken)
@@ -39,5 +40,5 @@ class AccessTokenService(
 
     fun delete(token: String) = accessTokenRepository.deleteById(token)
 
-    fun deleteByUserId(userId: Long) = accessTokenRepository.deleteByUserId(userId)
+    fun deleteByUserId(userId: UUID) = accessTokenRepository.deleteByUserId(userId.toString())
 }

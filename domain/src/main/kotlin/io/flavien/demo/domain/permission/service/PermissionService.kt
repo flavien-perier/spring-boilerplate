@@ -16,6 +16,7 @@ import io.flavien.demo.domain.user.exception.UserNotFoundException
 import io.flavien.demo.domain.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class PermissionService(
@@ -25,17 +26,8 @@ class PermissionService(
     private val groupRepository: GroupRepository,
     private val userRepository: UserRepository,
 ) {
-    /**
-     * Resolves the permissions effectively granted to a user.
-     *
-     * Resolution for a permission `P`:
-     *  1. the group closest to the root of the group hierarchy that defines `P` wins (a parent cannot
-     *     be overridden by its children, nor by the user); on an equal-depth conflict, deny wins;
-     *  2. otherwise a direct [io.flavien.demo.domain.permission.entity.UserPermission] applies (its `allow` value);
-     *  3. otherwise `P` is not granted.
-     */
     @Transactional(readOnly = true)
-    fun getGrantedPermissions(userId: Long): Set<PermissionEnum> {
+    fun getGrantedPermissions(userId: UUID): Set<PermissionEnum> {
         val directDecisions = userPermissionRepository.findByUserId(userId).associate { it.permission to it.allow }
         val groupDecisions = resolveGroupDecisions(userId)
 
@@ -46,13 +38,13 @@ class PermissionService(
 
     @Transactional(readOnly = true)
     fun hasPermission(
-        userId: Long,
+        userId: UUID,
         permission: PermissionEnum,
     ): Boolean = permission in getGrantedPermissions(userId)
 
     @Transactional(readOnly = true)
     fun checkPermission(
-        userId: Long,
+        userId: UUID,
         permission: PermissionEnum,
     ) {
         if (!hasPermission(userId, permission)) {
@@ -61,12 +53,12 @@ class PermissionService(
     }
 
     @Transactional
-    fun deleteUserPermissions(userId: Long) {
+    fun deleteUserPermissions(userId: UUID) {
         userPermissionRepository.deleteByUserId(userId)
     }
 
     @Transactional(readOnly = true)
-    fun getGroupPermissions(groupId: Long): List<PermissionSetting> {
+    fun getGroupPermissions(groupId: UUID): List<PermissionSetting> {
         val defined = groupPermissionRepository.findByGroupId(groupId).associate { it.permission to it.allow }
         val ancestorDecisions = resolveAncestorDecisions(groupId)
         return PermissionEnum.entries.map { permission ->
@@ -80,7 +72,7 @@ class PermissionService(
     }
 
     @Transactional(readOnly = true)
-    fun getUserPermissionOverrides(userId: Long): List<PermissionSetting> {
+    fun getUserPermissionOverrides(userId: UUID): List<PermissionSetting> {
         val defined = userPermissionRepository.findByUserId(userId).associate { it.permission to it.allow }
         val groupDecisions = resolveGroupDecisions(userId)
         return PermissionEnum.entries.map { permission ->
@@ -95,17 +87,17 @@ class PermissionService(
 
     @Transactional
     fun setGroupPermission(
-        groupId: Long,
+        groupId: UUID,
         permission: PermissionEnum,
         allow: Boolean,
     ) {
-        val group = groupRepository.findById(groupId).orElseThrow { GroupNotFoundException(groupId) }
+        val group = groupRepository.findById(groupId).orElseThrow { GroupNotFoundException("Group id $groupId not found") }
         groupPermissionRepository.save(GroupPermission(group, permission, allow))
     }
 
     @Transactional
     fun removeGroupPermission(
-        groupId: Long,
+        groupId: UUID,
         permission: PermissionEnum,
     ) {
         groupPermissionRepository.deleteById(GroupPermissionId(groupId, permission))
@@ -113,44 +105,36 @@ class PermissionService(
 
     @Transactional
     fun setUserPermission(
-        userId: Long,
+        userId: UUID,
         permission: PermissionEnum,
         allow: Boolean,
     ) {
-        val user = userRepository.getUserById(userId).orElseThrow { UserNotFoundException(userId) }
+        val user = userRepository.getUserById(userId).orElseThrow { UserNotFoundException("User id $userId not found") }
         userPermissionRepository.save(UserPermission(user, permission, allow))
     }
 
     @Transactional
     fun removeUserPermission(
-        userId: Long,
+        userId: UUID,
         permission: PermissionEnum,
     ) {
         userPermissionRepository.deleteById(UserPermissionId(userId, permission))
     }
 
-    /**
-     * Resolves the explicit decisions of every group reachable from the user's memberships, keeping
-     * the decision of the group(s) closest to the root. Deny wins when several equal-depth groups
-     * disagree. These decisions take priority over the user's own overrides.
-     */
-    private fun resolveGroupDecisions(userId: Long): Map<PermissionEnum, Boolean> =
+    private fun resolveGroupDecisions(userId: UUID): Map<PermissionEnum, Boolean> =
         resolveDecisionsForGroups(buildGroupClosure(userGroupRepository.findByUserId(userId).map { it.group.id!! }))
 
-    /**
-     * Resolves the explicit decisions of a group's strict ancestors (its parent up to the root).
-     * These lock the permission for the group and all of its descendants.
-     */
-    private fun resolveAncestorDecisions(groupId: Long): Map<PermissionEnum, Boolean> {
-        val parentId = groupRepository.findById(groupId).orElse(null)?.parent?.id ?: return emptyMap()
+    private fun resolveAncestorDecisions(groupId: UUID): Map<PermissionEnum, Boolean> {
+        val parentId =
+            groupRepository
+                .findById(groupId)
+                .orElse(null)
+                ?.parent
+                ?.id ?: return emptyMap()
         return resolveDecisionsForGroups(buildGroupClosure(listOf(parentId)))
     }
 
-    /**
-     * For each permission explicitly defined within the given group set, keeps the decision of the
-     * group(s) closest to the root. Deny wins when several equal-depth groups disagree.
-     */
-    private fun resolveDecisionsForGroups(depthByGroup: Map<Long, Int>): Map<PermissionEnum, Boolean> {
+    private fun resolveDecisionsForGroups(depthByGroup: Map<UUID, Int>): Map<PermissionEnum, Boolean> {
         val definitions = mutableMapOf<PermissionEnum, MutableList<Pair<Int, Boolean>>>()
         depthByGroup.forEach { (groupId, depth) ->
             groupPermissionRepository.findByGroupId(groupId).forEach { groupPermission ->
@@ -164,16 +148,12 @@ class PermissionService(
         }
     }
 
-    /**
-     * Walks each membership up to its root and returns every reachable group with its depth from the
-     * root (root = 0). Cycles are guarded against.
-     */
-    private fun buildGroupClosure(directGroupIds: List<Long>): Map<Long, Int> {
-        val depthByGroup = mutableMapOf<Long, Int>()
+    private fun buildGroupClosure(directGroupIds: List<UUID>): Map<UUID, Int> {
+        val depthByGroup = mutableMapOf<UUID, Int>()
 
         for (groupId in directGroupIds) {
-            val chain = mutableListOf<Long>()
-            val visited = mutableSetOf<Long>()
+            val chain = mutableListOf<UUID>()
+            val visited = mutableSetOf<UUID>()
             var current = groupRepository.findById(groupId).orElse(null)
             while (current != null && visited.add(current.id!!)) {
                 chain.add(current.id!!)

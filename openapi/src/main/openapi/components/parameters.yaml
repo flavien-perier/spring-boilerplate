@@ -76,10 +76,8 @@ groupId:
   description: The group identifier.
   required: true
   schema:
-    type: integer
-    format: int64
-    minimum: 1
-    example: 1
+    type: string
+    example: "018f3e5a-1234-7abc-def0-123456789abc"
 
 permissionName:
   name: permission

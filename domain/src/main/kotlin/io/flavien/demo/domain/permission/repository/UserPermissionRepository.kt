@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
 interface UserPermissionRepository : JpaRepository<UserPermission, UserPermissionId> {
-    fun findByUserId(userId: Long): List<UserPermission>
+    fun findByUserId(userId: UUID): List<UserPermission>
 
     @Modifying
     @Query("DELETE FROM user_permission up WHERE up.user.id = :userId")
-    fun deleteByUserId(userId: Long)
+    fun deleteByUserId(userId: UUID)
 }

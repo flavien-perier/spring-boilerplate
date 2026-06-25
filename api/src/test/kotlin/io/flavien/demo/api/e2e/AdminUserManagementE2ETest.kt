@@ -62,7 +62,7 @@ class AdminUserManagementE2ETest {
     fun `Seed known admin credentials`() {
         TenantContext.set("test-tenant")
         try {
-            userService.update(
+            userService.updateByEmail(
                 ADMIN_EMAIL,
                 UserUpdate(password = ADMIN_PASSWORD, proofOfWork = ADMIN_PROOF_OF_WORK),
             )

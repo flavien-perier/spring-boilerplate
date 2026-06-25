@@ -36,6 +36,10 @@ class SessionControllerTest {
     @Mock
     var refreshTokenMapper: RefreshTokenMapper? = null
 
+    companion object {
+        private val USER_ID = UUID.fromString("00000000-0000-7000-8000-000000000001")
+    }
+
     @BeforeEach
     fun setUp() {
         sessionController =
@@ -95,7 +99,7 @@ class SessionControllerTest {
     @Test
     fun `Test findSessions`() {
         // Given
-        val userId = 1L
+        val userId = USER_ID
         val refreshTokens = listOf(SessionTestFactory.initRefreshToken())
         val refreshTokenPropertiesDtos =
             listOf(
@@ -151,7 +155,7 @@ class SessionControllerTest {
         // Given
         val sessionUuid = "123e4567-e89b-12d3-a456-426614174000"
         val uuid = UUID.fromString(sessionUuid)
-        val userId = 1L
+        val userId = USER_ID
 
         mockkObject(ContextUtil)
         every { ContextUtil.userId } returns userId

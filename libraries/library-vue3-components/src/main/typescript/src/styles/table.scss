@@ -3,6 +3,10 @@
 
 $table-border: 1px solid lighter(secondary, 60);
 
+.fio-table-wrapper {
+  width: 100%;
+}
+
 .fio-table {
   width: 100%;
   border-collapse: separate;
@@ -30,8 +34,22 @@ $table-border: 1px solid lighter(secondary, 60);
         border-right: none;
       }
 
-      .sort-icon {
+      .fio-table__sort-icon {
         margin-left: $margin-xs;
+      }
+
+      &.fio-table__th--sortable {
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+          background-color: lighter(primary, 60);
+        }
+      }
+
+      &.fio-table__th--active {
+        background-color: lighter(primary, 60);
       }
     }
   }
@@ -53,5 +71,83 @@ $table-border: 1px solid lighter(secondary, 60);
         border-right: none;
       }
     }
+  }
+}
+
+.fio-table__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $margin-s;
+  padding: $margin-s $margin-xs;
+  border: $table-border;
+  border-top: none;
+  border-radius: 0 0 $border-radius-size $border-radius-size;
+  background-color: lighter(secondary, 90);
+}
+
+.fio-table__page-size {
+  display: flex;
+  align-items: center;
+  gap: $margin-xs;
+}
+
+.fio-table__page-size-label {
+  font-size: $font-s-size;
+  color: darker(secondary, 70);
+}
+
+.fio-table__page-size-select {
+  padding: $margin-xxs $margin-xs;
+  font-size: $font-s-size;
+  background-color: lighter(secondary, 90);
+  color: darker(secondary, 90);
+  border: 1px solid lighter(secondary, 40);
+  border-radius: $border-radius-size;
+  cursor: pointer;
+}
+
+.fio-table__pager {
+  display: flex;
+  align-items: center;
+  gap: $margin-xs;
+}
+
+.fio-table__pager-info {
+  font-size: $font-s-size;
+  color: darker(secondary, 70);
+  margin-right: $margin-xs;
+}
+
+.fio-table__pager-current {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  color: darker(primary, 70);
+}
+
+.fio-table__pager-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 $margin-xxs;
+  background-color: lighter(secondary, 90);
+  color: darker(secondary, 90);
+  border: 1px solid lighter(secondary, 40);
+  border-radius: $border-radius-size;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background-color: lighter(primary, 70);
+    color: darker(primary, 70);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }

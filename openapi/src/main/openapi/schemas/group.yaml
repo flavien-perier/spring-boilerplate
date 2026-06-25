@@ -6,16 +6,14 @@ GroupDto:
     - name
   properties:
     id:
-      type: integer
-      format: int64
+      type: string
       description: The group identifier.
     name:
       type: string
       maxLength: 100
       description: The group name.
     parentId:
-      type: integer
-      format: int64
+      type: string
       description: The parent group identifier, if any.
     parentName:
       type: string
@@ -32,8 +30,7 @@ GroupCreationDto:
       type: string
       maxLength: 100
     parentId:
-      type: integer
-      format: int64
+      type: string
 
 GroupUpdateDto:
   type: object
@@ -43,6 +40,5 @@ GroupUpdateDto:
       type: string
       maxLength: 100
     parentId:
-      type: integer
-      format: int64
+      type: string
       description: Send null to remove the current parent.

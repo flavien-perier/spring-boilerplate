@@ -25,6 +25,7 @@ import org.springframework.mail.SimpleMailMessage
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 import java.util.Optional
+import java.util.UUID
 
 class ForgotPasswordServiceTest {
     private val forgotPasswordRepository = mockk<ForgotPasswordRepository>(relaxed = true)
@@ -34,6 +35,9 @@ class ForgotPasswordServiceTest {
 
     private val forgotPasswordService =
         ForgotPasswordService(forgotPasswordRepository, templateEngine, mailService, registry)
+
+    private val userId = UUID.fromString("00000000-0000-0000-0000-00000000002a")
+    private val userIdStr = userId.toString()
 
     private val testTenant =
         TenantDefinition(
@@ -55,8 +59,7 @@ class ForgotPasswordServiceTest {
 
     @Test
     fun `Should send forgot-password email and persist token`() {
-        // Given
-        val user = UserTestFactory.initUser(email = "user@flavien.io", id = 42L)
+        val user = UserTestFactory.initUser(email = "user@flavien.io", id = userId)
         every { registry.get("test") } returns testTenant
         every { templateEngine.process(eq("forgot-password"), any<Context>()) } returns "<html>Reset body</html>"
         val forgotPasswordSlot = slot<ForgotPassword>()
@@ -64,11 +67,9 @@ class ForgotPasswordServiceTest {
         val messageSlot = slot<SimpleMailMessage>()
         justRun { mailService.send(capture(messageSlot)) }
 
-        // When
         forgotPasswordService.sendForgotPasswordToken(user)
 
-        // Then
-        assertThat(forgotPasswordSlot.captured.userId).isEqualTo(42L)
+        assertThat(forgotPasswordSlot.captured.userId).isEqualTo(userIdStr)
         assertThat(forgotPasswordSlot.captured.id).isNotBlank()
 
         assertThat(messageSlot.captured.to).containsExactly("user@flavien.io")
@@ -79,14 +80,11 @@ class ForgotPasswordServiceTest {
 
     @Test
     fun `Should validate and return forgot-password token`() {
-        // Given
         val forgotPassword = UserTestFactory.initForgotPassword()
         every { forgotPasswordRepository.findById(forgotPassword.id) } returns Optional.of(forgotPassword)
 
-        // When
         val result = forgotPasswordService.validate(forgotPassword.id)
 
-        // Then
         assertThat(result).isEqualTo(forgotPassword)
         verify(exactly = 1) { forgotPasswordRepository.findById(forgotPassword.id) }
         verify(exactly = 1) { forgotPasswordRepository.delete(forgotPassword) }
@@ -94,11 +92,9 @@ class ForgotPasswordServiceTest {
 
     @Test
     fun `Should fail to validate an unknown forgot-password token`() {
-        // Given
         val unknownToken = "non-existent-token"
         every { forgotPasswordRepository.findById(unknownToken) } returns Optional.empty()
 
-        // When / Then
         assertThatThrownBy { forgotPasswordService.validate(unknownToken) }
             .isInstanceOf(ChangePasswordFailedException::class.java)
 
@@ -108,13 +104,8 @@ class ForgotPasswordServiceTest {
 
     @Test
     fun `Should delete forgot-password tokens by user id`() {
-        // Given
-        val userId = 7L
-
-        // When
         forgotPasswordService.deleteByUserId(userId)
 
-        // Then
-        verify(exactly = 1) { forgotPasswordRepository.deleteByUserId(userId) }
+        verify(exactly = 1) { forgotPasswordRepository.deleteByUserId(userIdStr) }
     }
 }

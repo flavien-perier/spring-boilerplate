@@ -13,10 +13,10 @@ import java.util.UUID
 class RefreshTokenService(
     private val refreshTokenRepository: RefreshTokenRepository,
 ) {
-    fun create(userId: Long): RefreshToken {
+    fun create(userId: UUID): RefreshToken {
         val id = RandomUtil.randomString(64, SECURE_RANDOM)
 
-        val refreshToken = RefreshToken(id, UUID.randomUUID(), userId, OffsetDateTime.now())
+        val refreshToken = RefreshToken(id, UUID.randomUUID(), userId.toString(), OffsetDateTime.now())
         refreshTokenRepository.save(refreshToken)
 
         return refreshToken
@@ -26,7 +26,7 @@ class RefreshTokenService(
 
     fun get(uuid: UUID) = refreshTokenRepository.getByUuid(uuid) ?: throw BadRefreshTokenException()
 
-    fun findByUserId(userId: Long) = refreshTokenRepository.findByUserId(userId).sortedByDescending { it.creationDate }
+    fun findByUserId(userId: UUID) = refreshTokenRepository.findByUserId(userId.toString()).sortedByDescending { it.creationDate }
 
     fun exists(token: String) = refreshTokenRepository.existsById(token)
 
@@ -34,14 +34,14 @@ class RefreshTokenService(
 
     fun delete(
         uuid: UUID,
-        userId: Long,
+        userId: UUID,
     ) {
         val refreshToken = get(uuid)
-        if (refreshToken.userId != userId) {
+        if (refreshToken.userId != userId.toString()) {
             throw BadRefreshTokenException()
         }
         refreshTokenRepository.delete(refreshToken)
     }
 
-    fun deleteByUserId(userId: Long) = refreshTokenRepository.deleteByUserId(userId)
+    fun deleteByUserId(userId: UUID) = refreshTokenRepository.deleteByUserId(userId.toString())
 }
