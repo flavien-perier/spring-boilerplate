@@ -98,16 +98,20 @@ import { ref, computed, watch, onMounted } from "vue";
 import { passwordUtil } from "../../utils/password-util";
 import InputPassword from "./input-password.vue";
 import FioIcon from "../icon.vue";
+import type { InputComponent } from "./model/input-component";
 
 defineOptions({
   name: "FioInputCreatePassword",
 });
 
-const props = defineProps({
-  modelValue: { type: String, default: "" },
-  minPasswordLength: { type: Number, default: 8 },
-  disabled: { type: Boolean, default: false },
-});
+const props = withDefaults(
+  defineProps<
+    InputComponent<string> & {
+      minPasswordLength?: number;
+    }
+  >(),
+  { modelValue: "", minPasswordLength: 8, disabled: false }
+);
 
 const emit = defineEmits(["update:modelValue", "update:isValid"]);
 

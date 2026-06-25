@@ -27,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class UserControllerTest {
@@ -50,6 +51,11 @@ class UserControllerTest {
 
     @Mock
     var groupMapper: GroupMapper? = null
+
+    companion object {
+        private val USER_ID = UUID.fromString("00000000-0000-7000-8000-000000000001")
+        private val GROUP_10_ID = UUID.fromString("00000000-0000-7000-8000-000000000010")
+    }
 
     @Test
     fun `Test createUser`() {
@@ -113,7 +119,7 @@ class UserControllerTest {
         val user = UserTestFactory.initUser()
         val userDto = UserDtoTestFactory.initUserDto()
 
-        Mockito.`when`(userService!!.get(email)).thenReturn(user)
+        Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
         Mockito.`when`(userMapper!!.toUserDto(user)).thenReturn(userDto)
 
         val response = userController!!.getUser(email)
@@ -132,7 +138,7 @@ class UserControllerTest {
         val user = UserTestFactory.initUser()
 
         Mockito.`when`(userUpdateMapper!!.fromUserUpdateAdminDto(userUpdateAdminDto)).thenReturn(userUpdate)
-        Mockito.`when`(userService!!.update(email, userUpdate)).thenReturn(user)
+        Mockito.`when`(userService!!.updateByEmail(email, userUpdate)).thenReturn(user)
         Mockito.`when`(userMapper!!.toUserDto(user)).thenReturn(userDto)
 
         val response = userController!!.updateUser(email, userUpdateAdminDto)
@@ -152,19 +158,19 @@ class UserControllerTest {
             .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
-        Mockito.verify(userService!!).delete(email)
+        Mockito.verify(userService!!).deleteByEmail(email)
     }
 
     @Test
     fun `Test getCurrentUser`() {
-        val userId = 1L
+        val userId = USER_ID
         val user = UserTestFactory.initUser()
         val userDto = UserDtoTestFactory.initUserDto()
 
         mockkObject(ContextUtil)
         every { ContextUtil.userId } returns userId
 
-        Mockito.`when`(userService!!.get(userId)).thenReturn(user)
+        Mockito.`when`(userService!!.getById(userId)).thenReturn(user)
         Mockito.`when`(userMapper!!.toUserDto(user)).thenReturn(userDto)
 
         val response = userController!!.getCurrentUser()
@@ -176,7 +182,7 @@ class UserControllerTest {
 
     @Test
     fun `Test updateCurrentUser`() {
-        val userId = 1L
+        val userId = USER_ID
         val userUpdateDto = UserDtoTestFactory.initUserUpdateDto()
         val userUpdate = UserTestFactory.initUserUpdate()
         val userDto = UserDtoTestFactory.initUserDto()
@@ -186,7 +192,7 @@ class UserControllerTest {
         every { ContextUtil.userId } returns userId
 
         Mockito.`when`(userUpdateMapper!!.fromUserUpdateDto(userUpdateDto)).thenReturn(userUpdate)
-        Mockito.`when`(userService!!.update(userId, userUpdate)).thenReturn(user)
+        Mockito.`when`(userService!!.updateById(userId, userUpdate)).thenReturn(user)
         Mockito.`when`(userMapper!!.toUserDto(user)).thenReturn(userDto)
 
         val response = userController!!.updateCurrentUser(userUpdateDto)
@@ -198,7 +204,7 @@ class UserControllerTest {
 
     @Test
     fun `Test deleteCurrentUser`() {
-        val userId = 1L
+        val userId = USER_ID
 
         mockkObject(ContextUtil)
         every { ContextUtil.userId } returns userId
@@ -209,7 +215,7 @@ class UserControllerTest {
             .usingRecursiveComparison()
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
-        Mockito.verify(userService!!).delete(userId)
+        Mockito.verify(userService!!).deleteById(userId)
     }
 
     @Test
@@ -250,15 +256,15 @@ class UserControllerTest {
     @Test
     fun `Test getUserPermissionOverrides`() {
         val email = "perier@flavien.io"
-        val user = UserTestFactory.initUser(id = 1L)
+        val user = UserTestFactory.initUser(id = USER_ID)
         val settings =
             listOf(
                 PermissionSetting(PermissionEnum.MANAGE_ALL_USERS, true),
                 PermissionSetting(PermissionEnum.MANAGE_ALL_GROUPS, null),
             )
 
-        Mockito.`when`(userService!!.get(email)).thenReturn(user)
-        Mockito.`when`(permissionService!!.getUserPermissionOverrides(1L)).thenReturn(settings)
+        Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
+        Mockito.`when`(permissionService!!.getUserPermissionOverrides(user.id!!)).thenReturn(settings)
 
         val response = userController!!.getUserPermissionOverrides(email)
 
@@ -273,41 +279,41 @@ class UserControllerTest {
     @Test
     fun `Test setUserPermission`() {
         val email = "perier@flavien.io"
-        val user = UserTestFactory.initUser(id = 1L)
+        val user = UserTestFactory.initUser(id = USER_ID)
         val updateDto = PermissionUpdateDto(true)
 
-        Mockito.`when`(userService!!.get(email)).thenReturn(user)
+        Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
 
         val response = userController!!.setUserPermission(email, "MANAGE_ALL_USERS", updateDto)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(permissionService!!).setUserPermission(1L, PermissionEnum.MANAGE_ALL_USERS, true)
+        Mockito.verify(permissionService!!).setUserPermission(user.id!!, PermissionEnum.MANAGE_ALL_USERS, true)
     }
 
     @Test
     fun `Test removeUserPermission`() {
         val email = "perier@flavien.io"
-        val user = UserTestFactory.initUser(id = 1L)
+        val user = UserTestFactory.initUser(id = USER_ID)
 
-        Mockito.`when`(userService!!.get(email)).thenReturn(user)
+        Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
 
         val response = userController!!.removeUserPermission(email, "MANAGE_ALL_USERS")
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(permissionService!!).removeUserPermission(1L, PermissionEnum.MANAGE_ALL_USERS)
+        Mockito.verify(permissionService!!).removeUserPermission(user.id!!, PermissionEnum.MANAGE_ALL_USERS)
     }
 
     @Test
     fun `Test getUserGroups`() {
         val email = "perier@flavien.io"
-        val user = UserTestFactory.initUser(id = 1L)
-        val group1 = GroupTestFactory.initGroup(id = 1L, name = "G1")
-        val group2 = GroupTestFactory.initGroup(id = 2L, name = "G2")
-        val dto1 = GroupDtoTestFactory.initGroupDto(id = 1L, name = "G1")
-        val dto2 = GroupDtoTestFactory.initGroupDto(id = 2L, name = "G2")
+        val user = UserTestFactory.initUser(id = USER_ID)
+        val group1 = GroupTestFactory.initGroup(id = UUID.fromString("00000000-0000-7000-8000-000000000001"), name = "G1")
+        val group2 = GroupTestFactory.initGroup(id = UUID.fromString("00000000-0000-7000-8000-000000000002"), name = "G2")
+        val dto1 = GroupDtoTestFactory.initGroupDto(name = "G1")
+        val dto2 = GroupDtoTestFactory.initGroupDto(name = "G2")
 
-        Mockito.`when`(userService!!.get(email)).thenReturn(user)
-        Mockito.`when`(groupService!!.getUserGroups(1L)).thenReturn(listOf(group1, group2))
+        Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
+        Mockito.`when`(groupService!!.getUserGroups(user.id!!)).thenReturn(listOf(group1, group2))
         Mockito.`when`(groupMapper!!.toGroupDto(group1)).thenReturn(dto1)
         Mockito.`when`(groupMapper!!.toGroupDto(group2)).thenReturn(dto2)
 
@@ -320,40 +326,40 @@ class UserControllerTest {
     @Test
     fun `Test addUserToGroup`() {
         val email = "perier@flavien.io"
-        val user = UserTestFactory.initUser(id = 1L)
+        val user = UserTestFactory.initUser(id = USER_ID)
 
-        Mockito.`when`(userService!!.get(email)).thenReturn(user)
+        Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
 
-        val response = userController!!.addUserToGroup(email, 10L)
+        val response = userController!!.addUserToGroup(email, GROUP_10_ID.toString())
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(groupService!!).addUserToGroup(1L, 10L)
+        Mockito.verify(groupService!!).addUserToGroup(user.id!!, GROUP_10_ID)
     }
 
     @Test
     fun `Test removeUserFromGroup`() {
         val email = "perier@flavien.io"
-        val user = UserTestFactory.initUser(id = 1L)
+        val user = UserTestFactory.initUser(id = USER_ID)
 
-        Mockito.`when`(userService!!.get(email)).thenReturn(user)
+        Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
 
-        val response = userController!!.removeUserFromGroup(email, 10L)
+        val response = userController!!.removeUserFromGroup(email, GROUP_10_ID.toString())
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(groupService!!).removeUserFromGroup(1L, 10L)
+        Mockito.verify(groupService!!).removeUserFromGroup(user.id!!, GROUP_10_ID)
     }
 
     @Test
     fun `Test disableUserOtp`() {
         val email = "perier@flavien.io"
-        val user = UserTestFactory.initUser(id = 1L)
+        val user = UserTestFactory.initUser(id = USER_ID)
 
-        Mockito.`when`(userService!!.get(email)).thenReturn(user)
+        Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
 
         val response = userController!!.disableUserOtp(email)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(userService!!).disableOtp(1L)
+        Mockito.verify(userService!!).disableOtp(user.id!!)
     }
 
     @Test

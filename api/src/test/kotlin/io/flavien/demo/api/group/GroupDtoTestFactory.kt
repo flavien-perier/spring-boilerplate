@@ -8,20 +8,20 @@ import io.flavien.demo.api.generated.dto.PermissionUpdateDto
 
 object GroupDtoTestFactory {
     fun initGroupDto(
-        id: Long = 1L,
+        id: String = "group-1",
         name: String = "GROUP",
-        parentId: Long? = null,
+        parentId: String? = null,
         parentName: String? = null,
     ) = GroupDto(id, name, parentId, parentName)
 
     fun initGroupCreationDto(
         name: String = "GROUP",
-        parentId: Long? = null,
+        parentId: String? = null,
     ) = GroupCreationDto(name, parentId)
 
     fun initGroupUpdateDto(
         name: String? = "GROUP",
-        parentId: Long? = null,
+        parentId: String? = null,
     ) = GroupUpdateDto(name, parentId)
 
     fun initPermissionSettingDto(

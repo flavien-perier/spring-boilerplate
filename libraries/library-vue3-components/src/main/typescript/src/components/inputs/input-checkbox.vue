@@ -1,19 +1,28 @@
 <template>
-  <div class="input-field input-field--checkbox" :class="{ 'input-field--disabled': disabled }">
+  <div
+    class="input-field input-field--checkbox"
+    :class="{ 'input-field--disabled': disabled }"
+  >
     <input
-        type="checkbox"
-        :id="inputId"
-        class="input-control input-control--checkbox"
-        :checked="modelValue"
-        :disabled="disabled"
-        @change="handleChange"
+      type="checkbox"
+      :id="inputId"
+      class="input-control input-control--checkbox"
+      :checked="modelValue"
+      :disabled="disabled"
+      @change="handleChange"
     />
-    <label v-if="label" :for="inputId" class="input-label input-label--checkbox">{{ label }}</label>
+    <label
+      v-if="label"
+      :for="inputId"
+      class="input-label input-label--checkbox"
+      >{{ label }}</label
+    >
   </div>
 </template>
 
 <script setup lang="ts">
-import {useId} from "vue";
+import { useId } from "vue";
+import type { InputComponent } from "./model/input-component";
 
 defineOptions({
   name: "FioInputCheckbox",
@@ -21,18 +30,20 @@ defineOptions({
 
 const inputId = useId();
 
-const {label, disabled = false} = defineProps<{
-  label?: string;
-  disabled?: boolean;
+const {
+  modelValue = false,
+  label,
+  disabled = false,
+} = defineProps<InputComponent<boolean> & { label?: string }>();
+
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+  change: [event: Event];
 }>();
-
-const modelValue = defineModel<boolean>({default: false});
-
-const emit = defineEmits<{ change: [event: Event] }>();
 
 function handleChange(event: Event) {
   const target = event.target as HTMLInputElement;
-  modelValue.value = target.checked;
+  emit("update:modelValue", target.checked);
   emit("change", event);
 }
 </script>

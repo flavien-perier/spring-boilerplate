@@ -1,13 +1,14 @@
 package io.flavien.demo.domain.user.entity
 
+import io.flavien.demo.domain.shared.util.UuidUtil
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.PrePersist
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.OffsetDateTime
+import java.util.UUID
 
 @Entity(name = "app_user")
 data class User(
@@ -26,9 +27,8 @@ data class User(
     @Column(name = "last_login", nullable = false)
     var lastLogin: OffsetDateTime,
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", nullable = false, unique = true, updatable = false)
-    var id: Long? = null,
+    @Column(name = "user_id", nullable = false, unique = true, updatable = false, columnDefinition = "uuid")
+    var id: UUID? = null,
     @Column(name = "deletion_warning_sent_at")
     var deletionWarningSentAt: OffsetDateTime? = null,
     @UpdateTimestamp
@@ -37,4 +37,11 @@ data class User(
     @CreationTimestamp
     @Column(name = "creation_date", nullable = false, updatable = false)
     var creationDate: OffsetDateTime? = null,
-)
+) {
+    @PrePersist
+    fun prePersist() {
+        if (id == null) {
+            id = UuidUtil.uuidv7()
+        }
+    }
+}

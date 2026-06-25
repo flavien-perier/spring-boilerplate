@@ -10,5 +10,5 @@ class ForgotPassword(
     @Id
     val id: String,
     @Indexed
-    val userId: Long,
+    val userId: String,
 ) : Serializable

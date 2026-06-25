@@ -27,48 +27,40 @@ class RefreshTokenServiceTest {
     @Mock
     var refreshTokenRepository: RefreshTokenRepository? = null
 
+    private val userId = UUID.fromString("00000000-0000-0000-0000-00000000000a")
+    private val userIdStr = userId.toString()
+
     @Test
     fun `Should create an refresh token`() {
-        // Given
-        val userId = 1L
-
-        // When
         val result = refreshTokenService!!.create(userId)
 
-        // Then
         val refreshTokenCaptor = ArgumentCaptor.forClass(RefreshToken::class.java)
         verify(refreshTokenRepository!!).save(refreshTokenCaptor.capture())
         val savedRefreshToken = refreshTokenCaptor.value
 
-        assertEquals(userId, savedRefreshToken.userId)
-
-        assertEquals(userId, result.userId)
+        assertEquals(userIdStr, savedRefreshToken.userId)
+        assertEquals(userIdStr, result.userId)
     }
 
     @Test
     fun `Should return an refresh token according to its id`() {
-        // Given
         val tokenId = "refreshTokenId"
         val refreshToken = SessionTestFactory.initRefreshToken()
 
         `when`(refreshTokenRepository!!.findById(tokenId)).thenReturn(Optional.of(refreshToken))
 
-        // When
         val result = refreshTokenService!!.get(tokenId)
 
-        // Then
         verify(refreshTokenRepository!!).findById(tokenId)
         assertEquals(refreshToken, result)
     }
 
     @Test
     fun `Should fail to return an refresh token according to its id (Refresh token does not exist)`() {
-        // Given
         val tokenId = "nonExistentTokenId"
 
         `when`(refreshTokenRepository!!.findById(tokenId)).thenReturn(Optional.empty())
 
-        // When & Then
         assertThrows(BadRefreshTokenException::class.java) {
             refreshTokenService!!.get(tokenId)
         }
@@ -78,28 +70,23 @@ class RefreshTokenServiceTest {
 
     @Test
     fun `Should return an refresh token according to its uuid`() {
-        // Given
         val refreshToken = SessionTestFactory.initRefreshToken()
         val uuid = refreshToken.uuid
 
         `when`(refreshTokenRepository!!.getByUuid(uuid)).thenReturn(refreshToken)
 
-        // When
         val result = refreshTokenService!!.get(uuid)
 
-        // Then
         verify(refreshTokenRepository!!).getByUuid(uuid)
         assertEquals(refreshToken, result)
     }
 
     @Test
     fun `Should fail to return an refresh token according to its uuid (Refresh token does not exist)`() {
-        // Given
         val uuid = UUID.randomUUID()
 
         `when`(refreshTokenRepository!!.getByUuid(uuid)).thenReturn(null)
 
-        // When & Then
         assertThrows(BadRefreshTokenException::class.java) {
             refreshTokenService!!.get(uuid)
         }
@@ -109,25 +96,20 @@ class RefreshTokenServiceTest {
 
     @Test
     fun `Should return a list of refresh tokens based on an userId`() {
-        // Given
-        val userId = 1L
         val refreshToken1 = SessionTestFactory.initRefreshToken()
         val refreshToken2 =
             SessionTestFactory.initRefreshToken(
                 id = "test2",
-                userId = userId,
+                userId = userIdStr,
                 creationDate = OffsetDateTime.now().minusHours(1),
             )
         val refreshTokens = listOf(refreshToken1, refreshToken2)
 
-        `when`(refreshTokenRepository!!.findByUserId(userId)).thenReturn(refreshTokens)
+        `when`(refreshTokenRepository!!.findByUserId(userIdStr)).thenReturn(refreshTokens)
 
-        // When
         val result = refreshTokenService!!.findByUserId(userId)
 
-        // Then
-        verify(refreshTokenRepository!!).findByUserId(userId)
-
+        verify(refreshTokenRepository!!).findByUserId(userIdStr)
         assertEquals(2, result.size)
         assertEquals(refreshToken1, result[0])
         assertEquals(refreshToken2, result[1])
@@ -135,88 +117,72 @@ class RefreshTokenServiceTest {
 
     @Test
     fun `Should return an empty list of refresh tokens based on an userId (No userId matches)`() {
-        // Given
-        val userId = 999L
+        val unknownUserIdStr = "00000000-0000-0000-0000-000000000999"
 
-        `when`(refreshTokenRepository!!.findByUserId(userId)).thenReturn(emptyList())
+        `when`(refreshTokenRepository!!.findByUserId(unknownUserIdStr)).thenReturn(emptyList())
 
-        // When
-        val result = refreshTokenService!!.findByUserId(userId)
+        val result = refreshTokenService!!.findByUserId(UUID.fromString(unknownUserIdStr))
 
-        // Then
-        verify(refreshTokenRepository!!).findByUserId(userId)
+        verify(refreshTokenRepository!!).findByUserId(unknownUserIdStr)
         assertEquals(0, result.size)
     }
 
     @Test
     fun `Should return that the refresh token exists according to its id`() {
-        // Given
         val tokenId = "existing-token-id"
 
         `when`(refreshTokenRepository!!.existsById(tokenId)).thenReturn(true)
 
-        // When
         val result = refreshTokenService!!.exists(tokenId)
 
-        // Then
         verify(refreshTokenRepository!!).existsById(tokenId)
         assertEquals(true, result)
     }
 
     @Test
     fun `Should return that the refresh token does not exist according to its id`() {
-        // Given
         val tokenId = "non-existent-token-id"
 
         `when`(refreshTokenRepository!!.existsById(tokenId)).thenReturn(false)
 
-        // When
         val result = refreshTokenService!!.exists(tokenId)
 
-        // Then
         verify(refreshTokenRepository!!).existsById(tokenId)
         assertEquals(false, result)
     }
 
     @Test
     fun `Should delete a refresh token according to its id`() {
-        // Given
         val tokenId = "token-to-delete"
 
-        // When
         refreshTokenService!!.delete(tokenId)
 
-        // Then
         verify(refreshTokenRepository!!).deleteById(tokenId)
     }
 
     @Test
     fun `Should delete a refresh token according to its uuid`() {
-        // Given
         val uuid = UUID.randomUUID()
-        val refreshToken = SessionTestFactory.initRefreshToken(userId = 1L)
+        val refreshToken = SessionTestFactory.initRefreshToken(userId = userIdStr)
 
         `when`(refreshTokenRepository!!.getByUuid(uuid)).thenReturn(refreshToken)
 
-        // When
-        refreshTokenService!!.delete(uuid, 1L)
+        refreshTokenService!!.delete(uuid, userId)
 
-        // Then
         verify(refreshTokenRepository!!).getByUuid(uuid)
         verify(refreshTokenRepository!!).delete(refreshToken)
     }
 
     @Test
     fun `Should throw a BadRefreshTokenException when deleting a refresh token owned by another user`() {
-        // Given
         val uuid = UUID.randomUUID()
-        val refreshToken = SessionTestFactory.initRefreshToken(userId = 1L)
+        val refreshToken = SessionTestFactory.initRefreshToken(userId = userIdStr)
+        val otherUserId = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
         `when`(refreshTokenRepository!!.getByUuid(uuid)).thenReturn(refreshToken)
 
-        // When / Then
         assertThrows(BadRefreshTokenException::class.java) {
-            refreshTokenService!!.delete(uuid, 2L)
+            refreshTokenService!!.delete(uuid, otherUserId)
         }
 
         verify(refreshTokenRepository!!).getByUuid(uuid)
@@ -225,13 +191,8 @@ class RefreshTokenServiceTest {
 
     @Test
     fun `Should delete a refresh token according to its userId`() {
-        // Given
-        val userId = 1L
-
-        // When
         refreshTokenService!!.deleteByUserId(userId)
 
-        // Then
-        verify(refreshTokenRepository!!).deleteByUserId(userId)
+        verify(refreshTokenRepository!!).deleteByUserId(userIdStr)
     }
 }

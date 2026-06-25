@@ -24,6 +24,7 @@ import io.flavien.demo.domain.permission.service.PermissionService
 import io.flavien.demo.domain.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import java.util.UUID
 
 @Controller
 class UserController(
@@ -59,7 +60,7 @@ class UserController(
     }
 
     override fun getUser(userMail: String): ResponseEntity<UserDto> {
-        val user = userService.get(userMail)
+        val user = userService.getByEmail(userMail)
 
         return ResponseEntity.ok(userMapper.toUserDto(user))
     }
@@ -68,31 +69,31 @@ class UserController(
         userMail: String,
         userUpdateAdminDto: UserUpdateAdminDto,
     ): ResponseEntity<UserDto> {
-        val user = userService.update(userMail, userUpdateMapper.fromUserUpdateAdminDto(userUpdateAdminDto))
+        val user = userService.updateByEmail(userMail, userUpdateMapper.fromUserUpdateAdminDto(userUpdateAdminDto))
 
         return ResponseEntity.ok(userMapper.toUserDto(user))
     }
 
     override fun deleteUser(userMail: String): ResponseEntity<Unit> {
-        userService.delete(userMail)
+        userService.deleteByEmail(userMail)
 
         return ResponseEntity.noContent().build()
     }
 
     override fun getCurrentUser(): ResponseEntity<UserDto> {
-        val user = userService.get(ContextUtil.userId)
+        val user = userService.getById(ContextUtil.userId)
 
         return ResponseEntity.ok(userMapper.toUserDto(user))
     }
 
     override fun updateCurrentUser(userUpdateDto: UserUpdateDto): ResponseEntity<UserDto> {
-        val user = userService.update(ContextUtil.userId, userUpdateMapper.fromUserUpdateDto(userUpdateDto))
+        val user = userService.updateById(ContextUtil.userId, userUpdateMapper.fromUserUpdateDto(userUpdateDto))
 
         return ResponseEntity.ok(userMapper.toUserDto(user))
     }
 
     override fun deleteCurrentUser(): ResponseEntity<Unit> {
-        userService.delete(ContextUtil.userId)
+        userService.deleteById(ContextUtil.userId)
         return ResponseEntity.noContent().build()
     }
 
@@ -112,7 +113,7 @@ class UserController(
     }
 
     override fun exportCurrentUserData(): ResponseEntity<UserExportDto> {
-        val user = userService.get(ContextUtil.userId)
+        val user = userService.getById(ContextUtil.userId)
 
         return ResponseEntity.ok(userMapper.toUserExportDto(user))
     }
@@ -142,7 +143,7 @@ class UserController(
     }
 
     override fun getUserPermissionOverrides(userMail: String): ResponseEntity<List<PermissionSettingDto>> {
-        val user = userService.get(userMail)
+        val user = userService.getByEmail(userMail)
         val settings = permissionService.getUserPermissionOverrides(user.id!!)
         return ResponseEntity.ok(
             settings.map {
@@ -161,7 +162,7 @@ class UserController(
         permission: String,
         permissionUpdateDto: PermissionUpdateDto,
     ): ResponseEntity<Unit> {
-        val user = userService.get(userMail)
+        val user = userService.getByEmail(userMail)
         val permissionEnum = PermissionEnum.fromName(permission)
         permissionService.setUserPermission(user.id!!, permissionEnum, permissionUpdateDto.allow)
         return ResponseEntity.noContent().build()
@@ -171,38 +172,38 @@ class UserController(
         userMail: String,
         permission: String,
     ): ResponseEntity<Unit> {
-        val user = userService.get(userMail)
+        val user = userService.getByEmail(userMail)
         val permissionEnum = PermissionEnum.fromName(permission)
         permissionService.removeUserPermission(user.id!!, permissionEnum)
         return ResponseEntity.noContent().build()
     }
 
     override fun getUserGroups(userMail: String): ResponseEntity<List<GroupDto>> {
-        val user = userService.get(userMail)
+        val user = userService.getByEmail(userMail)
         val groups = groupService.getUserGroups(user.id!!)
         return ResponseEntity.ok(groups.map { groupMapper.toGroupDto(it) })
     }
 
     override fun addUserToGroup(
         userMail: String,
-        groupId: Long,
+        groupId: String,
     ): ResponseEntity<Unit> {
-        val user = userService.get(userMail)
-        groupService.addUserToGroup(user.id!!, groupId)
+        val user = userService.getByEmail(userMail)
+        groupService.addUserToGroup(user.id!!, UUID.fromString(groupId))
         return ResponseEntity.noContent().build()
     }
 
     override fun removeUserFromGroup(
         userMail: String,
-        groupId: Long,
+        groupId: String,
     ): ResponseEntity<Unit> {
-        val user = userService.get(userMail)
-        groupService.removeUserFromGroup(user.id!!, groupId)
+        val user = userService.getByEmail(userMail)
+        groupService.removeUserFromGroup(user.id!!, UUID.fromString(groupId))
         return ResponseEntity.noContent().build()
     }
 
     override fun disableUserOtp(userMail: String): ResponseEntity<Unit> {
-        val user = userService.get(userMail)
+        val user = userService.getByEmail(userMail)
         userService.disableOtp(user.id!!)
         return ResponseEntity.noContent().build()
     }

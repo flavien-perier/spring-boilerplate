@@ -112,5 +112,9 @@
   "fio.password.constraint.lowercase": "At least one lowercase letter",
   "fio.password.constraint.uppercase": "At least one uppercase letter",
   "fio.password.constraint.number": "At least one number",
-  "fio.password.constraint.special-character": "At least one special character"
+  "fio.password.constraint.special-character": "At least one special character",
+  "fio.table.page-size": "Rows per page",
+  "fio.table.page-info": "Page {page} of {total}",
+  "fio.table.example.user": "User",
+  "fio.table.example.email": "Email"
 }

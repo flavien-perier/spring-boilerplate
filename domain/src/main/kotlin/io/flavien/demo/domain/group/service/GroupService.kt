@@ -15,6 +15,7 @@ import io.flavien.demo.domain.user.exception.UserNotFoundException
 import io.flavien.demo.domain.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class GroupService(
@@ -37,7 +38,7 @@ class GroupService(
     }
 
     @Transactional
-    fun deleteUserGroups(userId: Long) {
+    fun deleteUserGroups(userId: UUID) {
         userGroupRepository.deleteByUserId(userId)
     }
 
@@ -45,29 +46,29 @@ class GroupService(
     fun findAll(): List<Group> = groupRepository.findAll()
 
     @Transactional(readOnly = true)
-    fun get(id: Long): Group = groupRepository.findById(id).orElseThrow { GroupNotFoundException(id) }
+    fun getById(id: UUID): Group = groupRepository.findById(id).orElseThrow { GroupNotFoundException("Group id $id not found") }
 
     @Transactional
     fun create(
         name: String,
-        parentId: Long?,
+        parentId: UUID?,
     ): Group {
         if (groupRepository.existsByName(name)) {
             throw GroupAlreadyExistsException(name)
         }
 
-        val parent = parentId?.let { get(it) }
+        val parent = parentId?.let { getById(it) }
 
         return groupRepository.save(Group(name = name, parent = parent))
     }
 
     @Transactional
     fun update(
-        id: Long,
+        id: UUID,
         name: String?,
-        parentId: Long?,
+        parentId: UUID?,
     ): Group {
-        val group = get(id)
+        val group = getById(id)
 
         if (name != null && name != group.name && groupRepository.existsByName(name)) {
             throw GroupAlreadyExistsException(name)
@@ -79,9 +80,9 @@ class GroupService(
                     throw GroupHierarchyException(id, parentId)
                 }
 
-                val resolvedParent = get(parentId)
+                val resolvedParent = getById(parentId)
 
-                val visited = mutableSetOf<Long>()
+                val visited = mutableSetOf<UUID>()
                 var ancestor: Group? = resolvedParent
                 while (ancestor != null && visited.add(ancestor.id!!)) {
                     if (ancestor.id == id) {
@@ -102,8 +103,8 @@ class GroupService(
     }
 
     @Transactional
-    fun delete(id: Long) {
-        val group = get(id)
+    fun delete(id: UUID) {
+        val group = getById(id)
 
         if (group.name in setOf(DEFAULT_GROUP_NAME, ADMIN_GROUP_NAME)) {
             throw ProtectedGroupException(group.name)
@@ -120,11 +121,11 @@ class GroupService(
 
     @Transactional
     fun addUserToGroup(
-        userId: Long,
-        groupId: Long,
+        userId: UUID,
+        groupId: UUID,
     ) {
-        val user = userRepository.getUserById(userId).orElseThrow { UserNotFoundException(userId) }
-        val group = get(groupId)
+        val user = userRepository.getUserById(userId).orElseThrow { UserNotFoundException("User id $userId not found") }
+        val group = getById(groupId)
 
         val id = UserGroupId(user.id!!, group.id!!)
         if (!userGroupRepository.existsById(id)) {
@@ -134,14 +135,14 @@ class GroupService(
 
     @Transactional
     fun removeUserFromGroup(
-        userId: Long,
-        groupId: Long,
+        userId: UUID,
+        groupId: UUID,
     ) {
         userGroupRepository.deleteById(UserGroupId(userId, groupId))
     }
 
     @Transactional(readOnly = true)
-    fun getUserGroups(userId: Long): List<Group> = userGroupRepository.findByUserId(userId).map { it.group }
+    fun getUserGroups(userId: UUID): List<Group> = userGroupRepository.findByUserId(userId).map { it.group }
 
     companion object {
         const val DEFAULT_GROUP_NAME = "USER"

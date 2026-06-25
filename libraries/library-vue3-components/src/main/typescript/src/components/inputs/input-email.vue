@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import type { InputComponent } from "./model/input-component";
 
 defineOptions({
   name: "FioInputEmail",
@@ -25,10 +26,8 @@ defineOptions({
 
 const isValid = ref(true);
 
-const { modelValue, disabled } = defineProps({
-  modelValue: { type: String, default: "" },
-  disabled: { type: Boolean, default: false },
-});
+const { modelValue = "", disabled = false } =
+  defineProps<InputComponent<string>>();
 
 const emit = defineEmits([
   "update:modelValue",

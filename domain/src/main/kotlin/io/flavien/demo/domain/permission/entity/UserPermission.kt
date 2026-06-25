@@ -3,7 +3,15 @@ package io.flavien.demo.domain.permission.entity
 import io.flavien.demo.domain.permission.model.PermissionEnum
 import io.flavien.demo.domain.permission.model.id.UserPermissionId
 import io.flavien.demo.domain.user.entity.User
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.IdClass
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 
 @Entity(name = "user_permission")
 @IdClass(UserPermissionId::class)

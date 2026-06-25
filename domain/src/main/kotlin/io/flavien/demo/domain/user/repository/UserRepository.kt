@@ -8,14 +8,15 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.time.OffsetDateTime
 import java.util.Optional
+import java.util.UUID
 
 @Repository
-interface UserRepository : JpaRepository<User, Long> {
+interface UserRepository : JpaRepository<User, UUID> {
     fun existsByEmail(email: String): Boolean
 
     fun getByEmail(email: String): Optional<User>
 
-    fun getUserById(userId: Long): Optional<User>
+    fun getUserById(userId: UUID): Optional<User>
 
     @Query("SELECT u FROM app_user u WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%'))")
     fun find(

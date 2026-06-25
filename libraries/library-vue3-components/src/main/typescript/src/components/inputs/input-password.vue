@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import FioIcon from "../icon.vue";
+import type { InputComponent } from "./model/input-component";
 
 defineOptions({
   name: "FioInputPassword",
@@ -51,12 +52,12 @@ const {
   label = "",
   isValid = true,
   disabled = false,
-} = defineProps<{
-  modelValue?: string;
-  label?: string;
-  isValid?: boolean;
-  disabled?: boolean;
-}>();
+} = defineProps<
+  InputComponent<string> & {
+    label?: string;
+    isValid?: boolean;
+  }
+>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: string];

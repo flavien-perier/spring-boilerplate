@@ -1,24 +1,40 @@
 <template>
-  <div class="input-field input-field--toggle" :class="{ 'input-field--disabled': disabled }">
+  <div
+    class="input-field input-field--toggle"
+    :class="{ 'input-field--disabled': disabled }"
+  >
     <label :for="inputId" class="input-toggle">
       <input
-          type="checkbox"
-          :id="inputId"
-          class="input-control input-control--toggle"
-          :checked="modelValue"
-          :disabled="disabled"
-          @change="handleChange"
+        type="checkbox"
+        :id="inputId"
+        class="input-control input-control--toggle"
+        :checked="modelValue"
+        :disabled="disabled"
+        @change="handleChange"
       />
-      <span class="input-toggle__track">
-        <span class="input-toggle__thumb"></span>
+      <span
+        ref="trackRef"
+        class="input-toggle__track"
+        :class="{ 'input-toggle__track--dragging': dragging }"
+        @pointerdown="onPointerDown"
+      >
+        <span
+          ref="thumbRef"
+          class="input-toggle__thumb"
+          :style="thumbStyle"
+        ></span>
       </span>
     </label>
-    <span v-if="label" class="input-label input-label--toggle">{{ label }}</span>
+    <span v-if="label" class="input-label input-label--toggle">{{
+      label
+    }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
-import {useId} from "vue";
+import { computed, ref, useId } from "vue";
+import type { InputComponent } from "./model/input-component";
+import { useDraggableToggle } from "./composables/use-draggable-toggle";
 
 defineOptions({
   name: "FioInputToggle",
@@ -26,20 +42,39 @@ defineOptions({
 
 const inputId = useId();
 
-const {label, disabled = false} = defineProps<{
-  label?: string;
-  disabled?: boolean;
+const {
+  modelValue = false,
+  label,
+  disabled = false,
+} = defineProps<InputComponent<boolean> & { label?: string }>();
+
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+  change: [event: Event];
 }>();
-
-const modelValue = defineModel<boolean>({default: false});
-
-const emit = defineEmits<{ change: [event: Event] }>();
 
 function handleChange(event: Event) {
   const target = event.target as HTMLInputElement;
-  modelValue.value = target.checked;
+  emit("update:modelValue", target.checked);
   emit("change", event);
 }
+
+const trackRef = ref<HTMLElement | null>(null);
+const thumbRef = ref<HTMLElement | null>(null);
+
+const { dragging, dragOffset, onPointerDown } = useDraggableToggle<boolean>({
+  trackRef,
+  thumbRef,
+  stops: [false, true],
+  isDisabled: () => disabled,
+  onCommit: (value) => emit("update:modelValue", value),
+});
+
+const thumbStyle = computed(() =>
+  dragOffset.value === null
+    ? undefined
+    : { transform: `translateX(${dragOffset.value}px)` }
+);
 </script>
 
 <style scoped lang="scss">
@@ -83,6 +118,12 @@ function handleChange(event: Event) {
   border-radius: calc(#{$font-l-size} + #{$margin-xxs * 2});
   box-sizing: border-box;
   transition: background-color 0.2s ease, border-color 0.2s ease;
+  touch-action: none;
+}
+
+.input-toggle__track--dragging {
+  background-color: $primary;
+  border-color: $primary;
 }
 
 .input-toggle__thumb {
@@ -95,6 +136,10 @@ function handleChange(event: Event) {
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
+.input-toggle__track--dragging .input-toggle__thumb {
+  transition: none;
+}
+
 .input-control--toggle:checked + .input-toggle__track {
   background-color: $primary;
   border-color: $primary;
@@ -102,9 +147,9 @@ function handleChange(event: Event) {
 
 .input-control--toggle:checked + .input-toggle__track .input-toggle__thumb {
   transform: translateX(
-      calc(
-          #{$font-xxl-size * 1.8} - #{$border-size * 2} - #{$margin-xxs * 2} - #{$font-l-size}
-      )
+    calc(
+      #{$font-xxl-size * 1.8} - #{$border-size * 2} - #{$margin-xxs * 2} - #{$font-l-size}
+    )
   );
   background-color: lighter(secondary, 90);
 }

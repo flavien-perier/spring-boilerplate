@@ -3,7 +3,12 @@
     <div class="fio-modal__dialog">
       <div class="fio-modal__header">
         <h5 class="fio-modal__title">{{ title }}</h5>
-        <fio-icon icon="xmark" clickable class="fio-modal__close" @click="emit('close')"/>
+        <fio-icon
+          icon="xmark"
+          clickable
+          class="fio-modal__close"
+          @click="emit('close')"
+        />
       </div>
       <div class="fio-modal__body">
         <slot>

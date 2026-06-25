@@ -14,7 +14,7 @@ class DeleteInactiveUsersItemWriter(
     override fun write(chunk: Chunk<out User>) {
         chunk.forEach { user ->
             log.info("Deleting inactive user ${user.email} (last login: ${user.lastLogin})")
-            userService.delete(user.id!!)
+            userService.deleteById(user.id!!)
         }
     }
 

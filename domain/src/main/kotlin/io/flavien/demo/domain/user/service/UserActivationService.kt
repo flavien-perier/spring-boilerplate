@@ -14,6 +14,7 @@ import org.springframework.mail.SimpleMailMessage
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
+import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -26,7 +27,7 @@ class UserActivationService(
     fun sendActivationToken(user: User) {
         val activationToken = RandomUtil.randomString(64, SECURE_RANDOM)
 
-        val userActivation = UserActivation(activationToken, user.id!!)
+        val userActivation = UserActivation(activationToken, user.id!!.toString())
         userActivationRepository.save(userActivation)
 
         val smtp = registry.get(TenantContext.require()).smtp
@@ -52,8 +53,8 @@ class UserActivationService(
         return userActivation
     }
 
-    fun deleteByUserId(userId: Long) {
-        userActivationRepository.deleteByUserId(userId)
+    fun deleteByUserId(userId: UUID) {
+        userActivationRepository.deleteByUserId(userId.toString())
     }
 
     companion object {

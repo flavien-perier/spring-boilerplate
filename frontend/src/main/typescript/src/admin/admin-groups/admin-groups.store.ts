@@ -13,7 +13,7 @@ const applicationStore = useApplicationStore();
 export const useAdminGroupsStore = defineStore("admin-groups", {
   state: () => ({
     groups: [] as GroupDto[],
-    selectedGroupId: null as number | null,
+    selectedGroupId: null as string | null,
     permissions: [] as PermissionSettingDto[],
     newGroupName: "",
     newGroupParentId: null as string | null,
@@ -37,21 +37,19 @@ export const useAdminGroupsStore = defineStore("admin-groups", {
         })
         .catch(applicationStore.axiosException);
     },
-    selectGroup(groupId: number) {
+    selectGroup(groupId: string) {
       this.selectedGroupId = groupId;
       const group = this.selectedGroup;
       if (group) {
         this.editGroupName = group.name;
-        this.editGroupParentId = group.parentId ? String(group.parentId) : null;
+        this.editGroupParentId = group.parentId ?? null;
       }
       this.loadGroupPermissions(groupId);
     },
     createGroup() {
       const dto: GroupCreationDto = {
         name: this.newGroupName,
-        parentId: this.newGroupParentId
-          ? Number(this.newGroupParentId)
-          : undefined,
+        parentId: this.newGroupParentId ?? undefined,
       };
       groupApi
         .createGroup(dto)
@@ -70,9 +68,7 @@ export const useAdminGroupsStore = defineStore("admin-groups", {
       if (this.selectedGroupId === null) return;
       const dto: GroupUpdateDto = {
         name: this.editGroupName || undefined,
-        parentId: this.editGroupParentId
-          ? Number(this.editGroupParentId)
-          : undefined,
+        parentId: this.editGroupParentId ?? undefined,
       };
       groupApi
         .updateGroup(this.selectedGroupId, dto)
@@ -85,7 +81,7 @@ export const useAdminGroupsStore = defineStore("admin-groups", {
         })
         .catch(applicationStore.axiosException);
     },
-    deleteGroup(groupId: number) {
+    deleteGroup(groupId: string) {
       groupApi
         .deleteGroup(groupId)
         .then(() => {
@@ -101,7 +97,7 @@ export const useAdminGroupsStore = defineStore("admin-groups", {
         })
         .catch(applicationStore.axiosException);
     },
-    loadGroupPermissions(groupId: number) {
+    loadGroupPermissions(groupId: string) {
       groupApi
         .getGroupPermissions(groupId)
         .then((response) => {

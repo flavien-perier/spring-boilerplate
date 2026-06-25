@@ -25,6 +25,7 @@ import org.springframework.mail.SimpleMailMessage
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 import java.util.Optional
+import java.util.UUID
 
 class UserActivationServiceTest {
     private val userActivationRepository = mockk<UserActivationRepository>(relaxed = true)
@@ -34,6 +35,9 @@ class UserActivationServiceTest {
 
     private val userActivationService =
         UserActivationService(userActivationRepository, templateEngine, mailService, registry)
+
+    private val userId = UUID.fromString("00000000-0000-0000-0000-000000000010")
+    private val userIdStr = userId.toString()
 
     private val testTenant =
         TenantDefinition(
@@ -55,8 +59,7 @@ class UserActivationServiceTest {
 
     @Test
     fun `Should send activation email and persist activation token`() {
-        // Given
-        val user = UserTestFactory.initUser(email = "new@flavien.io", id = 10L)
+        val user = UserTestFactory.initUser(email = "new@flavien.io", id = userId)
         every { registry.get("test") } returns testTenant
         every { templateEngine.process(eq("user-activation"), any<Context>()) } returns "<html>Activation body</html>"
         val activationSlot = slot<UserActivation>()
@@ -64,11 +67,9 @@ class UserActivationServiceTest {
         val messageSlot = slot<SimpleMailMessage>()
         justRun { mailService.send(capture(messageSlot)) }
 
-        // When
         userActivationService.sendActivationToken(user)
 
-        // Then
-        assertThat(activationSlot.captured.userId).isEqualTo(10L)
+        assertThat(activationSlot.captured.userId).isEqualTo(userIdStr)
         assertThat(activationSlot.captured.id).isNotBlank()
 
         assertThat(messageSlot.captured.to).containsExactly("new@flavien.io")
@@ -79,14 +80,11 @@ class UserActivationServiceTest {
 
     @Test
     fun `Should validate and return activation token`() {
-        // Given
         val userActivation = UserTestFactory.initUserActivation()
         every { userActivationRepository.findById(userActivation.id) } returns Optional.of(userActivation)
 
-        // When
         val result = userActivationService.validate(userActivation.id)
 
-        // Then
         assertThat(result).isEqualTo(userActivation)
         verify(exactly = 1) { userActivationRepository.findById(userActivation.id) }
         verify(exactly = 1) { userActivationRepository.delete(userActivation) }
@@ -94,11 +92,9 @@ class UserActivationServiceTest {
 
     @Test
     fun `Should fail to validate an unknown activation token`() {
-        // Given
         val unknownToken = "non-existent-token"
         every { userActivationRepository.findById(unknownToken) } returns Optional.empty()
 
-        // When / Then
         assertThatThrownBy { userActivationService.validate(unknownToken) }
             .isInstanceOf(ActivationFailedException::class.java)
 
@@ -108,13 +104,8 @@ class UserActivationServiceTest {
 
     @Test
     fun `Should delete activation tokens by user id`() {
-        // Given
-        val userId = 10L
-
-        // When
         userActivationService.deleteByUserId(userId)
 
-        // Then
-        verify(exactly = 1) { userActivationRepository.deleteByUserId(userId) }
+        verify(exactly = 1) { userActivationRepository.deleteByUserId(userIdStr) }
     }
 }

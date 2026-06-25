@@ -19,6 +19,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.OffsetDateTime
 import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class AccessTokenServiceTest {
@@ -34,15 +35,15 @@ class AccessTokenServiceTest {
     @Mock
     var permissionService: PermissionService? = null
 
+    private val userId = UUID.fromString("00000000-0000-0000-0000-00000000000a")
+    private val userIdStr = userId.toString()
+
     @Test
     fun `Should create an access token`() {
-        // Given
         val refreshToken = SessionTestFactory.initRefreshToken()
 
-        // When
         val accessToken = accessTokenService!!.create(refreshToken)
 
-        // Then
         assertThat(accessToken)
             .usingRecursiveComparison()
             .ignoringFields("id")
@@ -61,11 +62,9 @@ class AccessTokenServiceTest {
 
     @Test
     fun `Should return an access token according to its id`() {
-        // Given
         val tokenId = "test-token-id"
         val refreshTokenId = "test-refresh-token-id"
-        val userId = 1L
-        val accessToken = SessionTestFactory.initAccessToken(tokenId, userId, refreshTokenId)
+        val accessToken = SessionTestFactory.initAccessToken(tokenId, userIdStr, refreshTokenId)
 
         Mockito
             .`when`(accessTokenRepository!!.findById(tokenId))
@@ -75,10 +74,8 @@ class AccessTokenServiceTest {
             .`when`(refreshTokenService!!.exists(refreshTokenId))
             .thenReturn(true)
 
-        // When
         val result = accessTokenService!!.get(tokenId)
 
-        // Then
         Assertions.assertThat(result).isEqualTo(accessToken)
         Mockito.verify(accessTokenRepository!!).findById(tokenId)
         Mockito.verify(refreshTokenService!!).exists(refreshTokenId)
@@ -86,14 +83,12 @@ class AccessTokenServiceTest {
 
     @Test
     fun `Should fail to return an access token according to its id (Access token does not exist)`() {
-        // Given
         val tokenId = "non-existent-token-id"
 
         Mockito
             .`when`(accessTokenRepository!!.findById(tokenId))
             .thenReturn(Optional.empty())
 
-        // When/Then
         assertThrows(BadAccessTokenException::class.java) {
             accessTokenService!!.get(tokenId)
         }
@@ -104,25 +99,17 @@ class AccessTokenServiceTest {
 
     @Test
     fun `Should delete an access token by its id`() {
-        // Given
         val tokenId = "token-to-delete"
 
-        // When
         accessTokenService!!.delete(tokenId)
 
-        // Then
         Mockito.verify(accessTokenRepository!!).deleteById(tokenId)
     }
 
     @Test
     fun `Should delete an access token by user id`() {
-        // Given
-        val userId = 1L
-
-        // When
         accessTokenService!!.deleteByUserId(userId)
 
-        // Then
-        Mockito.verify(accessTokenRepository!!).deleteByUserId(userId)
+        Mockito.verify(accessTokenRepository!!).deleteByUserId(userIdStr)
     }
 }

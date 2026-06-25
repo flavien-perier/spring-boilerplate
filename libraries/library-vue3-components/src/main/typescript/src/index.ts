@@ -12,8 +12,8 @@ import Table from "./components/table.vue";
 import InputText from "./components/inputs/input-text.vue";
 import InputCheckbox from "./components/inputs/input-checkbox.vue";
 import InputToggle from "./components/inputs/input-toggle.vue";
+import InputTriToggle from "./components/inputs/input-tri-toggle.vue";
 import InputSelect from "./components/inputs/input-select.vue";
-import PermissionSetting from "./components/permission-setting.vue";
 import Markdown from "./components/markdown.vue";
 import InputMarkdown from "./components/inputs/input-markdown.vue";
 import TopNavLayout from "./layouts/top-nav.layout.vue";
@@ -44,8 +44,8 @@ export default {
     app.component("fio-input-text", InputText);
     app.component("fio-input-checkbox", InputCheckbox);
     app.component("fio-input-toggle", InputToggle);
+    app.component("fio-input-tri-toggle", InputTriToggle);
     app.component("fio-input-select", InputSelect);
-    app.component("fio-permission-setting", PermissionSetting);
     app.component("fio-markdown", Markdown);
     app.component("fio-input-markdown", InputMarkdown);
     app.component("fio-top-nav-layout", TopNavLayout);
@@ -75,8 +75,8 @@ export type {
   InputText,
   InputCheckbox,
   InputToggle,
+  InputTriToggle,
   InputSelect,
-  PermissionSetting,
   Markdown,
   InputMarkdown,
   TopNavLayout,
@@ -93,4 +93,10 @@ export type { NavbarElement } from "./model/navbar-element";
 export type { IconColor } from "./model/icon-color";
 export type { IconSize } from "./model/icon-size";
 export type { ImageName } from "./model/images";
-export type { TableHeader } from "./model/table-header";
+export type {
+  TableHeader,
+  SortDirection,
+  TableSortEvent,
+  TablePageEvent,
+  TablePageSizeEvent,
+} from "./model/table-header";

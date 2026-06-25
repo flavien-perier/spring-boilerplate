@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ForgotPasswordRepository : CrudRepository<ForgotPassword, String> {
-    fun deleteByUserId(userId: Long)
+    fun deleteByUserId(userId: String)
 }

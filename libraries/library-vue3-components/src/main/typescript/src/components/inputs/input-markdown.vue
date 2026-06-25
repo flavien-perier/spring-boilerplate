@@ -3,105 +3,106 @@
     <label v-if="label" :for="editorId" class="input-label">{{ label }}</label>
     <div v-if="showToolbar" class="fio-input-markdown__toolbar">
       <button
-          type="button"
-          class="fio-input-markdown__tool"
-          :title="t('fio.markdown.bold')"
-          :disabled="disabled"
-          @mousedown.prevent
-          @click="wrapSelection('**', t('fio.markdown.placeholder.text'))"
+        type="button"
+        class="fio-input-markdown__tool"
+        :title="t('fio.markdown.bold')"
+        :disabled="disabled"
+        @mousedown.prevent
+        @click="wrapSelection('**', t('fio.markdown.placeholder.text'))"
       >
-        <fio-icon icon="bold"/>
+        <fio-icon icon="bold" />
       </button>
       <button
-          type="button"
-          class="fio-input-markdown__tool"
-          :title="t('fio.markdown.italic')"
-          :disabled="disabled"
-          @mousedown.prevent
-          @click="wrapSelection('*', t('fio.markdown.placeholder.text'))"
+        type="button"
+        class="fio-input-markdown__tool"
+        :title="t('fio.markdown.italic')"
+        :disabled="disabled"
+        @mousedown.prevent
+        @click="wrapSelection('*', t('fio.markdown.placeholder.text'))"
       >
-        <fio-icon icon="italic"/>
+        <fio-icon icon="italic" />
       </button>
       <button
-          v-if="enableTitle"
-          type="button"
-          class="fio-input-markdown__tool"
-          :title="t('fio.markdown.heading')"
-          :disabled="disabled"
-          @mousedown.prevent
-          @click="prefixLine('# ')"
+        v-if="enableTitle"
+        type="button"
+        class="fio-input-markdown__tool"
+        :title="t('fio.markdown.heading')"
+        :disabled="disabled"
+        @mousedown.prevent
+        @click="prefixLine('# ')"
       >
-        <fio-icon icon="heading"/>
+        <fio-icon icon="heading" />
       </button>
       <button
-          v-if="enableLinks"
-          type="button"
-          class="fio-input-markdown__tool"
-          :title="t('fio.markdown.link')"
-          :disabled="disabled"
-          @mousedown.prevent
-          @click="insertLink"
+        v-if="enableLinks"
+        type="button"
+        class="fio-input-markdown__tool"
+        :title="t('fio.markdown.link')"
+        :disabled="disabled"
+        @mousedown.prevent
+        @click="insertLink"
       >
-        <fio-icon icon="link"/>
+        <fio-icon icon="link" />
       </button>
       <button
-          type="button"
-          class="fio-input-markdown__tool"
-          :title="t('fio.markdown.list')"
-          :disabled="disabled"
-          @mousedown.prevent
-          @click="prefixLine('- ')"
+        type="button"
+        class="fio-input-markdown__tool"
+        :title="t('fio.markdown.list')"
+        :disabled="disabled"
+        @mousedown.prevent
+        @click="prefixLine('- ')"
       >
-        <fio-icon icon="list-ul"/>
+        <fio-icon icon="list-ul" />
       </button>
       <button
-          type="button"
-          class="fio-input-markdown__tool"
-          :title="t('fio.markdown.code')"
-          :disabled="disabled"
-          @mousedown.prevent
-          @click="wrapSelection('`', t('fio.markdown.placeholder.text'))"
+        type="button"
+        class="fio-input-markdown__tool"
+        :title="t('fio.markdown.code')"
+        :disabled="disabled"
+        @mousedown.prevent
+        @click="wrapSelection('`', t('fio.markdown.placeholder.text'))"
       >
-        <fio-icon icon="code"/>
+        <fio-icon icon="code" />
       </button>
       <button
-          type="button"
-          class="fio-input-markdown__tool"
-          :title="t('fio.markdown.quote')"
-          :disabled="disabled"
-          @mousedown.prevent
-          @click="prefixLine('> ')"
+        type="button"
+        class="fio-input-markdown__tool"
+        :title="t('fio.markdown.quote')"
+        :disabled="disabled"
+        @mousedown.prevent
+        @click="prefixLine('> ')"
       >
-        <fio-icon icon="quote-right"/>
+        <fio-icon icon="quote-right" />
       </button>
     </div>
     <div
-        ref="editor"
-        :id="editorId"
-        class="input-control fio-input-markdown__area"
-        :class="{ 'input-control--disabled': disabled }"
-        :contenteditable="!disabled"
-        :data-placeholder="placeholder"
-        @input="onInput"
-        @keydown="onKeydown"
-        @paste="onPaste"
-        @compositionstart="onCompositionStart"
-        @compositionend="onCompositionEnd"
+      ref="editor"
+      :id="editorId"
+      class="input-control fio-input-markdown__area"
+      :class="{ 'input-control--disabled': disabled }"
+      :contenteditable="!disabled"
+      :data-placeholder="placeholder"
+      @input="onInput"
+      @keydown="onKeydown"
+      @paste="onPaste"
+      @compositionstart="onCompositionStart"
+      @compositionend="onCompositionEnd"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, useId, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed, onMounted, ref, useId, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import FioIcon from "../icon.vue";
-import {markdownUtil} from "@/utils/markdown-util";
+import { markdownUtil } from "@/utils/markdown-util";
+import type { InputComponent } from "./model/input-component";
 
 defineOptions({
   name: "FioInputMarkdown",
 });
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const editorId = useId();
 
@@ -111,22 +112,33 @@ const editorId = useId();
 let isComposing = false;
 
 const props = withDefaults(
-    defineProps<{
+  defineProps<
+    InputComponent<string> & {
       label?: string;
       placeholder?: string;
-      disabled?: boolean;
       showToolbar?: boolean;
       enableTitle?: boolean;
       enableLinks?: boolean;
-    }>(),
-    {showToolbar: true, enableTitle: true, enableLinks: true}
+    }
+  >(),
+  {
+    modelValue: "",
+    disabled: false,
+    showToolbar: true,
+    enableTitle: true,
+    enableLinks: true,
+  }
 );
 
 const emit = defineEmits<{
+  "update:modelValue": [value: string];
   input: [event: Event];
 }>();
 
-const model = defineModel<string>({default: ""});
+const model = computed<string>({
+  get: () => props.modelValue,
+  set: (value) => emit("update:modelValue", value),
+});
 
 const editor = ref<HTMLElement | null>(null);
 
@@ -138,15 +150,15 @@ function getSelectionOffsets(root: HTMLElement): {
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) {
     const end = (root.textContent ?? "").length;
-    return {start: end, end};
+    return { start: end, end };
   }
   const range = selection.getRangeAt(0);
   if (
-      !root.contains(range.startContainer) ||
-      !root.contains(range.endContainer)
+    !root.contains(range.startContainer) ||
+    !root.contains(range.endContainer)
   ) {
     const end = (root.textContent ?? "").length;
-    return {start: end, end};
+    return { start: end, end };
   }
   // A boundary's character offset is the length of the text spanning from the
   // editor's start up to that boundary.
@@ -164,8 +176,8 @@ function getSelectionOffsets(root: HTMLElement): {
 
 /** Resolve a character offset to a concrete text node and local offset. */
 function locate(
-    root: HTMLElement,
-    offset: number
+  root: HTMLElement,
+  offset: number
 ): { node: Text; offset: number } | null {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   let remaining = offset;
@@ -174,14 +186,14 @@ function locate(
   while (node) {
     const length = node.data.length;
     if (remaining <= length) {
-      return {node, offset: remaining};
+      return { node, offset: remaining };
     }
     remaining -= length;
     last = node;
     node = walker.nextNode() as Text | null;
   }
   if (last) {
-    return {node: last, offset: last.data.length};
+    return { node: last, offset: last.data.length };
   }
   return null;
 }
@@ -236,7 +248,7 @@ function emitInput(): void {
 function handleInput(event: Event): void {
   const el = editor.value;
   if (!el) return;
-  const {end} = getSelectionOffsets(el);
+  const { end } = getSelectionOffsets(el);
   const value = el.textContent ?? "";
   model.value = value;
   render(value);
@@ -263,9 +275,9 @@ function onCompositionEnd(event: Event): void {
 // re-highlight, restore focus, place the selection at the given character
 // offsets and notify listeners.
 function applyEdit(
-    value: string,
-    selectionStart: number,
-    selectionEnd: number
+  value: string,
+  selectionStart: number,
+  selectionEnd: number
 ): void {
   const el = editor.value;
   if (!el) return;
@@ -279,7 +291,7 @@ function applyEdit(
 function insertText(text: string): void {
   const el = editor.value;
   if (!el || props.disabled) return;
-  const {start, end} = getSelectionOffsets(el);
+  const { start, end } = getSelectionOffsets(el);
   const current = el.textContent ?? "";
   const caret = start + text.length;
   applyEdit(current.slice(0, start) + text + current.slice(end), caret, caret);
@@ -302,15 +314,15 @@ function onPaste(event: ClipboardEvent): void {
 function wrapSelection(marker: string, placeholder: string): void {
   const el = editor.value;
   if (!el || props.disabled) return;
-  const {start, end} = getSelectionOffsets(el);
+  const { start, end } = getSelectionOffsets(el);
   const current = el.textContent ?? "";
   const selected = current.slice(start, end) || placeholder;
   const value =
-      current.slice(0, start) + marker + selected + marker + current.slice(end);
+    current.slice(0, start) + marker + selected + marker + current.slice(end);
   applyEdit(
-      value,
-      start + marker.length,
-      start + marker.length + selected.length
+    value,
+    start + marker.length,
+    start + marker.length + selected.length
   );
 }
 
@@ -318,7 +330,7 @@ function wrapSelection(marker: string, placeholder: string): void {
 function prefixLine(prefix: string): void {
   const el = editor.value;
   if (!el || props.disabled) return;
-  const {start} = getSelectionOffsets(el);
+  const { start } = getSelectionOffsets(el);
   const current = el.textContent ?? "";
   const lineStart = start === 0 ? 0 : current.lastIndexOf("\n", start - 1) + 1;
   const value = current.slice(0, lineStart) + prefix + current.slice(lineStart);
@@ -329,11 +341,11 @@ function prefixLine(prefix: string): void {
 function insertLink(): void {
   const el = editor.value;
   if (!el || props.disabled) return;
-  const {start, end} = getSelectionOffsets(el);
+  const { start, end } = getSelectionOffsets(el);
   const current = el.textContent ?? "";
   const urlPlaceholder = t("fio.markdown.placeholder.url");
   const label =
-      current.slice(start, end) || t("fio.markdown.placeholder.link-text");
+    current.slice(start, end) || t("fio.markdown.placeholder.link-text");
   const snippet = `[${label}](${urlPlaceholder})`;
   const value = current.slice(0, start) + snippet + current.slice(end);
   // Select the url placeholder: "[" + label + "](" precedes it.

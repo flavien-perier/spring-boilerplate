@@ -25,6 +25,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
+import java.util.UUID
 
 @Service
 class UserService(
@@ -73,13 +74,13 @@ class UserService(
     fun activate(token: String) {
         val userAction = userActivationService.validate(token)
 
-        val user = get(userAction.userId)
+        val user = getById(UUID.fromString(userAction.userId))
         user.enabled = true
         userRepository.save(user)
     }
 
     fun sendForgotPassword(email: String) {
-        val user = get(email)
+        val user = getByEmail(email)
 
         forgotPasswordService.sendForgotPasswordToken(user)
     }
@@ -92,20 +93,20 @@ class UserService(
     ) {
         val forgotPassword = forgotPasswordService.validate(token)
 
-        val user = get(forgotPassword.userId)
+        val user = getById(UUID.fromString(forgotPassword.userId))
         val salt = RandomUtil.randomString(PASSWORD_SALT_LENGTH, SECURE_RANDOM)
         user.passwordSalt = salt
         user.password = passwordService.hashPassword(password, salt)
         user.proofOfWork = proofOfWork
         user.enabled = true
         user.otpSecret = null
-        otpPendingRepository.deleteById(user.id.toString())
+        otpPendingRepository.deleteById(user.id!!.toString())
         userRepository.save(user)
     }
 
     @Transactional
-    fun disable(userId: Long) {
-        val user = get(userId)
+    fun disable(userId: UUID) {
+        val user = getById(userId)
         val id = user.id!!
         user.enabled = false
         userRepository.save(user)
@@ -116,16 +117,16 @@ class UserService(
     }
 
     @Transactional
-    fun update(
-        userId: Long,
+    fun updateById(
+        userId: UUID,
         userUpdate: UserUpdate,
-    ) = update(get(userId), userUpdate)
+    ) = update(getById(userId), userUpdate)
 
     @Transactional
-    fun update(
+    fun updateByEmail(
         email: String,
         userUpdate: UserUpdate,
-    ) = update(get(email), userUpdate)
+    ) = update(getByEmail(email), userUpdate)
 
     private fun update(
         user: User,
@@ -159,19 +160,15 @@ class UserService(
         return user
     }
 
-    fun exists(userId: Long) = userRepository.existsById(userId)
+    fun getById(userId: UUID) = userRepository.getUserById(userId).orElseThrow { UserNotFoundException("User id $userId not found") }
 
-    fun exists(email: String) = userRepository.existsByEmail(email)
-
-    fun get(userId: Long) = userRepository.getUserById(userId).orElseThrow { UserNotFoundException(userId) }
-
-    fun get(email: String) = userRepository.getByEmail(email).orElseThrow { UserNotFoundException(email) }
+    fun getByEmail(email: String) = userRepository.getByEmail(email).orElseThrow { UserNotFoundException("User $email not found") }
 
     @Transactional
-    fun delete(userId: Long) = delete(get(userId))
+    fun deleteById(userId: UUID) = delete(getById(userId))
 
     @Transactional
-    fun delete(email: String) = delete(get(email))
+    fun deleteByEmail(email: String) = delete(getByEmail(email))
 
     fun find(
         query: String?,
@@ -190,8 +187,8 @@ class UserService(
         return userRepository.find(query ?: "", pageable)
     }
 
-    fun setupOtp(userId: Long): String {
-        val user = get(userId)
+    fun setupOtp(userId: UUID): String {
+        val user = getById(userId)
 
         if (user.otpSecret != null) {
             throw OtpAlreadyConfiguredException()
@@ -209,7 +206,7 @@ class UserService(
 
     @Transactional
     fun confirmOtp(
-        userId: Long,
+        userId: UUID,
         otp: String,
     ) {
         val pending = otpPendingRepository.findById(userId.toString()).orElseThrow { OtpNotPendingException() }
@@ -218,15 +215,15 @@ class UserService(
             throw InvalidOtpException()
         }
 
-        val user = get(userId)
+        val user = getById(userId)
         user.otpSecret = pending.secret
         userRepository.save(user)
         otpPendingRepository.deleteById(userId.toString())
     }
 
     @Transactional
-    fun disableOtp(userId: Long) {
-        val user = get(userId)
+    fun disableOtp(userId: UUID) {
+        val user = getById(userId)
         if (user.otpSecret != null) {
             user.otpSecret = null
             userRepository.save(user)
