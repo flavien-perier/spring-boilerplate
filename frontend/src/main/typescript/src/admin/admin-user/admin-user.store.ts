@@ -41,25 +41,25 @@ export const useAdminUserStore = defineStore("admin-user", {
     },
     loadAllGroups() {
       groupApi
-        .findGroups()
+        .findGroups(1, 1000)
         .then((response) => {
-          this.groups = response.data;
+          this.groups = response.data.content;
         })
         .catch(applicationStore.axiosException);
     },
     loadUserGroups() {
       userApi
-        .getUserGroups(this.userMail)
+        .getUserGroups(this.userMail, 1, 1000)
         .then((response) => {
-          this.userGroups = response.data;
+          this.userGroups = response.data.content;
         })
         .catch(applicationStore.axiosException);
     },
     loadPermissionOverrides() {
       userApi
-        .getUserPermissionOverrides(this.userMail)
+        .getUserPermissionOverrides(this.userMail, 1, 100)
         .then((response) => {
-          this.permissionOverrides = response.data;
+          this.permissionOverrides = response.data.content;
         })
         .catch(applicationStore.axiosException);
     },

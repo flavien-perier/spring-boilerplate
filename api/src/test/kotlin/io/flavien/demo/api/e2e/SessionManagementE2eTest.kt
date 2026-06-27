@@ -311,9 +311,9 @@ class SessionManagementE2eTest {
             .expectHeader()
             .contentType(MediaType.APPLICATION_JSON)
             .expectBody()
-            .jsonPath("$")
+            .jsonPath("$.content")
             .isArray()
-            .jsonPath("$.length()")
+            .jsonPath("$.content.length()")
             .isEqualTo(2)
     }
 

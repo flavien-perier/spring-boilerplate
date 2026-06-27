@@ -124,28 +124,18 @@ UserUpdateAdminDto:
       type: boolean
 
 UserPageDto:
-  type: object
-  description: A page of user.
-  required:
-    - totalElements
-    - totalPages
-    - content
-  properties:
-    totalElements:
-      type: integer
-      description: Total elements.
-      minimum: 0
-      format: int64
-    totalPages:
-      type: integer
-      description: Total pages.
-      minimum: 0
-      format: int32
-    content:
-      type: array
-      description: Content.
-      items:
-        $ref: "#/UserDto"
+  description: A page of users.
+  allOf:
+    - $ref: "page.yaml#/Page"
+    - type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          description: The user content of this page.
+          items:
+            $ref: "#/UserDto"
 
 ForgotPasswordDto:
   type: object

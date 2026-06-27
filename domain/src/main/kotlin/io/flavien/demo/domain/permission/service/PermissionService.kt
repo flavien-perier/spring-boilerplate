@@ -14,6 +14,10 @@ import io.flavien.demo.domain.permission.repository.GroupPermissionRepository
 import io.flavien.demo.domain.permission.repository.UserPermissionRepository
 import io.flavien.demo.domain.user.exception.UserNotFoundException
 import io.flavien.demo.domain.user.repository.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -32,7 +36,7 @@ class PermissionService(
         val groupDecisions = resolveGroupDecisions(userId)
 
         return PermissionEnum.entries
-            .filter { permission -> groupDecisions[permission] ?: directDecisions[permission] ?: false }
+            .filter { permission -> directDecisions[permission] ?: groupDecisions[permission] ?: false }
             .toSet()
     }
 
@@ -72,17 +76,54 @@ class PermissionService(
     }
 
     @Transactional(readOnly = true)
-    fun getUserPermissionOverrides(userId: UUID): List<PermissionSetting> {
+    fun getUserPermissionOverrides(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<PermissionSetting> {
         val defined = userPermissionRepository.findByUserId(userId).associate { it.permission to it.allow }
         val groupDecisions = resolveGroupDecisions(userId)
-        return PermissionEnum.entries.map { permission ->
-            PermissionSetting(
-                permission = permission,
-                allow = defined[permission],
-                locked = groupDecisions.containsKey(permission),
-                inheritedAllow = groupDecisions[permission],
-            )
+        val all =
+            PermissionEnum.entries.map { permission ->
+                PermissionSetting(
+                    permission = permission,
+                    allow = defined[permission],
+                    locked = false,
+                    inheritedAllow = groupDecisions[permission],
+                )
+            }
+
+        val sorted =
+            if (pageable.sort.isSorted) {
+                all.sortedWith(buildPermissionSettingComparator(pageable.sort))
+            } else {
+                all
+            }
+
+        val total = sorted.size.toLong()
+        val from = pageable.offset.toInt().coerceAtMost(sorted.size)
+        val to = (from + pageable.pageSize).coerceAtMost(sorted.size)
+        val content = if (from < to) sorted.subList(from, to) else emptyList()
+
+        return PageImpl(content, pageable, total)
+    }
+
+    private fun buildPermissionSettingComparator(sort: Sort): Comparator<PermissionSetting> {
+        var comparator: Comparator<PermissionSetting>? = null
+        for (order in sort) {
+            val propertyComparator: Comparator<PermissionSetting> =
+                when (order.property) {
+                    "permission" -> compareBy { it.permission }
+                    else -> compareBy { it.permission }
+                }
+            val directed =
+                if (order.isAscending) {
+                    propertyComparator
+                } else {
+                    java.util.Collections.reverseOrder(propertyComparator)
+                }
+            comparator = comparator?.then(directed) ?: directed
         }
+        return comparator ?: compareBy { it.permission }
     }
 
     @Transactional
@@ -134,39 +175,29 @@ class PermissionService(
         return resolveDecisionsForGroups(buildGroupClosure(listOf(parentId)))
     }
 
-    private fun resolveDecisionsForGroups(depthByGroup: Map<UUID, Int>): Map<PermissionEnum, Boolean> {
-        val definitions = mutableMapOf<PermissionEnum, MutableList<Pair<Int, Boolean>>>()
-        depthByGroup.forEach { (groupId, depth) ->
+    private fun resolveDecisionsForGroups(groupIds: Set<UUID>): Map<PermissionEnum, Boolean> {
+        val allowed = mutableSetOf<PermissionEnum>()
+        groupIds.forEach { groupId ->
             groupPermissionRepository.findByGroupId(groupId).forEach { groupPermission ->
-                definitions.getOrPut(groupPermission.permission) { mutableListOf() }.add(depth to groupPermission.allow)
+                if (groupPermission.allow) {
+                    allowed.add(groupPermission.permission)
+                }
             }
         }
 
-        return definitions.mapValues { (_, candidates) ->
-            val rootDepth = candidates.minOf { it.first }
-            candidates.filter { it.first == rootDepth }.all { it.second }
-        }
+        return allowed.associateWith { true }
     }
 
-    private fun buildGroupClosure(directGroupIds: List<UUID>): Map<UUID, Int> {
-        val depthByGroup = mutableMapOf<UUID, Int>()
+    private fun buildGroupClosure(directGroupIds: List<UUID>): Set<UUID> {
+        val visited = mutableSetOf<UUID>()
 
         for (groupId in directGroupIds) {
-            val chain = mutableListOf<UUID>()
-            val visited = mutableSetOf<UUID>()
             var current = groupRepository.findById(groupId).orElse(null)
             while (current != null && visited.add(current.id!!)) {
-                chain.add(current.id!!)
                 current = current.parent
-            }
-
-            val rootIndex = chain.size - 1
-            chain.forEachIndexed { index, id ->
-                val depth = rootIndex - index
-                depthByGroup[id] = minOf(depthByGroup[id] ?: depth, depth)
             }
         }
 
-        return depthByGroup
+        return visited
     }
 }

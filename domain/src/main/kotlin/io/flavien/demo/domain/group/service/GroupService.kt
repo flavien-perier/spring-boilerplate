@@ -13,6 +13,10 @@ import io.flavien.demo.domain.permission.repository.GroupPermissionRepository
 import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.exception.UserNotFoundException
 import io.flavien.demo.domain.user.repository.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -43,7 +47,7 @@ class GroupService(
     }
 
     @Transactional(readOnly = true)
-    fun findAll(): List<Group> = groupRepository.findAll()
+    fun findAll(pageable: Pageable): Page<Group> = groupRepository.findAll(pageable)
 
     @Transactional(readOnly = true)
     fun getById(id: UUID): Group = groupRepository.findById(id).orElseThrow { GroupNotFoundException("Group id $id not found") }
@@ -142,7 +146,28 @@ class GroupService(
     }
 
     @Transactional(readOnly = true)
-    fun getUserGroups(userId: UUID): List<Group> = userGroupRepository.findByUserId(userId).map { it.group }
+    fun getUserGroups(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<Group> = userGroupRepository.findByUserId(userId, mapSortToGroupAssociation(pageable)).map { it.group }
+
+    private fun mapSortToGroupAssociation(pageable: Pageable): Pageable {
+        if (pageable.sort.isUnsorted) {
+            return pageable
+        }
+        val mappedSort =
+            Sort.by(
+                pageable.sort
+                    .map { order ->
+                        Sort.Order
+                            .by("group.${order.property}")
+                            .with(order.direction)
+                            .with(order.nullHandling)
+                            .let { if (order.isIgnoreCase) it.ignoreCase() else it }
+                    }.toList(),
+            )
+        return PageRequest.of(pageable.pageNumber, pageable.pageSize, mappedSort)
+    }
 
     companion object {
         const val DEFAULT_GROUP_NAME = "USER"

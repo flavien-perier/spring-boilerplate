@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { groupApi } from "@/core/util/api-util";
 import { useApplicationStore } from "@/core/application.store";
+import type { TableSortEvent } from "@generated/component-library";
 import type {
   GroupCreationDto,
   GroupDto,
@@ -19,6 +20,12 @@ export const useAdminGroupsStore = defineStore("admin-groups", {
     newGroupParentId: null as string | null,
     editGroupName: "",
     editGroupParentId: null as string | null,
+    currentPage: 1,
+    pageSize: 10,
+    totalElements: 0,
+    totalPages: 1,
+    sortColumn: "name",
+    sortOrder: "asc" as "asc" | "desc",
   }),
   getters: {
     selectedGroup(): GroupDto | null {
@@ -31,11 +38,33 @@ export const useAdminGroupsStore = defineStore("admin-groups", {
     },
     findGroups() {
       groupApi
-        .findGroups()
+        .findGroups(
+          this.currentPage,
+          this.pageSize,
+          this.sortColumn,
+          this.sortOrder
+        )
         .then((response) => {
-          this.groups = response.data;
+          this.groups = response.data.content;
+          this.totalElements = response.data.totalElements;
+          this.totalPages = response.data.totalPages;
         })
         .catch(applicationStore.axiosException);
+    },
+    setPage(page: number) {
+      this.currentPage = page;
+      this.findGroups();
+    },
+    setPageSize(size: number) {
+      this.pageSize = size;
+      this.currentPage = 1;
+      this.findGroups();
+    },
+    setSort(payload: TableSortEvent) {
+      this.sortColumn = payload.key;
+      this.sortOrder = payload.direction ?? "asc";
+      this.currentPage = 1;
+      this.findGroups();
     },
     selectGroup(groupId: string) {
       this.selectedGroupId = groupId;

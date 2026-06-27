@@ -16,11 +16,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import java.util.Optional
 import java.util.UUID
 
@@ -45,6 +51,25 @@ class GroupServiceTest {
     private val group1Id = UUID.fromString("00000000-0000-0000-0000-000000000001")
     private val group2Id = UUID.fromString("00000000-0000-0000-0000-000000000002")
     private val group10Id = UUID.fromString("00000000-0000-0000-0000-000000000010")
+
+    // Kotlin-safe Mockito matcher helpers: the stock matchers return null, which the compiler
+    // rejects when the result is passed to a non-null parameter such as findByUserId(UUID, Pageable).
+    // Returning a real non-null value works because Mockito matches on the registered matcher
+    // (pushed onto its internal stack), not on the dummy value passed at the call site.
+    private fun <T> eqArg(value: T): T {
+        eq(value)
+        return value
+    }
+
+    private fun anyPageable(): Pageable {
+        any<Pageable>()
+        return Pageable.unpaged()
+    }
+
+    private fun capturePageable(captor: ArgumentCaptor<Pageable>): Pageable {
+        captor.capture()
+        return Pageable.unpaged()
+    }
 
     @Test
     fun `Should assign the default group when the user has none`() {
@@ -104,12 +129,15 @@ class GroupServiceTest {
     fun `Should find all groups`() {
         val g1 = GroupTestFactory.initGroup(id = group1Id, name = "G1")
         val g2 = GroupTestFactory.initGroup(id = group2Id, name = "G2")
+        val pageable = PageRequest.of(0, 10)
 
-        Mockito.`when`(groupRepository!!.findAll()).thenReturn(listOf(g1, g2))
+        Mockito.`when`(groupRepository!!.findAll(pageable)).thenReturn(PageImpl(listOf(g1, g2), pageable, 2))
 
-        val result = groupService!!.findAll()
+        val result = groupService!!.findAll(pageable)
 
-        assertThat(result).containsExactly(g1, g2)
+        assertThat(result.content).containsExactly(g1, g2)
+        assertThat(result.totalElements).isEqualTo(2)
+        assertThat(result.totalPages).isEqualTo(1)
     }
 
     @Test
@@ -307,11 +335,86 @@ class GroupServiceTest {
     fun `Should get user groups`() {
         val group1 = GroupTestFactory.initGroup(id = group1Id, name = "G1")
         val userGroup = GroupTestFactory.initUserGroup(group = group1)
+        val pageable = PageRequest.of(0, 10)
 
-        Mockito.`when`(userGroupRepository!!.findByUserId(userId)).thenReturn(listOf(userGroup))
+        Mockito
+            .`when`(userGroupRepository!!.findByUserId(userId, pageable))
+            .thenReturn(PageImpl(listOf(userGroup), pageable, 1))
 
-        val result = groupService!!.getUserGroups(userId)
+        val result = groupService!!.getUserGroups(userId, pageable)
 
-        assertThat(result).containsExactly(group1)
+        assertThat(result.content).containsExactly(group1)
+        assertThat(result.totalElements).isEqualTo(1)
+        assertThat(result.totalPages).isEqualTo(1)
+    }
+
+    @Test
+    fun `Should remap sort by name ascending onto the group association when getting user groups`() {
+        val group1 = GroupTestFactory.initGroup(id = group1Id, name = "G1")
+        val userGroup = GroupTestFactory.initUserGroup(group = group1)
+        val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"))
+        val pageableCaptor = ArgumentCaptor.forClass(Pageable::class.java)
+
+        Mockito
+            .`when`(userGroupRepository!!.findByUserId(eqArg(userId), anyPageable()))
+            .thenReturn(PageImpl(listOf(userGroup), PageRequest.of(0, 10), 1))
+
+        val result = groupService!!.getUserGroups(userId, pageable)
+
+        Mockito.verify(userGroupRepository!!).findByUserId(eqArg(userId), capturePageable(pageableCaptor))
+        val captured = pageableCaptor.value
+        val order = captured.sort.getOrderFor("group.name")
+        assertThat(order).isNotNull()
+        assertThat(order!!.direction).isEqualTo(Sort.Direction.ASC)
+        assertThat(captured.sort.getOrderFor("name")).isNull()
+        assertThat(captured.pageNumber).isEqualTo(0)
+        assertThat(captured.pageSize).isEqualTo(10)
+        assertThat(result.content).containsExactly(group1)
+    }
+
+    @Test
+    fun `Should remap sort by name descending onto the group association when getting user groups`() {
+        val group1 = GroupTestFactory.initGroup(id = group1Id, name = "G1")
+        val group2 = GroupTestFactory.initGroup(id = group2Id, name = "G2")
+        val userGroup1 = GroupTestFactory.initUserGroup(group = group1)
+        val userGroup2 = GroupTestFactory.initUserGroup(group = group2)
+        val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "name"))
+        val pageableCaptor = ArgumentCaptor.forClass(Pageable::class.java)
+
+        Mockito
+            .`when`(userGroupRepository!!.findByUserId(eqArg(userId), anyPageable()))
+            .thenReturn(PageImpl(listOf(userGroup2, userGroup1), PageRequest.of(0, 10), 2))
+
+        val result = groupService!!.getUserGroups(userId, pageable)
+
+        Mockito.verify(userGroupRepository!!).findByUserId(eqArg(userId), capturePageable(pageableCaptor))
+        val captured = pageableCaptor.value
+        val order = captured.sort.getOrderFor("group.name")
+        assertThat(order).isNotNull()
+        assertThat(order!!.direction).isEqualTo(Sort.Direction.DESC)
+        assertThat(captured.sort.getOrderFor("name")).isNull()
+        assertThat(result.content).containsExactly(group2, group1)
+    }
+
+    @Test
+    fun `Should leave the pageable unsorted when getting user groups without a sort`() {
+        val group1 = GroupTestFactory.initGroup(id = group1Id, name = "G1")
+        val userGroup = GroupTestFactory.initUserGroup(group = group1)
+        val pageable = PageRequest.of(0, 10)
+        val pageableCaptor = ArgumentCaptor.forClass(Pageable::class.java)
+
+        Mockito
+            .`when`(userGroupRepository!!.findByUserId(eqArg(userId), anyPageable()))
+            .thenReturn(PageImpl(listOf(userGroup), pageable, 1))
+
+        val result = groupService!!.getUserGroups(userId, pageable)
+
+        Mockito.verify(userGroupRepository!!).findByUserId(eqArg(userId), capturePageable(pageableCaptor))
+        val captured = pageableCaptor.value
+        assertThat(captured.sort.isUnsorted).isTrue()
+        assertThat(captured.sort.getOrderFor("group.name")).isNull()
+        assertThat(captured.pageNumber).isEqualTo(0)
+        assertThat(captured.pageSize).isEqualTo(10)
+        assertThat(result.content).containsExactly(group1)
     }
 }

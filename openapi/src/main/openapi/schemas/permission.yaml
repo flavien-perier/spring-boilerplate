@@ -28,3 +28,17 @@ PermissionUpdateDto:
     allow:
       type: boolean
       description: true=granted, false=denied.
+
+PermissionSettingPageDto:
+  description: A page of permission settings.
+  allOf:
+    - $ref: "page.yaml#/Page"
+    - type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          description: The permission setting content of this page.
+          items:
+            $ref: "#/PermissionSettingDto"

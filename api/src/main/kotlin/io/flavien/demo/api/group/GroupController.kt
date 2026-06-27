@@ -3,13 +3,17 @@ package io.flavien.demo.api.group
 import io.flavien.demo.api.generated.api.GroupApi
 import io.flavien.demo.api.generated.dto.GroupCreationDto
 import io.flavien.demo.api.generated.dto.GroupDto
+import io.flavien.demo.api.generated.dto.GroupPageDto
 import io.flavien.demo.api.generated.dto.GroupUpdateDto
 import io.flavien.demo.api.generated.dto.PermissionSettingDto
 import io.flavien.demo.api.generated.dto.PermissionUpdateDto
 import io.flavien.demo.api.group.mapper.GroupMapper
+import io.flavien.demo.api.permission.mapper.PermissionMapper
 import io.flavien.demo.domain.group.service.GroupService
 import io.flavien.demo.domain.permission.model.PermissionEnum
 import io.flavien.demo.domain.permission.service.PermissionService
+import io.flavien.demo.domain.shared.util.PageableUtil
+import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import java.util.UUID
@@ -19,6 +23,7 @@ class GroupController(
     private val groupService: GroupService,
     private val permissionService: PermissionService,
     private val groupMapper: GroupMapper,
+    private val permissionMapper: PermissionMapper,
 ) : GroupApi {
     override fun createGroup(groupCreationDto: GroupCreationDto): ResponseEntity<GroupDto> {
         val parentId = groupCreationDto.parentId?.let { UUID.fromString(it) }
@@ -26,9 +31,15 @@ class GroupController(
         return ResponseEntity.ok(groupMapper.toGroupDto(group))
     }
 
-    override fun findGroups(): ResponseEntity<List<GroupDto>> {
-        val groups = groupService.findAll()
-        return ResponseEntity.ok(groups.map { groupMapper.toGroupDto(it) })
+    override fun findGroups(
+        page: Int?,
+        pageSize: Int?,
+        sortColumn: String?,
+        sortOrder: String?,
+    ): ResponseEntity<GroupPageDto> {
+        val pageable = PageableUtil.toPageable(page, pageSize, sortColumn, sortOrder, "name")
+        val groups = groupService.findAll(pageable)
+        return ResponseEntity.ok(groupMapper.toGroupPageDto(groups))
     }
 
     override fun getGroup(groupId: String): ResponseEntity<GroupDto> {
@@ -53,16 +64,7 @@ class GroupController(
 
     override fun getGroupPermissions(groupId: String): ResponseEntity<List<PermissionSettingDto>> {
         val settings = permissionService.getGroupPermissions(UUID.fromString(groupId))
-        return ResponseEntity.ok(
-            settings.map {
-                PermissionSettingDto(
-                    permission = it.permission.name,
-                    locked = it.locked,
-                    allow = it.allow,
-                    inheritedAllow = it.inheritedAllow,
-                )
-            },
-        )
+        return ResponseEntity.ok(permissionMapper.toPermissionSettingDtoList(settings))
     }
 
     override fun setGroupPermission(

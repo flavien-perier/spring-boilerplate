@@ -5,8 +5,13 @@ import io.flavien.demo.domain.session.exception.BadRefreshTokenException
 import io.flavien.demo.domain.session.repository.RefreshTokenRepository
 import io.flavien.demo.domain.shared.util.SECURE_RANDOM
 import io.flavien.demo.library.common.RandomUtil
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
+import java.util.Collections
 import java.util.UUID
 
 @Service
@@ -27,6 +32,49 @@ class RefreshTokenService(
     fun get(uuid: UUID) = refreshTokenRepository.getByUuid(uuid) ?: throw BadRefreshTokenException()
 
     fun findByUserId(userId: UUID) = refreshTokenRepository.findByUserId(userId.toString()).sortedByDescending { it.creationDate }
+
+    fun findByUserId(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<RefreshToken> {
+        val all = refreshTokenRepository.findByUserId(userId.toString())
+
+        val sorted =
+            if (pageable.sort.isSorted) {
+                all.sortedWith(buildComparator(pageable.sort))
+            } else {
+                all.sortedByDescending { it.creationDate }
+            }
+
+        val total = sorted.size.toLong()
+        val from = pageable.offset.toInt().coerceAtMost(sorted.size)
+        val to = (from + pageable.pageSize).coerceAtMost(sorted.size)
+        val content = if (from < to) sorted.subList(from, to) else emptyList()
+
+        return PageImpl(content, pageable, total)
+    }
+
+    private fun buildComparator(sort: Sort): Comparator<RefreshToken> {
+        var comparator: Comparator<RefreshToken>? = null
+        for (order in sort) {
+            val propertyComparator: Comparator<RefreshToken> =
+                when (order.property) {
+                    "uuid" -> compareBy { it.uuid }
+                    "creationDate" -> compareBy { it.creationDate }
+                    "userId" -> compareBy { it.userId }
+                    "id" -> compareBy { it.id }
+                    else -> compareBy { it.creationDate }
+                }
+            val directed =
+                if (order.isAscending) {
+                    propertyComparator
+                } else {
+                    Collections.reverseOrder(propertyComparator)
+                }
+            comparator = comparator?.then(directed) ?: directed
+        }
+        return comparator ?: compareByDescending { it.creationDate }
+    }
 
     fun exists(token: String) = refreshTokenRepository.existsById(token)
 

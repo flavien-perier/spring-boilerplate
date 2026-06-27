@@ -68,3 +68,17 @@ RefreshTokenPropertiesDto:
     creationDate:
       type: string
       format: date-time
+
+RefreshTokenPropertiesPageDto:
+  description: A page of refresh token properties.
+  allOf:
+    - $ref: "page.yaml#/Page"
+    - type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          description: The refresh token properties content of this page.
+          items:
+            $ref: "#/RefreshTokenPropertiesDto"

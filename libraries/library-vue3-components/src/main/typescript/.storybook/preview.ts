@@ -1,4 +1,4 @@
-import type {Preview, App, Decorator} from "@storybook/vue3";
+import type { Preview, App, Decorator } from "@storybook/vue3";
 import { setup } from "@storybook/vue3";
 import { createI18n } from "vue-i18n";
 import { createRouter, createMemoryHistory } from "vue-router";
@@ -38,6 +38,10 @@ const i18n = createI18n({
       "fio.layout.tab-one": "Tab One",
       "fio.layout.tab-two": "Tab Two",
       "fio.layout.tab-three": "Tab Three",
+      "fio.table.page-size": "Page size",
+      "fio.table.page-info": "Page {page} of {total}",
+      "fio.table.example.user": "User",
+      "fio.table.example.email": "Email",
     },
     fr: {
       "fio.email": "Adresse e-mail",
@@ -69,6 +73,10 @@ const i18n = createI18n({
       "fio.layout.tab-one": "Onglet un",
       "fio.layout.tab-two": "Onglet deux",
       "fio.layout.tab-three": "Onglet trois",
+      "fio.table.page-size": "Taille de page",
+      "fio.table.page-info": "Page {page} sur {total}",
+      "fio.table.example.user": "Utilisateur",
+      "fio.table.example.email": "E-mail",
     },
   },
 });
@@ -101,8 +109,8 @@ export const globalTypes = {
     toolbar: {
       icon: "paintbrush",
       items: [
-        {value: "light", title: "Light", icon: "sun"},
-        {value: "dark", title: "Dark", icon: "moon"},
+        { value: "light", title: "Light", icon: "sun" },
+        { value: "dark", title: "Dark", icon: "moon" },
       ],
       dynamicTitle: true,
     },

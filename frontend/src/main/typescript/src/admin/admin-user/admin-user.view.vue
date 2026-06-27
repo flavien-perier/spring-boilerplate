@@ -140,15 +140,19 @@ const enabled = computed<boolean>({
 
 const triValues = reactive<Record<string, boolean | null>>({});
 
-watch(permissionOverrides, (newOverrides) => {
-  newOverrides.forEach((setting) => {
-    if (setting.locked) {
-      triValues[setting.permission] = setting.inheritedAllow ?? false;
-    } else {
-      triValues[setting.permission] = setting.allow ?? null;
-    }
-  });
-});
+watch(
+  permissionOverrides,
+  (newOverrides) => {
+    newOverrides.forEach((setting) => {
+      if (setting.locked) {
+        triValues[setting.permission] = setting.inheritedAllow ?? false;
+      } else {
+        triValues[setting.permission] = setting.allow ?? null;
+      }
+    });
+  },
+  { immediate: true }
+);
 
 function onPermissionChange(permission: string, value: boolean | null) {
   if (value === null) {

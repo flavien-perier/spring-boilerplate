@@ -11,6 +11,7 @@ import io.flavien.demo.domain.session.service.AccessTokenService
 import io.flavien.demo.domain.session.service.OtpService
 import io.flavien.demo.domain.session.service.PasswordService
 import io.flavien.demo.domain.session.service.RefreshTokenService
+import io.flavien.demo.domain.shared.util.PageableUtil
 import io.flavien.demo.domain.shared.util.SECURE_RANDOM
 import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.exception.UserAlreadyExistsException
@@ -20,8 +21,6 @@ import io.flavien.demo.domain.user.repository.UserRepository
 import io.flavien.demo.library.common.RandomUtil
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
@@ -177,12 +176,7 @@ class UserService(
         sortColumn: String?,
         sortOrder: String?,
     ): Page<User> {
-        val pageable =
-            PageRequest.of(
-                page ?: 0,
-                pageSize ?: 10,
-                Sort.by(Sort.Direction.fromString(sortOrder ?: "ASC"), sortColumn ?: "email"),
-            )
+        val pageable = PageableUtil.toPageable(page, pageSize, sortColumn, sortOrder, "email")
 
         return userRepository.find(query ?: "", pageable)
     }

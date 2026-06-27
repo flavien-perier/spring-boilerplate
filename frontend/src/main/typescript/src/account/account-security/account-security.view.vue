@@ -13,7 +13,17 @@
             {{ $t("menu.sessions") }}
           </h2>
 
-          <fio-table :headers="headers">
+          <fio-table
+            :headers="headers"
+            :current-page="currentPage"
+            :page-size="pageSize"
+            :total-pages="totalPages"
+            :sort-key="sortColumn"
+            :sort-direction="sortOrder"
+            @page-change="onPageChange"
+            @page-size-change="onPageSizeChange"
+            @sort-change="onSortChange"
+          >
             <template #body>
               <tr v-for="session in sessions" :key="session.uuid">
                 <td>{{ dateUtil(session.creationDate) }}</td>
@@ -101,7 +111,13 @@ import type { TableHeader } from "@generated/component-library";
 const { t } = useI18n();
 
 const headers = computed<TableHeader[]>(() => [
-  { name: t("field.date"), position: 0, sortable: false, show: true },
+  {
+    name: t("field.date"),
+    key: "creationDate",
+    position: 0,
+    sortable: true,
+    show: true,
+  },
   { name: t("field.actions"), position: 1, sortable: false, show: true },
 ]);
 
@@ -115,7 +131,27 @@ const {
   computeActionConfirmOtp,
   computeActionDisableOtp,
   computeActionDeleteAccount,
+  currentPage,
+  pageSize,
+  totalPages,
+  sortColumn,
+  sortOrder,
 } = storeToRefs(accountSecurityStore);
+
+function onPageChange(page: number) {
+  accountSecurityStore.setPage(page);
+}
+
+function onPageSizeChange(size: number) {
+  accountSecurityStore.setPageSize(size);
+}
+
+function onSortChange(payload: {
+  key: string;
+  direction: "asc" | "desc" | null;
+}) {
+  accountSecurityStore.setSort(payload);
+}
 
 accountSecurityStore.init();
 </script>

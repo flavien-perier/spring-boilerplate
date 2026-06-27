@@ -29,7 +29,9 @@
                 :icon="sortIcon(header)"
                 size="s"
                 :color="
-                  header.key === sortKey && sortDirection ? 'primary' : undefined
+                  header.key === sortKey && sortDirection
+                    ? 'primary'
+                    : undefined
                 "
               />
             </span>
@@ -65,7 +67,9 @@
 
       <div class="fio-table__pager">
         <span class="fio-table__pager-info">
-          {{ $t("fio.table.page-info", { page: currentPage, total: totalPages }) }}
+          {{
+            $t("fio.table.page-info", { page: currentPage, total: totalPages })
+          }}
         </span>
 
         <button
@@ -113,10 +117,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import type {
-  SortDirection,
-  TableHeader,
-} from "../model/table-header";
+import type { SortDirection, TableHeader } from "../model/table-header";
 import FioIcon from "./icon.vue";
 
 defineOptions({

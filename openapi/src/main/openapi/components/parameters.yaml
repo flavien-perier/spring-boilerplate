@@ -55,11 +55,12 @@ pageSize:
 sortColumn:
   name: sortColumn
   in: query
-  description: Indicates which column will be used for sorting.
+  description: Indicates which entity property will be used for sorting.
   required: false
   schema:
     type: string
-    enum: [ email ]
+    maxLength: 100
+    pattern: ^[a-zA-Z][a-zA-Z0-9_]*$
 
 sortOrder:
   name: sortOrder

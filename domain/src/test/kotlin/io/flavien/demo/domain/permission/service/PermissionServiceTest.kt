@@ -23,6 +23,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.data.domain.PageRequest
 import java.util.Optional
 import java.util.UUID
 
@@ -87,7 +88,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should let a group allow win over a direct user deny`() {
+    fun `Should let a direct user deny win over a group allow`() {
         val user = UserTestFactory.initUser(id = userId)
         val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
         val directDeny =
@@ -118,11 +119,11 @@ class PermissionServiceTest {
 
         val result = service!!.getGrantedPermissions(userId)
 
-        assertThat(result).contains(PermissionEnum.MANAGE_ALL_USERS)
+        assertThat(result).doesNotContain(PermissionEnum.MANAGE_ALL_USERS)
     }
 
     @Test
-    fun `Should ignore a user allow when a group denies the permission`() {
+    fun `Should let a direct user allow win over a group deny`() {
         val user = UserTestFactory.initUser(id = userId)
         val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
         val userAllow =
@@ -153,7 +154,7 @@ class PermissionServiceTest {
 
         val result = service!!.getGrantedPermissions(userId)
 
-        assertThat(result).doesNotContain(PermissionEnum.MANAGE_ALL_USERS)
+        assertThat(result).contains(PermissionEnum.MANAGE_ALL_USERS)
     }
 
     @Test
@@ -215,7 +216,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should let the parent group win over the child`() {
+    fun `Should grant when an ancestor allows even if the child denies (allow wins)`() {
         val user = UserTestFactory.initUser(id = userId)
         val parent = GroupTestFactory.initGroup(id = group1Id, name = "P", parent = null)
         val child = GroupTestFactory.initGroup(id = group2Id, name = "C", parent = parent)
@@ -254,7 +255,7 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should deny on equal-depth conflict (deny wins)`() {
+    fun `Should grant when any group allows even if another group denies (allow wins)`() {
         val user = UserTestFactory.initUser(id = userId)
         val groupA = GroupTestFactory.initGroup(id = group1Id, name = "A", parent = null)
         val groupB = GroupTestFactory.initGroup(id = group2Id, name = "B", parent = null)
@@ -292,7 +293,7 @@ class PermissionServiceTest {
 
         val result = service!!.getGrantedPermissions(userId)
 
-        assertThat(result).doesNotContain(PermissionEnum.MANAGE_OWN_SESSIONS)
+        assertThat(result).contains(PermissionEnum.MANAGE_OWN_SESSIONS)
     }
 
     @Test
@@ -360,6 +361,48 @@ class PermissionServiceTest {
         val result = service!!.getGrantedPermissions(userId)
 
         assertThat(result).contains(PermissionEnum.MANAGE_OWN_SESSIONS)
+    }
+
+    @Test
+    fun `Should grant when one of several groups allows even if another denies`() {
+        val user = UserTestFactory.initUser(id = userId)
+        val groupAllowing = GroupTestFactory.initGroup(id = group1Id, name = "Allowing", parent = null)
+        val groupDenying = GroupTestFactory.initGroup(id = group2Id, name = "Denying", parent = null)
+        val allow =
+            PermissionTestFactory.initGroupPermission(
+                group = groupAllowing,
+                permission = PermissionEnum.MANAGE_ALL_USERS,
+                allow = true,
+            )
+        val deny =
+            PermissionTestFactory.initGroupPermission(
+                group = groupDenying,
+                permission = PermissionEnum.MANAGE_ALL_USERS,
+                allow = false,
+            )
+
+        Mockito
+            .`when`(userPermissionRepository!!.findByUserId(userId))
+            .thenReturn(emptyList())
+        Mockito
+            .`when`(userGroupRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserGroup(user, groupAllowing), UserGroup(user, groupDenying)))
+        Mockito
+            .`when`(groupRepository!!.findById(group1Id))
+            .thenReturn(Optional.of(groupAllowing))
+        Mockito
+            .`when`(groupRepository!!.findById(group2Id))
+            .thenReturn(Optional.of(groupDenying))
+        Mockito
+            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .thenReturn(listOf(allow))
+        Mockito
+            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .thenReturn(listOf(deny))
+
+        val result = service!!.getGrantedPermissions(userId)
+
+        assertThat(result).contains(PermissionEnum.MANAGE_ALL_USERS)
     }
 
     @Test
@@ -467,17 +510,18 @@ class PermissionServiceTest {
 
         Mockito.`when`(userPermissionRepository!!.findByUserId(userId)).thenReturn(listOf(define))
 
-        val result = service!!.getUserPermissionOverrides(userId)
+        val result = service!!.getUserPermissionOverrides(userId, PageRequest.of(0, 10))
 
-        assertThat(result).hasSize(PermissionEnum.entries.size)
-        val denied = result.first { it.permission == PermissionEnum.MANAGE_OWN_SESSIONS }
+        assertThat(result.content).hasSize(PermissionEnum.entries.size)
+        val denied = result.content.first { it.permission == PermissionEnum.MANAGE_OWN_SESSIONS }
         assertThat(denied.allow).isFalse()
-        val inherited = result.first { it.permission == PermissionEnum.MANAGE_ALL_USERS }
+        val inherited = result.content.first { it.permission == PermissionEnum.MANAGE_ALL_USERS }
         assertThat(inherited.allow).isNull()
+        assertThat(result.totalElements).isEqualTo(PermissionEnum.entries.size.toLong())
     }
 
     @Test
-    fun `Should flag user permissions locked by a group with the inherited value`() {
+    fun `Should expose the inherited value of user permissions granted by a group without locking them`() {
         val user = UserTestFactory.initUser(id = userId)
         val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
         val groupAllow =
@@ -500,12 +544,12 @@ class PermissionServiceTest {
             .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
             .thenReturn(listOf(groupAllow))
 
-        val result = service!!.getUserPermissionOverrides(userId)
+        val result = service!!.getUserPermissionOverrides(userId, PageRequest.of(0, 10))
 
-        val locked = result.first { it.permission == PermissionEnum.MANAGE_OWN_ACCOUNT }
-        assertThat(locked.locked).isTrue()
-        assertThat(locked.inheritedAllow).isTrue()
-        val free = result.first { it.permission == PermissionEnum.MANAGE_ALL_USERS }
+        val inheritedRow = result.content.first { it.permission == PermissionEnum.MANAGE_OWN_ACCOUNT }
+        assertThat(inheritedRow.locked).isFalse()
+        assertThat(inheritedRow.inheritedAllow).isTrue()
+        val free = result.content.first { it.permission == PermissionEnum.MANAGE_ALL_USERS }
         assertThat(free.locked).isFalse()
         assertThat(free.inheritedAllow).isNull()
     }
@@ -564,6 +608,68 @@ class PermissionServiceTest {
         val setting = result.first { it.permission == PermissionEnum.MANAGE_ALL_USERS }
         assertThat(setting.locked).isFalse()
         assertThat(setting.allow).isTrue()
+    }
+
+    @Test
+    fun `Should mark a user override granted by a group as not locked with inherited allow true`() {
+        val user = UserTestFactory.initUser(id = userId)
+        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
+        val groupAllow =
+            PermissionTestFactory.initGroupPermission(
+                group = group,
+                permission = PermissionEnum.MANAGE_ALL_USERS,
+                allow = true,
+            )
+
+        Mockito
+            .`when`(userPermissionRepository!!.findByUserId(userId))
+            .thenReturn(emptyList())
+        Mockito
+            .`when`(userGroupRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserGroup(user, group)))
+        Mockito
+            .`when`(groupRepository!!.findById(group1Id))
+            .thenReturn(Optional.of(group))
+        Mockito
+            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .thenReturn(listOf(groupAllow))
+
+        val result = service!!.getUserPermissionOverrides(userId, PageRequest.of(0, 10))
+
+        val granted = result.content.first { it.permission == PermissionEnum.MANAGE_ALL_USERS }
+        assertThat(granted.locked).isFalse()
+        assertThat(granted.inheritedAllow).isTrue()
+    }
+
+    @Test
+    fun `Should not lock a group permission when a strict ancestor denies it`() {
+        val parent = GroupTestFactory.initGroup(id = group1Id, name = "P", parent = null)
+        val child = GroupTestFactory.initGroup(id = group2Id, name = "C", parent = parent)
+        val parentDeny =
+            PermissionTestFactory.initGroupPermission(
+                group = parent,
+                permission = PermissionEnum.MANAGE_OWN_ACCOUNT,
+                allow = false,
+            )
+
+        Mockito
+            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .thenReturn(emptyList())
+        Mockito
+            .`when`(groupRepository!!.findById(group2Id))
+            .thenReturn(Optional.of(child))
+        Mockito
+            .`when`(groupRepository!!.findById(group1Id))
+            .thenReturn(Optional.of(parent))
+        Mockito
+            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .thenReturn(listOf(parentDeny))
+
+        val result = service!!.getGroupPermissions(group2Id)
+
+        val setting = result.first { it.permission == PermissionEnum.MANAGE_OWN_ACCOUNT }
+        assertThat(setting.locked).isFalse()
+        assertThat(setting.inheritedAllow).isNull()
     }
 
     @Test

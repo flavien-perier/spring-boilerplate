@@ -354,19 +354,21 @@
   get:
     tags:
       - User
-    summary: Returns the permission overrides of a user.
+    summary: Returns the permission overrides of a user, paginated.
     operationId: getUserPermissionOverrides
     parameters:
       - $ref: "../components/parameters.yaml#/userMail"
+      - $ref: "../components/parameters.yaml#/page"
+      - $ref: "../components/parameters.yaml#/pageSize"
+      - $ref: "../components/parameters.yaml#/sortColumn"
+      - $ref: "../components/parameters.yaml#/sortOrder"
     responses:
       "200":
-        description: List of permission settings.
+        description: Paginated list of permission settings.
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "../schemas/permission.yaml#/PermissionSettingDto"
+              $ref: "../schemas/permission.yaml#/PermissionSettingPageDto"
       "401":
         $ref: "../components/errors.yaml#/Unauthorized"
       "403":
@@ -435,19 +437,21 @@
   get:
     tags:
       - User
-    summary: Returns the groups of a user.
+    summary: Returns the groups of a user, paginated.
     operationId: getUserGroups
     parameters:
       - $ref: "../components/parameters.yaml#/userMail"
+      - $ref: "../components/parameters.yaml#/page"
+      - $ref: "../components/parameters.yaml#/pageSize"
+      - $ref: "../components/parameters.yaml#/sortColumn"
+      - $ref: "../components/parameters.yaml#/sortOrder"
     responses:
       "200":
-        description: List of groups.
+        description: Paginated list of groups.
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "../schemas/group.yaml#/GroupDto"
+              $ref: "../schemas/group.yaml#/GroupPageDto"
       "401":
         $ref: "../components/errors.yaml#/Unauthorized"
       "403":

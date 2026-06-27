@@ -133,18 +133,20 @@
   get:
     tags:
       - Session
-    summary: Lists the user's active sessions.
+    summary: Lists the user's active sessions, paginated.
     operationId: findSessions
+    parameters:
+      - $ref: "../components/parameters.yaml#/page"
+      - $ref: "../components/parameters.yaml#/pageSize"
+      - $ref: "../components/parameters.yaml#/sortColumn"
+      - $ref: "../components/parameters.yaml#/sortOrder"
     responses:
       "200":
-        description: Session list.
+        description: Paginated session list.
         content:
           application/json:
             schema:
-              type: array
-              description: List of active refresh tokens.
-              items:
-                $ref: "../schemas/session.yaml#/RefreshTokenPropertiesDto"
+              $ref: "../schemas/session.yaml#/RefreshTokenPropertiesPageDto"
       "401":
         $ref: "../components/errors.yaml#/Unauthorized"
       "500":

@@ -2,17 +2,20 @@
   get:
     tags:
       - Group
-    summary: Returns a list of groups.
+    summary: Returns a paginated list of groups.
     operationId: findGroups
+    parameters:
+      - $ref: "../components/parameters.yaml#/page"
+      - $ref: "../components/parameters.yaml#/pageSize"
+      - $ref: "../components/parameters.yaml#/sortColumn"
+      - $ref: "../components/parameters.yaml#/sortOrder"
     responses:
       "200":
-        description: List of groups.
+        description: Paginated list of groups.
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "../schemas/group.yaml#/GroupDto"
+              $ref: "../schemas/group.yaml#/GroupPageDto"
       "401":
         $ref: "../components/errors.yaml#/Unauthorized"
       "403":

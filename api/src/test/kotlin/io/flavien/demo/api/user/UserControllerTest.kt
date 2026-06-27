@@ -1,11 +1,14 @@
 package io.flavien.demo.api.user
 
 import io.flavien.demo.api.generated.dto.ForgotPasswordDto
+import io.flavien.demo.api.generated.dto.GroupPageDto
+import io.flavien.demo.api.generated.dto.PermissionSettingPageDto
 import io.flavien.demo.api.generated.dto.PermissionUpdateDto
 import io.flavien.demo.api.generated.dto.UserPageDto
 import io.flavien.demo.api.group.GroupDtoTestFactory
 import io.flavien.demo.api.group.GroupTestFactory
 import io.flavien.demo.api.group.mapper.GroupMapper
+import io.flavien.demo.api.permission.mapper.PermissionMapper
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper
@@ -25,6 +28,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.UUID
@@ -51,6 +55,9 @@ class UserControllerTest {
 
     @Mock
     var groupMapper: GroupMapper? = null
+
+    @Mock
+    var permissionMapper: PermissionMapper? = null
 
     companion object {
         private val USER_ID = UUID.fromString("00000000-0000-7000-8000-000000000001")
@@ -221,7 +228,7 @@ class UserControllerTest {
     @Test
     fun `Test findUsers`() {
         val query = "search"
-        val page = 0
+        val page = 1
         val pageSize = 10
         val sortColumn = "email"
         val sortOrder = "ASC"
@@ -233,47 +240,80 @@ class UserControllerTest {
         val userDto1 = UserDtoTestFactory.initUserDto()
         val userDto2 = UserDtoTestFactory.initUserDto()
 
-        val userPage = PageImpl<User>(users)
-
-        Mockito.`when`(userService!!.find(query, page, pageSize, sortColumn, sortOrder)).thenReturn(userPage)
-        Mockito.`when`(userMapper!!.toUserDto(user1)).thenReturn(userDto1)
-        Mockito.`when`(userMapper!!.toUserDto(user2)).thenReturn(userDto2)
-
-        val response = userController!!.findUsers(query, page, pageSize, sortColumn, sortOrder)
+        val userPage = PageImpl<User>(users, PageRequest.of(0, pageSize), 2)
 
         val expectedUserPageDto =
             UserPageDto(
-                users.size.toLong(),
-                1,
-                listOf(userDto1, userDto2),
+                totalElements = 2,
+                totalPages = 1,
+                number = 0,
+                propertySize = pageSize,
+                content = listOf(userDto1, userDto2),
             )
 
-        assertThat(response)
-            .usingRecursiveComparison()
-            .isEqualTo(ResponseEntity<UserPageDto>(expectedUserPageDto, HttpStatus.OK))
+        Mockito.`when`(userService!!.find(query, page, pageSize, sortColumn, sortOrder)).thenReturn(userPage)
+        Mockito.`when`(userMapper!!.toUserPageDto(userPage)).thenReturn(expectedUserPageDto)
+
+        val response = userController!!.findUsers(query, page, pageSize, sortColumn, sortOrder)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body!!.content).containsExactly(userDto1, userDto2)
+        assertThat(response.body!!.totalElements).isEqualTo(2)
+        assertThat(response.body!!.totalPages).isEqualTo(1)
+        assertThat(response.body!!.propertySize).isEqualTo(pageSize)
     }
 
     @Test
     fun `Test getUserPermissionOverrides`() {
         val email = "perier@flavien.io"
+        val page = 1
+        val pageSize = 10
+        val sortColumn = "permission"
+        val sortOrder = "ASC"
+        val pageable =
+            PageRequest.of(
+                0,
+                pageSize,
+                org.springframework.data.domain.Sort
+                    .by(
+                        org.springframework.data.domain.Sort.Direction
+                            .fromString(sortOrder),
+                        sortColumn,
+                    ),
+            )
         val user = UserTestFactory.initUser(id = USER_ID)
         val settings =
             listOf(
                 PermissionSetting(PermissionEnum.MANAGE_ALL_USERS, true),
                 PermissionSetting(PermissionEnum.MANAGE_ALL_GROUPS, null),
             )
+        val settingsPage = PageImpl(settings, pageable, 2)
+        val dto1 = GroupDtoTestFactory.initPermissionSettingDto(permission = "MANAGE_ALL_USERS", allow = true)
+        val dto2 = GroupDtoTestFactory.initPermissionSettingDto(permission = "MANAGE_ALL_GROUPS", allow = null)
+        val expectedPageDto =
+            PermissionSettingPageDto(
+                totalElements = 2,
+                totalPages = 1,
+                number = 0,
+                propertySize = pageSize,
+                content = listOf(dto1, dto2),
+            )
 
         Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
-        Mockito.`when`(permissionService!!.getUserPermissionOverrides(user.id!!)).thenReturn(settings)
+        Mockito.`when`(permissionService!!.getUserPermissionOverrides(user.id!!, pageable)).thenReturn(settingsPage)
+        Mockito.`when`(permissionMapper!!.toPermissionSettingPageDto(settingsPage)).thenReturn(expectedPageDto)
 
-        val response = userController!!.getUserPermissionOverrides(email)
+        val response = userController!!.getUserPermissionOverrides(email, page, pageSize, sortColumn, sortOrder)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body).hasSize(2)
-        assertThat(response.body!![0].permission).isEqualTo("MANAGE_ALL_USERS")
-        assertThat(response.body!![0].allow).isTrue()
-        assertThat(response.body!![1].permission).isEqualTo("MANAGE_ALL_GROUPS")
-        assertThat(response.body!![1].allow).isNull()
+        assertThat(response.body!!.content).hasSize(2)
+        assertThat(response.body!!.content[0].permission).isEqualTo("MANAGE_ALL_USERS")
+        assertThat(response.body!!.content[0].allow).isTrue()
+        assertThat(response.body!!.content[1].permission).isEqualTo("MANAGE_ALL_GROUPS")
+        assertThat(response.body!!.content[1].allow).isNull()
+        assertThat(response.body!!.totalElements).isEqualTo(2)
+        assertThat(response.body!!.totalPages).isEqualTo(1)
+        assertThat(response.body!!.propertySize).isEqualTo(pageSize)
     }
 
     @Test
@@ -306,21 +346,47 @@ class UserControllerTest {
     @Test
     fun `Test getUserGroups`() {
         val email = "perier@flavien.io"
+        val page = 1
+        val pageSize = 10
+        val sortColumn = "name"
+        val sortOrder = "ASC"
+        val pageable =
+            PageRequest.of(
+                0,
+                pageSize,
+                org.springframework.data.domain.Sort
+                    .by(
+                        org.springframework.data.domain.Sort.Direction
+                            .fromString(sortOrder),
+                        sortColumn,
+                    ),
+            )
         val user = UserTestFactory.initUser(id = USER_ID)
         val group1 = GroupTestFactory.initGroup(id = UUID.fromString("00000000-0000-7000-8000-000000000001"), name = "G1")
         val group2 = GroupTestFactory.initGroup(id = UUID.fromString("00000000-0000-7000-8000-000000000002"), name = "G2")
+        val groupsPage = PageImpl(listOf(group1, group2), pageable, 2)
         val dto1 = GroupDtoTestFactory.initGroupDto(name = "G1")
         val dto2 = GroupDtoTestFactory.initGroupDto(name = "G2")
+        val expectedPageDto =
+            GroupPageDto(
+                totalElements = 2,
+                totalPages = 1,
+                number = 0,
+                propertySize = pageSize,
+                content = listOf(dto1, dto2),
+            )
 
         Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
-        Mockito.`when`(groupService!!.getUserGroups(user.id!!)).thenReturn(listOf(group1, group2))
-        Mockito.`when`(groupMapper!!.toGroupDto(group1)).thenReturn(dto1)
-        Mockito.`when`(groupMapper!!.toGroupDto(group2)).thenReturn(dto2)
+        Mockito.`when`(groupService!!.getUserGroups(user.id!!, pageable)).thenReturn(groupsPage)
+        Mockito.`when`(groupMapper!!.toGroupPageDto(groupsPage)).thenReturn(expectedPageDto)
 
-        val response = userController!!.getUserGroups(email)
+        val response = userController!!.getUserGroups(email, page, pageSize, sortColumn, sortOrder)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body).containsExactly(dto1, dto2)
+        assertThat(response.body!!.content).containsExactly(dto1, dto2)
+        assertThat(response.body!!.totalElements).isEqualTo(2)
+        assertThat(response.body!!.totalPages).isEqualTo(1)
+        assertThat(response.body!!.propertySize).isEqualTo(pageSize)
     }
 
     @Test

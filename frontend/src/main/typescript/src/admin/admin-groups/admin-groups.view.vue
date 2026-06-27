@@ -10,7 +10,17 @@
         />
       </div>
 
-      <fio-table :headers="groupHeaders">
+      <fio-table
+        :headers="groupHeaders"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total-pages="totalPages"
+        :sort-key="sortColumn"
+        :sort-direction="sortOrder"
+        @page-change="onPageChange"
+        @page-size-change="onPageSizeChange"
+        @sort-change="onSortChange"
+      >
         <template #body>
           <tr
             v-for="group in groups"
@@ -113,7 +123,13 @@ import type { SelectOption, TableHeader } from "@generated/component-library";
 const { t } = useI18n();
 
 const groupHeaders = computed<TableHeader[]>(() => [
-  { name: t("field.group"), position: 0, sortable: false, show: true },
+  {
+    name: t("field.group"),
+    key: "name",
+    position: 0,
+    sortable: true,
+    show: true,
+  },
   { name: t("field.parent"), position: 1, sortable: false, show: true },
 ]);
 
@@ -126,7 +142,27 @@ const {
   newGroupParentId,
   editGroupName,
   editGroupParentId,
+  currentPage,
+  pageSize,
+  totalPages,
+  sortColumn,
+  sortOrder,
 } = storeToRefs(adminGroupsStore);
+
+function onPageChange(page: number) {
+  adminGroupsStore.setPage(page);
+}
+
+function onPageSizeChange(size: number) {
+  adminGroupsStore.setPageSize(size);
+}
+
+function onSortChange(payload: {
+  key: string;
+  direction: "asc" | "desc" | null;
+}) {
+  adminGroupsStore.setSort(payload);
+}
 
 adminGroupsStore.init();
 
@@ -167,15 +203,19 @@ const nonDescendantOptions = computed<SelectOption[]>(() =>
 
 const triValues = reactive<Record<string, boolean | null>>({});
 
-watch(permissions, (newPermissions) => {
-  newPermissions.forEach((setting) => {
-    if (setting.locked) {
-      triValues[setting.permission] = setting.inheritedAllow ?? false;
-    } else {
-      triValues[setting.permission] = setting.allow ?? null;
-    }
-  });
-});
+watch(
+  permissions,
+  (newPermissions) => {
+    newPermissions.forEach((setting) => {
+      if (setting.locked) {
+        triValues[setting.permission] = setting.inheritedAllow ?? false;
+      } else {
+        triValues[setting.permission] = setting.allow ?? null;
+      }
+    });
+  },
+  { immediate: true }
+);
 
 function onPermissionChange(permission: string, value: boolean | null) {
   if (value === null) {

@@ -1,6 +1,7 @@
 package io.flavien.demo.api.session
 
 import io.flavien.demo.api.generated.dto.RefreshTokenPropertiesDto
+import io.flavien.demo.api.generated.dto.RefreshTokenPropertiesPageDto
 import io.flavien.demo.api.session.mapper.RefreshTokenMapper
 import io.flavien.demo.api.session.mapper.SessionMapper
 import io.flavien.demo.api.session.util.ContextUtil
@@ -17,6 +18,9 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import java.util.UUID
 
@@ -100,27 +104,44 @@ class SessionControllerTest {
     fun `Test findSessions`() {
         // Given
         val userId = USER_ID
+        val page = 1
+        val pageSize = 10
+        val sortColumn = "creationDate"
+        val sortOrder = "ASC"
+        val pageable = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.fromString(sortOrder), sortColumn))
         val refreshTokens = listOf(SessionTestFactory.initRefreshToken())
         val refreshTokenPropertiesDtos =
             listOf(
                 RefreshTokenPropertiesDto(refreshTokens[0].uuid.toString(), refreshTokens[0].creationDate),
             )
+        val refreshTokensPage = PageImpl(refreshTokens, pageable, 1)
+        val expectedPageDto =
+            RefreshTokenPropertiesPageDto(
+                totalElements = 1,
+                totalPages = 1,
+                number = 0,
+                propertySize = pageSize,
+                content = refreshTokenPropertiesDtos,
+            )
 
         mockkObject(ContextUtil)
         every { ContextUtil.userId } returns userId
 
-        `when`(refreshTokenService!!.findByUserId(userId)).thenReturn(refreshTokens)
-        `when`(refreshTokenMapper!!.toRefreshTokenPropertiesDtoList(refreshTokens)).thenReturn(refreshTokenPropertiesDtos)
+        `when`(refreshTokenService!!.findByUserId(userId, pageable)).thenReturn(refreshTokensPage)
+        `when`(refreshTokenMapper!!.toRefreshTokenPropertiesPageDto(refreshTokensPage)).thenReturn(expectedPageDto)
 
         // When
-        val response = sessionController!!.findSessions()
+        val response = sessionController!!.findSessions(page, pageSize, sortColumn, sortOrder)
 
         // Then
-        verify(refreshTokenService!!).findByUserId(userId)
-        verify(refreshTokenMapper!!).toRefreshTokenPropertiesDtoList(refreshTokens)
+        verify(refreshTokenService!!).findByUserId(userId, pageable)
+        verify(refreshTokenMapper!!).toRefreshTokenPropertiesPageDto(refreshTokensPage)
 
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(refreshTokenPropertiesDtos, response.body)
+        assertEquals(expectedPageDto, response.body)
+        assertEquals(pageSize, response.body!!.propertySize)
+        assertEquals(1L, response.body!!.totalElements)
+        assertEquals(1, response.body!!.totalPages)
 
         unmockkObject(ContextUtil)
     }

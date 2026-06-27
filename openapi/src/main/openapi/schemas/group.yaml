@@ -42,3 +42,17 @@ GroupUpdateDto:
     parentId:
       type: string
       description: Send null to remove the current parent.
+
+GroupPageDto:
+  description: A page of groups.
+  allOf:
+    - $ref: "page.yaml#/Page"
+    - type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          description: The group content of this page.
+          items:
+            $ref: "#/GroupDto"

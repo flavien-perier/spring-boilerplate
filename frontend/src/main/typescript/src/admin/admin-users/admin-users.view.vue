@@ -6,7 +6,17 @@
     @input="adminUsersStore.findUsers()"
   />
 
-  <fio-table :headers="headers">
+  <fio-table
+    :headers="headers"
+    :current-page="currentPage"
+    :page-size="pageSize"
+    :total-pages="totalPages"
+    :sort-key="sortColumn"
+    :sort-direction="sortOrder"
+    @page-change="onPageChange"
+    @page-size-change="onPageSizeChange"
+    @sort-change="onSortChange"
+  >
     <template #body>
       <tr v-for="user in users" :key="user.email">
         <td>
@@ -51,13 +61,42 @@ const { t } = useI18n();
 const router = useRouter();
 
 const headers = computed<TableHeader[]>(() => [
-  { name: t("field.user"), position: 0, sortable: false, show: true },
+  {
+    name: t("field.user"),
+    key: "email",
+    position: 0,
+    sortable: true,
+    show: true,
+  },
   { name: t("field.enabled"), position: 1, sortable: false, show: true },
   { name: t("field.actions"), position: 2, sortable: false, show: true },
 ]);
 
 const adminUsersStore = useAdminUsersStore();
-const { query, users } = storeToRefs(adminUsersStore);
+const {
+  query,
+  users,
+  currentPage,
+  pageSize,
+  totalPages,
+  sortColumn,
+  sortOrder,
+} = storeToRefs(adminUsersStore);
+
+function onPageChange(page: number) {
+  adminUsersStore.setPage(page);
+}
+
+function onPageSizeChange(size: number) {
+  adminUsersStore.setPageSize(size);
+}
+
+function onSortChange(payload: {
+  key: string;
+  direction: "asc" | "desc" | null;
+}) {
+  adminUsersStore.setSort(payload);
+}
 
 adminUsersStore.init();
 </script>
