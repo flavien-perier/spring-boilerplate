@@ -16,6 +16,8 @@ const MAX_NOTIFICATIONS = 5;
 const EMAIL_LOCAL_STORAGE_KEY = "email";
 const THEME_LOCAL_STORAGE_KEY = "fio-theme";
 
+let initPromise: Promise<void> | null = null;
+
 export const useApplicationStore = defineStore("application", {
   state: () => ({
     user: null as UserDto | null,
@@ -52,21 +54,32 @@ export const useApplicationStore = defineStore("application", {
       document.documentElement.setAttribute("data-theme", this.theme);
     },
 
-    async init() {
+    init(): Promise<void> {
+      if (!initPromise) {
+        initPromise = this.runInit();
+      }
+      return initPromise;
+    },
+
+    async runInit() {
       document.documentElement.setAttribute("data-theme", this.theme);
       const email = cookieUtil.get(EMAIL_LOCAL_STORAGE_KEY) || "";
 
-      await applicationApi
-        .getConf()
-        .then((response) => {
-          this.configuration = response.data;
-        })
-        .catch(() => {
-          this.sendNotification("danger", "http.error.503");
-        });
+      try {
+        await applicationApi
+          .getConf()
+          .then((response) => {
+            this.configuration = response.data;
+          })
+          .catch(() => {
+            this.sendNotification("danger", "http.error.503");
+          });
 
-      await this.renew(email);
-      this.initOk = true;
+        await this.renew(email);
+      } finally {
+        // The router guard and disconnected() depend on initOk, so it must always be set.
+        this.initOk = true;
+      }
     },
 
     sendNotification(type: NotificationType, message: string) {
@@ -185,13 +198,20 @@ export const useApplicationStore = defineStore("application", {
         .catch(this.axiosException);
     },
 
-    disconnected() {
+    clearSession() {
       cookieUtil.clearAll();
       this.user = null;
       this.accessToken = "";
       this.permissions = [];
-      this.$router.push({ name: "home" });
       setAccessToken();
+    },
+
+    disconnected() {
+      this.clearSession();
+      // Don't navigate during init(): the router guard owns the destination then.
+      if (this.initOk) {
+        this.$router.push({ name: "home" });
+      }
     },
 
     logout() {
@@ -207,10 +227,12 @@ export const useApplicationStore = defineStore("application", {
         .renewSessionWeb("default", {
           email: email,
         })
-        .then((response) => {
-          this.login(response.data.accessToken);
-        })
+        .then((response) => this.login(response.data.accessToken))
         .catch((exception) => {
+          if (exception?.response?.status === 401) {
+            this.clearSession();
+            return;
+          }
           this.axiosException(exception);
         });
     },

@@ -21,11 +21,13 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const applicationStore = useApplicationStore();
 
+  await applicationStore.init();
+
   if (to.meta.authenticated && !applicationStore.isAuthenticated) {
-    router.push({ name: "login" });
+    next({ name: "login" });
   } else {
     next();
   }

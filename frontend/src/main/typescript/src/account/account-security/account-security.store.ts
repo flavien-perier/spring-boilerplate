@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { sessionApi, userApi } from "@/core/util/api-util";
 import { useApplicationStore } from "@/core/application.store";
-import type { TableSortEvent } from "@generated/component-library";
 import type { RefreshTokenPropertiesDto } from "@generated/api";
 
 const applicationStore = useApplicationStore();
@@ -20,8 +19,6 @@ export const useAccountSecurityStore = defineStore("account-security", {
     pageSize: 10,
     totalElements: 0,
     totalPages: 1,
-    sortColumn: "creationDate",
-    sortOrder: "desc" as "asc" | "desc",
   }),
   getters: {},
   actions: {
@@ -32,12 +29,7 @@ export const useAccountSecurityStore = defineStore("account-security", {
 
     loadSessions() {
       sessionApi
-        .findSessions(
-          this.currentPage,
-          this.pageSize,
-          this.sortColumn,
-          this.sortOrder
-        )
+        .findSessions(this.currentPage, this.pageSize)
         .then((response) => {
           this.sessions = response.data.content;
           this.totalElements = response.data.totalElements;
@@ -51,12 +43,6 @@ export const useAccountSecurityStore = defineStore("account-security", {
     },
     setPageSize(size: number) {
       this.pageSize = size;
-      this.currentPage = 1;
-      this.loadSessions();
-    },
-    setSort(payload: TableSortEvent) {
-      this.sortColumn = payload.key;
-      this.sortOrder = payload.direction ?? "desc";
       this.currentPage = 1;
       this.loadSessions();
     },

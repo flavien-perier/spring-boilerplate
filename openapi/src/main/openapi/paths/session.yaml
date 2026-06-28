@@ -138,8 +138,6 @@
     parameters:
       - $ref: "../components/parameters.yaml#/page"
       - $ref: "../components/parameters.yaml#/pageSize"
-      - $ref: "../components/parameters.yaml#/sortColumn"
-      - $ref: "../components/parameters.yaml#/sortOrder"
     responses:
       "200":
         description: Paginated session list.

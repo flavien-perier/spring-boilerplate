@@ -106,9 +106,7 @@ class SessionControllerTest {
         val userId = USER_ID
         val page = 1
         val pageSize = 10
-        val sortColumn = "creationDate"
-        val sortOrder = "ASC"
-        val pageable = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.fromString(sortOrder), sortColumn))
+        val pageable = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.DESC, "creationDate"))
         val refreshTokens = listOf(SessionTestFactory.initRefreshToken())
         val refreshTokenPropertiesDtos =
             listOf(
@@ -131,7 +129,7 @@ class SessionControllerTest {
         `when`(refreshTokenMapper!!.toRefreshTokenPropertiesPageDto(refreshTokensPage)).thenReturn(expectedPageDto)
 
         // When
-        val response = sessionController!!.findSessions(page, pageSize, sortColumn, sortOrder)
+        val response = sessionController!!.findSessions(page, pageSize)
 
         // Then
         verify(refreshTokenService!!).findByUserId(userId, pageable)

@@ -2,7 +2,6 @@ package io.flavien.demo.api.session
 
 import io.flavien.demo.api.generated.api.SessionApi
 import io.flavien.demo.api.generated.dto.LoginDto
-import io.flavien.demo.api.generated.dto.RefreshTokenPropertiesDto
 import io.flavien.demo.api.generated.dto.RefreshTokenPropertiesPageDto
 import io.flavien.demo.api.generated.dto.SessionDto
 import io.flavien.demo.api.generated.dto.SessionRenewalDto
@@ -17,7 +16,6 @@ import io.flavien.demo.domain.session.service.RefreshTokenService
 import io.flavien.demo.domain.session.service.SessionService
 import io.flavien.demo.domain.shared.util.PageableUtil
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
@@ -103,10 +101,8 @@ class SessionController(
     override fun findSessions(
         page: Int?,
         pageSize: Int?,
-        sortColumn: String?,
-        sortOrder: String?,
     ): ResponseEntity<RefreshTokenPropertiesPageDto> {
-        val pageable = PageableUtil.toPageable(page, pageSize, sortColumn, sortOrder, "creationDate")
+        val pageable = PageableUtil.toPageable(page, pageSize, null, "desc", "creationDate")
         val refreshTokens = refreshTokenService.findByUserId(ContextUtil.userId, pageable)
         return ResponseEntity.ok(refreshTokenMapper.toRefreshTokenPropertiesPageDto(refreshTokens))
     }
