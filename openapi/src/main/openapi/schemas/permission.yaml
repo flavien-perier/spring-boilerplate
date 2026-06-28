@@ -14,7 +14,7 @@ PermissionSettingDto:
       description: Explicit override set at this level; omitted/null when unset.
     locked:
       type: boolean
-      description: Enforced by a higher-priority source (an ancestor group, or any group for a user) and read-only at this level.
+      description: Enforced by a higher-priority source (an ancestor role, or any role for a user) and read-only at this level.
     inheritedAllow:
       type: boolean
       description: The enforced value to display when locked.

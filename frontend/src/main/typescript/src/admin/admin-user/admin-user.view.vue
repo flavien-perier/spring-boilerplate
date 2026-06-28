@@ -64,12 +64,12 @@
 
     <template v-if="activeTab === 'rights'">
       <div class="user-rights">
-        <h4 class="mb-s">{{ $t("menu.groups") }}</h4>
-        <div v-for="group in groups" :key="group.id" class="mb-xs">
+        <h4 class="mb-s">{{ $t("menu.roles") }}</h4>
+        <div v-for="role in roles" :key="role.id" class="mb-xs">
           <fio-input-checkbox
-            :model-value="adminUserStore.isUserInGroup(group.id)"
-            :label="group.name"
-            @change="adminUserStore.toggleUserGroup(group.id)"
+            :model-value="adminUserStore.isUserInRole(role.id)"
+            :label="role.name"
+            @change="adminUserStore.toggleUserRole(role.id)"
           />
         </div>
 
@@ -123,8 +123,8 @@ const userTabs = computed<TabElement[]>(() => [
 const adminUserStore = useAdminUserStore();
 const {
   user,
-  groups,
-  userGroups,
+  roles,
+  userRoles,
   permissionOverrides,
   editEmail,
   editPassword,

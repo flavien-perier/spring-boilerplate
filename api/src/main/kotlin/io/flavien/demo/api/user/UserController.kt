@@ -3,27 +3,27 @@ package io.flavien.demo.api.user
 import io.flavien.demo.api.generated.api.UserApi
 import io.flavien.demo.api.generated.dto.ChangePasswordDto
 import io.flavien.demo.api.generated.dto.ForgotPasswordDto
-import io.flavien.demo.api.generated.dto.GroupDto
-import io.flavien.demo.api.generated.dto.GroupPageDto
 import io.flavien.demo.api.generated.dto.OtpConfirmDto
 import io.flavien.demo.api.generated.dto.OtpSetupDto
 import io.flavien.demo.api.generated.dto.PermissionSettingDto
 import io.flavien.demo.api.generated.dto.PermissionSettingPageDto
 import io.flavien.demo.api.generated.dto.PermissionUpdateDto
+import io.flavien.demo.api.generated.dto.RoleDto
+import io.flavien.demo.api.generated.dto.RolePageDto
 import io.flavien.demo.api.generated.dto.UserCreationDto
 import io.flavien.demo.api.generated.dto.UserDto
 import io.flavien.demo.api.generated.dto.UserExportDto
 import io.flavien.demo.api.generated.dto.UserPageDto
 import io.flavien.demo.api.generated.dto.UserUpdateAdminDto
 import io.flavien.demo.api.generated.dto.UserUpdateDto
-import io.flavien.demo.api.group.mapper.GroupMapper
 import io.flavien.demo.api.permission.mapper.PermissionMapper
+import io.flavien.demo.api.role.mapper.RoleMapper
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper
-import io.flavien.demo.domain.group.service.GroupService
 import io.flavien.demo.domain.permission.model.PermissionEnum
 import io.flavien.demo.domain.permission.service.PermissionService
+import io.flavien.demo.domain.role.service.RoleService
 import io.flavien.demo.domain.shared.util.PageableUtil
 import io.flavien.demo.domain.user.service.UserService
 import org.springframework.data.domain.Pageable
@@ -38,8 +38,8 @@ class UserController(
     private val userUpdateMapper: UserUpdateMapper,
     private val permissionService: PermissionService,
     private val permissionMapper: PermissionMapper,
-    private val groupService: GroupService,
-    private val groupMapper: GroupMapper,
+    private val roleService: RoleService,
+    private val roleMapper: RoleMapper,
 ) : UserApi {
     override fun createUser(userCreationDto: UserCreationDto): ResponseEntity<Unit> {
         userService.create(userCreationDto.email, userCreationDto.password, userCreationDto.proofOfWork)
@@ -174,34 +174,34 @@ class UserController(
         return ResponseEntity.noContent().build()
     }
 
-    override fun getUserGroups(
+    override fun getUserRoles(
         userMail: String,
         page: Int?,
         pageSize: Int?,
         sortColumn: String?,
         sortOrder: String?,
-    ): ResponseEntity<GroupPageDto> {
+    ): ResponseEntity<RolePageDto> {
         val user = userService.getByEmail(userMail)
         val pageable = PageableUtil.toPageable(page, pageSize, sortColumn, sortOrder, "name")
-        val groups = groupService.getUserGroups(user.id!!, pageable)
-        return ResponseEntity.ok(groupMapper.toGroupPageDto(groups))
+        val roles = roleService.getUserRoles(user.id!!, pageable)
+        return ResponseEntity.ok(roleMapper.toRolePageDto(roles))
     }
 
-    override fun addUserToGroup(
+    override fun addUserToRole(
         userMail: String,
-        groupId: String,
+        roleId: String,
     ): ResponseEntity<Unit> {
         val user = userService.getByEmail(userMail)
-        groupService.addUserToGroup(user.id!!, UUID.fromString(groupId))
+        roleService.addUserToRole(user.id!!, UUID.fromString(roleId))
         return ResponseEntity.noContent().build()
     }
 
-    override fun removeUserFromGroup(
+    override fun removeUserFromRole(
         userMail: String,
-        groupId: String,
+        roleId: String,
     ): ResponseEntity<Unit> {
         val user = userService.getByEmail(userMail)
-        groupService.removeUserFromGroup(user.id!!, UUID.fromString(groupId))
+        roleService.removeUserFromRole(user.id!!, UUID.fromString(roleId))
         return ResponseEntity.noContent().build()
     }
 

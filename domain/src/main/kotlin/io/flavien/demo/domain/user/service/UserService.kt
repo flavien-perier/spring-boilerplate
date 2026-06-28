@@ -1,7 +1,7 @@
 package io.flavien.demo.domain.user.service
 
-import io.flavien.demo.domain.group.service.GroupService
 import io.flavien.demo.domain.permission.service.PermissionService
+import io.flavien.demo.domain.role.service.RoleService
 import io.flavien.demo.domain.session.entity.OtpPending
 import io.flavien.demo.domain.session.exception.InvalidOtpException
 import io.flavien.demo.domain.session.exception.OtpAlreadyConfiguredException
@@ -36,7 +36,7 @@ class UserService(
     private val passwordService: PasswordService,
     private val otpService: OtpService,
     private val otpPendingRepository: OtpPendingRepository,
-    private val groupService: GroupService,
+    private val roleService: RoleService,
     private val permissionService: PermissionService,
 ) {
     @Transactional
@@ -62,7 +62,7 @@ class UserService(
             )
 
         val savedUser = userRepository.save(user)
-        groupService.assignDefaultGroup(savedUser)
+        roleService.assignDefaultRole(savedUser)
         log.info("User $email has been created")
         userActivationService.sendActivationToken(savedUser)
 
@@ -227,7 +227,7 @@ class UserService(
 
     private fun delete(user: User) {
         val userId = user.id!!
-        groupService.deleteUserGroups(userId)
+        roleService.deleteUserRoles(userId)
         permissionService.deleteUserPermissions(userId)
         userRepository.delete(user)
         accessTokenService.deleteByUserId(userId)

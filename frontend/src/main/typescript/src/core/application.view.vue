@@ -46,7 +46,7 @@ const navbarElements = computed<NavbarElement[]>(() => [
     action: () => router.push({ name: "home" }),
   },
   ...(applicationStore.hasPermission("MANAGE_ALL_USERS") ||
-  applicationStore.hasPermission("MANAGE_ALL_GROUPS")
+  applicationStore.hasPermission("MANAGE_ALL_ROLES")
     ? [
         {
           i18nKey: "menu.administration",

@@ -433,12 +433,12 @@
     security:
       - bearer: [ MANAGE_ALL_USERS ]
 
-/api/users/{userMail}/groups:
+/api/users/{userMail}/roles:
   get:
     tags:
       - User
-    summary: Returns the groups of a user, paginated.
-    operationId: getUserGroups
+    summary: Returns the roles of a user, paginated.
+    operationId: getUserRoles
     parameters:
       - $ref: "../components/parameters.yaml#/userMail"
       - $ref: "../components/parameters.yaml#/page"
@@ -447,11 +447,11 @@
       - $ref: "../components/parameters.yaml#/sortOrder"
     responses:
       "200":
-        description: Paginated list of groups.
+        description: Paginated list of roles.
         content:
           application/json:
             schema:
-              $ref: "../schemas/group.yaml#/GroupPageDto"
+              $ref: "../schemas/role.yaml#/RolePageDto"
       "401":
         $ref: "../components/errors.yaml#/Unauthorized"
       "403":
@@ -463,18 +463,18 @@
     security:
       - bearer: [ MANAGE_ALL_USERS ]
 
-/api/users/{userMail}/groups/{groupId}:
+/api/users/{userMail}/roles/{roleId}:
   put:
     tags:
       - User
-    summary: Add a user to a group.
-    operationId: addUserToGroup
+    summary: Add a user to a role.
+    operationId: addUserToRole
     parameters:
       - $ref: "../components/parameters.yaml#/userMail"
-      - $ref: "../components/parameters.yaml#/groupId"
+      - $ref: "../components/parameters.yaml#/roleId"
     responses:
       "204":
-        description: The user has been added to the group.
+        description: The user has been added to the role.
       "401":
         $ref: "../components/errors.yaml#/Unauthorized"
       "403":
@@ -490,14 +490,14 @@
   delete:
     tags:
       - User
-    summary: Remove a user from a group.
-    operationId: removeUserFromGroup
+    summary: Remove a user from a role.
+    operationId: removeUserFromRole
     parameters:
       - $ref: "../components/parameters.yaml#/userMail"
-      - $ref: "../components/parameters.yaml#/groupId"
+      - $ref: "../components/parameters.yaml#/roleId"
     responses:
       "204":
-        description: The user has been removed from the group.
+        description: The user has been removed from the role.
       "401":
         $ref: "../components/errors.yaml#/Unauthorized"
       "403":

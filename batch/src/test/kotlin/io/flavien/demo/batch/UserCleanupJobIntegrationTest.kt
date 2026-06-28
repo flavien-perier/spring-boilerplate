@@ -1,7 +1,7 @@
 package io.flavien.demo.batch
 
-import io.flavien.demo.domain.group.repository.UserGroupRepository
 import io.flavien.demo.domain.permission.repository.UserPermissionRepository
+import io.flavien.demo.domain.role.repository.UserRoleRepository
 import io.flavien.demo.domain.tenant.TenantContext
 import io.flavien.demo.domain.user.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -91,7 +91,7 @@ class UserCleanupJobIntegrationTest {
     lateinit var userRepository: UserRepository
 
     @Autowired
-    lateinit var userGroupRepository: UserGroupRepository
+    lateinit var userRoleRepository: UserRoleRepository
 
     @Autowired
     lateinit var userPermissionRepository: UserPermissionRepository
@@ -104,7 +104,7 @@ class UserCleanupJobIntegrationTest {
     @AfterEach
     fun cleanup() {
         userPermissionRepository.deleteAll()
-        userGroupRepository.deleteAll()
+        userRoleRepository.deleteAll()
         userRepository.deleteAll()
         TenantContext.clear()
     }

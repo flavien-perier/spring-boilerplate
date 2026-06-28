@@ -1,0 +1,58 @@
+RoleDto:
+  type: object
+  description: A role of users.
+  required:
+    - id
+    - name
+  properties:
+    id:
+      type: string
+      description: The role identifier.
+    name:
+      type: string
+      maxLength: 100
+      description: The role name.
+    parentId:
+      type: string
+      description: The parent role identifier, if any.
+    parentName:
+      type: string
+      maxLength: 100
+      description: The parent role name, if any.
+
+RoleCreationDto:
+  type: object
+  description: Information to create a role.
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      maxLength: 100
+    parentId:
+      type: string
+
+RoleUpdateDto:
+  type: object
+  description: Information to update a role.
+  properties:
+    name:
+      type: string
+      maxLength: 100
+    parentId:
+      type: string
+      description: Send null to remove the current parent.
+
+RolePageDto:
+  description: A page of roles.
+  allOf:
+    - $ref: "page.yaml#/Page"
+    - type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          description: The role content of this page.
+          items:
+            $ref: "#/RoleDto"

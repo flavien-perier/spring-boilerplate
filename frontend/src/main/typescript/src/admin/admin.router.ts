@@ -15,12 +15,12 @@ export default {
       component: () => import("@/admin/admin-users/admin-users.view.vue"),
     },
     {
-      path: "groups",
-      name: "admin-groups",
+      path: "roles",
+      name: "admin-roles",
       meta: {
         authenticated: true,
       },
-      component: () => import("@/admin/admin-groups/admin-groups.view.vue"),
+      component: () => import("@/admin/admin-roles/admin-roles.view.vue"),
     },
     {
       path: "users/:userMail",

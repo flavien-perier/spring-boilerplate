@@ -6,7 +6,7 @@ enum class PermissionEnum {
     MANAGE_OWN_ACCOUNT,
     MANAGE_OWN_SESSIONS,
     MANAGE_ALL_USERS,
-    MANAGE_ALL_GROUPS,
+    MANAGE_ALL_ROLES,
     ;
 
     companion object {

@@ -71,10 +71,10 @@ sortOrder:
     type: string
     enum: [ asc, desc ]
 
-groupId:
-  name: groupId
+roleId:
+  name: roleId
   in: path
-  description: The group identifier.
+  description: The role identifier.
   required: true
   schema:
     type: string

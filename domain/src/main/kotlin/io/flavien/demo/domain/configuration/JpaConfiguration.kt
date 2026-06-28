@@ -1,10 +1,10 @@
 package io.flavien.demo.domain.configuration
 
-import io.flavien.demo.domain.group.entity.Group
-import io.flavien.demo.domain.group.entity.UserGroup
-import io.flavien.demo.domain.permission.entity.GroupPermission
 import io.flavien.demo.domain.permission.entity.Permission
+import io.flavien.demo.domain.permission.entity.RolePermission
 import io.flavien.demo.domain.permission.entity.UserPermission
+import io.flavien.demo.domain.role.entity.Role
+import io.flavien.demo.domain.role.entity.UserRole
 import io.flavien.demo.domain.tenant.configuration.SchemaMultiTenantConnectionProvider
 import io.flavien.demo.domain.tenant.configuration.TenantContextIdentifierResolver
 import io.flavien.demo.domain.tenant.repository.TenantRegistry
@@ -74,11 +74,11 @@ class JpaConfiguration {
                 PersistenceUnitPostProcessor { pud ->
                     listOf(
                         User::class.java,
-                        Group::class.java,
-                        UserGroup::class.java,
+                        Role::class.java,
+                        UserRole::class.java,
                         Permission::class.java,
                         UserPermission::class.java,
-                        GroupPermission::class.java,
+                        RolePermission::class.java,
                     ).forEach { pud.addManagedClassName(it.name) }
                 },
             )

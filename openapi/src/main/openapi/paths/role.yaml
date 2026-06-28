@@ -1,0 +1,219 @@
+/api/roles:
+  get:
+    tags:
+      - Role
+    summary: Returns a paginated list of roles.
+    operationId: findRoles
+    parameters:
+      - $ref: "../components/parameters.yaml#/page"
+      - $ref: "../components/parameters.yaml#/pageSize"
+      - $ref: "../components/parameters.yaml#/sortColumn"
+      - $ref: "../components/parameters.yaml#/sortOrder"
+    responses:
+      "200":
+        description: Paginated list of roles.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/role.yaml#/RolePageDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_ROLES ]
+  post:
+    tags:
+      - Role
+    summary: Creation of a new role.
+    operationId: createRole
+    requestBody:
+      description: Role information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/role.yaml#/RoleCreationDto"
+    responses:
+      "200":
+        description: The role.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/role.yaml#/RoleDto"
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "409":
+        $ref: "../components/errors.yaml#/Conflict"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_ROLES ]
+
+/api/roles/{roleId}:
+  get:
+    tags:
+      - Role
+    summary: Returns information about a role.
+    operationId: getRole
+    parameters:
+      - $ref: "../components/parameters.yaml#/roleId"
+    responses:
+      "200":
+        description: The role.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/role.yaml#/RoleDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_ROLES ]
+  put:
+    tags:
+      - Role
+    summary: Updating information about a role.
+    operationId: updateRole
+    parameters:
+      - $ref: "../components/parameters.yaml#/roleId"
+    requestBody:
+      description: Role information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/role.yaml#/RoleUpdateDto"
+    responses:
+      "200":
+        description: The role.
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/role.yaml#/RoleDto"
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "409":
+        $ref: "../components/errors.yaml#/Conflict"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_ROLES ]
+  delete:
+    tags:
+      - Role
+    summary: Deleting a role.
+    operationId: deleteRole
+    parameters:
+      - $ref: "../components/parameters.yaml#/roleId"
+    responses:
+      "204":
+        description: The role has been deleted.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_ROLES ]
+
+/api/roles/{roleId}/permissions:
+  get:
+    tags:
+      - Role
+    summary: Returns the permission settings of a role.
+    operationId: getRolePermissions
+    parameters:
+      - $ref: "../components/parameters.yaml#/roleId"
+    responses:
+      "200":
+        description: List of permission settings.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/permission.yaml#/PermissionSettingDto"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_ROLES ]
+
+/api/roles/{roleId}/permissions/{permission}:
+  put:
+    tags:
+      - Role
+    summary: Set a permission override on a role.
+    operationId: setRolePermission
+    parameters:
+      - $ref: "../components/parameters.yaml#/roleId"
+      - $ref: "../components/parameters.yaml#/permissionName"
+    requestBody:
+      description: The permission override.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/permission.yaml#/PermissionUpdateDto"
+    responses:
+      "204":
+        description: The permission has been set.
+      "400":
+        $ref: "../components/errors.yaml#/BadRequest"
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_ROLES ]
+  delete:
+    tags:
+      - Role
+    summary: Remove a permission override from a role.
+    operationId: removeRolePermission
+    parameters:
+      - $ref: "../components/parameters.yaml#/roleId"
+      - $ref: "../components/parameters.yaml#/permissionName"
+    responses:
+      "204":
+        description: The permission override has been removed.
+      "401":
+        $ref: "../components/errors.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/errors.yaml#/Forbidden"
+      "404":
+        $ref: "../components/errors.yaml#/NotFound"
+      "500":
+        $ref: "../components/errors.yaml#/InternalServerError"
+    security:
+      - bearer: [ MANAGE_ALL_ROLES ]

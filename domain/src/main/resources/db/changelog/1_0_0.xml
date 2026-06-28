@@ -53,30 +53,30 @@
     </createIndex>
   </changeSet>
 
-  <changeSet id="1.0.0-create-table-app_group" author="perier@flavien.io">
-    <createTable tableName="app_group">
-      <column name="group_id" type="UUID" defaultValueComputed="gen_random_uuid()">
+  <changeSet id="1.0.0-create-table-app_role" author="perier@flavien.io">
+    <createTable tableName="app_role">
+      <column name="role_id" type="UUID" defaultValueComputed="gen_random_uuid()">
         <constraints primaryKey="true" nullable="false"/>
       </column>
       <column name="name" type="VARCHAR(100)">
         <constraints nullable="false" unique="true"/>
       </column>
       <column name="parent_id" type="UUID">
-        <constraints nullable="true" foreignKeyName="fk_app_group_parent" referencedTableName="app_group"
-                     referencedColumnNames="group_id"/>
+        <constraints nullable="true" foreignKeyName="fk_app_role_parent" referencedTableName="app_role"
+                     referencedColumnNames="role_id"/>
       </column>
     </createTable>
   </changeSet>
 
-  <changeSet id="1.0.0-create-table-user_group" author="perier@flavien.io">
-    <createTable tableName="user_group">
+  <changeSet id="1.0.0-create-table-user_role" author="perier@flavien.io">
+    <createTable tableName="user_role">
       <column name="user_id" type="UUID">
-        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_group_user"
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_role_user"
                      referencedTableName="app_user" referencedColumnNames="user_id"/>
       </column>
-      <column name="group_id" type="UUID">
-        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_group_group"
-                     referencedTableName="app_group" referencedColumnNames="group_id"/>
+      <column name="role_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_role_role"
+                     referencedTableName="app_role" referencedColumnNames="role_id"/>
       </column>
     </createTable>
   </changeSet>
@@ -105,14 +105,14 @@
     </createTable>
   </changeSet>
 
-  <changeSet id="1.0.0-create-table-group_permission" author="perier@flavien.io">
-    <createTable tableName="group_permission">
-      <column name="group_id" type="UUID">
-        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_group_permission_group"
-                     referencedTableName="app_group" referencedColumnNames="group_id"/>
+  <changeSet id="1.0.0-create-table-role_permission" author="perier@flavien.io">
+    <createTable tableName="role_permission">
+      <column name="role_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_role_permission_role"
+                     referencedTableName="app_role" referencedColumnNames="role_id"/>
       </column>
       <column name="permission_name" type="VARCHAR(50)">
-        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_group_permission_permission"
+        <constraints nullable="false" primaryKey="true" foreignKeyName="fk_role_permission_permission"
                      referencedTableName="permission" referencedColumnNames="name"/>
       </column>
       <column name="allow" type="BOOLEAN" defaultValueBoolean="true">
@@ -145,67 +145,67 @@
     </insert>
   </changeSet>
 
-  <changeSet id="1.0.0-insert-default-groups" author="perier@flavien.io">
-    <insert tableName="app_group">
-      <column name="group_id" value="00000000-0000-7000-8000-000000000001"/>
+  <changeSet id="1.0.0-insert-default-roles" author="perier@flavien.io">
+    <insert tableName="app_role">
+      <column name="role_id" value="00000000-0000-7000-8000-000000000001"/>
       <column name="name" value="USER"/>
     </insert>
-    <insert tableName="app_group">
-      <column name="group_id" value="00000000-0000-7000-8000-000000000002"/>
+    <insert tableName="app_role">
+      <column name="role_id" value="00000000-0000-7000-8000-000000000002"/>
       <column name="name" value="ADMIN"/>
       <column name="parent_id" value="00000000-0000-7000-8000-000000000001"/>
     </insert>
   </changeSet>
 
-  <changeSet id="1.0.0-insert-default-group-permission" author="perier@flavien.io">
-    <insert tableName="group_permission">
-      <column name="group_id" value="00000000-0000-7000-8000-000000000001"/>
+  <changeSet id="1.0.0-insert-default-role-permission" author="perier@flavien.io">
+    <insert tableName="role_permission">
+      <column name="role_id" value="00000000-0000-7000-8000-000000000001"/>
       <column name="permission_name" value="MANAGE_OWN_ACCOUNT"/>
       <column name="allow" valueBoolean="true"/>
     </insert>
-    <insert tableName="group_permission">
-      <column name="group_id" value="00000000-0000-7000-8000-000000000001"/>
+    <insert tableName="role_permission">
+      <column name="role_id" value="00000000-0000-7000-8000-000000000001"/>
       <column name="permission_name" value="MANAGE_OWN_SESSIONS"/>
       <column name="allow" valueBoolean="true"/>
     </insert>
-    <insert tableName="group_permission">
-      <column name="group_id" value="00000000-0000-7000-8000-000000000002"/>
+    <insert tableName="role_permission">
+      <column name="role_id" value="00000000-0000-7000-8000-000000000002"/>
       <column name="permission_name" value="MANAGE_ALL_USERS"/>
       <column name="allow" valueBoolean="true"/>
     </insert>
   </changeSet>
 
-  <changeSet id="1.0.0-insert-default-user-group" author="perier@flavien.io">
-    <insert tableName="user_group">
+  <changeSet id="1.0.0-insert-default-user-role" author="perier@flavien.io">
+    <insert tableName="user_role">
       <column name="user_id" value="00000000-0000-7000-8000-000000000000"/>
-      <column name="group_id" value="00000000-0000-7000-8000-000000000002"/>
+      <column name="role_id" value="00000000-0000-7000-8000-000000000002"/>
     </insert>
   </changeSet>
 
-  <changeSet id="1.0.0-insert-permission-manage-all-groups" author="perier@flavien.io">
+  <changeSet id="1.0.0-insert-permission-manage-all-roles" author="perier@flavien.io">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
-        SELECT COUNT(*) FROM permission WHERE name = 'MANAGE_ALL_GROUPS'
+        SELECT COUNT(*) FROM permission WHERE name = 'MANAGE_ALL_ROLES'
       </sqlCheck>
     </preConditions>
 
     <insert tableName="permission">
-      <column name="name" value="MANAGE_ALL_GROUPS"/>
+      <column name="name" value="MANAGE_ALL_ROLES"/>
     </insert>
   </changeSet>
 
-  <changeSet id="1.0.0-grant-manage-all-groups-to-admin" author="perier@flavien.io">
+  <changeSet id="1.0.0-grant-manage-all-roles-to-admin" author="perier@flavien.io">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
-        SELECT COUNT(*) FROM group_permission
-        WHERE permission_name = 'MANAGE_ALL_GROUPS'
-          AND group_id = '00000000-0000-7000-8000-000000000002'
+        SELECT COUNT(*) FROM role_permission
+        WHERE permission_name = 'MANAGE_ALL_ROLES'
+          AND role_id = '00000000-0000-7000-8000-000000000002'
       </sqlCheck>
     </preConditions>
 
-    <insert tableName="group_permission">
-      <column name="group_id" value="00000000-0000-7000-8000-000000000002"/>
-      <column name="permission_name" value="MANAGE_ALL_GROUPS"/>
+    <insert tableName="role_permission">
+      <column name="role_id" value="00000000-0000-7000-8000-000000000002"/>
+      <column name="permission_name" value="MANAGE_ALL_ROLES"/>
       <column name="allow" valueBoolean="true"/>
     </insert>
   </changeSet>

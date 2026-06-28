@@ -23,12 +23,12 @@ const adminTabs = computed<TabElement[]>(() => [
     isActive: route.name === "admin-users" || route.name === "admin-user",
     action: () => router.push({ name: "admin-users" }),
   },
-  ...(applicationStore.hasPermission("MANAGE_ALL_GROUPS")
+  ...(applicationStore.hasPermission("MANAGE_ALL_ROLES")
     ? [
         {
-          i18nKey: "menu.groups",
-          isActive: route.name === "admin-groups",
-          action: () => router.push({ name: "admin-groups" }),
+          i18nKey: "menu.roles",
+          isActive: route.name === "admin-roles",
+          action: () => router.push({ name: "admin-roles" }),
         } as TabElement,
       ]
     : []),

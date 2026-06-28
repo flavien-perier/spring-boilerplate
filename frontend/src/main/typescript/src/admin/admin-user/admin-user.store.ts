@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
-import { groupApi, userApi } from "@/core/util/api-util";
+import { roleApi, userApi } from "@/core/util/api-util";
 import { useApplicationStore } from "@/core/application.store";
 import type {
-  GroupDto,
+  RoleDto,
   PermissionSettingDto,
   UserDto,
   UserUpdateAdminDto,
@@ -14,8 +14,8 @@ export const useAdminUserStore = defineStore("admin-user", {
   state: () => ({
     user: null as UserDto | null,
     userMail: "",
-    groups: [] as GroupDto[],
-    userGroups: [] as GroupDto[],
+    roles: [] as RoleDto[],
+    userRoles: [] as RoleDto[],
     permissionOverrides: [] as PermissionSettingDto[],
     editEmail: "",
     editPassword: "",
@@ -26,8 +26,8 @@ export const useAdminUserStore = defineStore("admin-user", {
     init(userMail: string) {
       this.userMail = userMail;
       this.loadUser();
-      this.loadAllGroups();
-      this.loadUserGroups();
+      this.loadAllRoles();
+      this.loadUserRoles();
       this.loadPermissionOverrides();
     },
     loadUser() {
@@ -39,19 +39,19 @@ export const useAdminUserStore = defineStore("admin-user", {
         })
         .catch(applicationStore.axiosException);
     },
-    loadAllGroups() {
-      groupApi
-        .findGroups(1, 1000)
+    loadAllRoles() {
+      roleApi
+        .findRoles(1, 1000)
         .then((response) => {
-          this.groups = response.data.content;
+          this.roles = response.data.content;
         })
         .catch(applicationStore.axiosException);
     },
-    loadUserGroups() {
+    loadUserRoles() {
       userApi
-        .getUserGroups(this.userMail, 1, 1000)
+        .getUserRoles(this.userMail, 1, 1000)
         .then((response) => {
-          this.userGroups = response.data.content;
+          this.userRoles = response.data.content;
         })
         .catch(applicationStore.axiosException);
     },
@@ -127,19 +127,19 @@ export const useAdminUserStore = defineStore("admin-user", {
         })
         .catch(applicationStore.axiosException);
     },
-    isUserInGroup(groupId: string): boolean {
-      return this.userGroups.some((g) => g.id === groupId);
+    isUserInRole(roleId: string): boolean {
+      return this.userRoles.some((g) => g.id === roleId);
     },
-    toggleUserGroup(groupId: string) {
-      if (this.isUserInGroup(groupId)) {
+    toggleUserRole(roleId: string) {
+      if (this.isUserInRole(roleId)) {
         userApi
-          .removeUserFromGroup(this.userMail, groupId)
-          .then(() => this.loadUserGroups())
+          .removeUserFromRole(this.userMail, roleId)
+          .then(() => this.loadUserRoles())
           .catch(applicationStore.axiosException);
       } else {
         userApi
-          .addUserToGroup(this.userMail, groupId)
-          .then(() => this.loadUserGroups())
+          .addUserToRole(this.userMail, roleId)
+          .then(() => this.loadUserRoles())
           .catch(applicationStore.axiosException);
       }
     },

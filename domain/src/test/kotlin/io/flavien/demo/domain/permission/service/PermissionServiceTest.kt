@@ -1,18 +1,18 @@
 package io.flavien.demo.domain.permission.service
 
-import io.flavien.demo.domain.group.GroupTestFactory
-import io.flavien.demo.domain.group.entity.UserGroup
-import io.flavien.demo.domain.group.repository.GroupRepository
-import io.flavien.demo.domain.group.repository.UserGroupRepository
 import io.flavien.demo.domain.permission.PermissionTestFactory
-import io.flavien.demo.domain.permission.entity.GroupPermission
+import io.flavien.demo.domain.permission.entity.RolePermission
 import io.flavien.demo.domain.permission.entity.UserPermission
 import io.flavien.demo.domain.permission.exception.BadPermissionException
 import io.flavien.demo.domain.permission.model.PermissionEnum
-import io.flavien.demo.domain.permission.model.id.GroupPermissionId
+import io.flavien.demo.domain.permission.model.id.RolePermissionId
 import io.flavien.demo.domain.permission.model.id.UserPermissionId
-import io.flavien.demo.domain.permission.repository.GroupPermissionRepository
+import io.flavien.demo.domain.permission.repository.RolePermissionRepository
 import io.flavien.demo.domain.permission.repository.UserPermissionRepository
+import io.flavien.demo.domain.role.RoleTestFactory
+import io.flavien.demo.domain.role.entity.UserRole
+import io.flavien.demo.domain.role.repository.RoleRepository
+import io.flavien.demo.domain.role.repository.UserRoleRepository
 import io.flavien.demo.domain.user.UserTestFactory
 import io.flavien.demo.domain.user.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -36,20 +36,20 @@ class PermissionServiceTest {
     var userPermissionRepository: UserPermissionRepository? = null
 
     @Mock
-    var userGroupRepository: UserGroupRepository? = null
+    var userRoleRepository: UserRoleRepository? = null
 
     @Mock
-    var groupPermissionRepository: GroupPermissionRepository? = null
+    var rolePermissionRepository: RolePermissionRepository? = null
 
     @Mock
-    var groupRepository: GroupRepository? = null
+    var roleRepository: RoleRepository? = null
 
     @Mock
     var userRepository: UserRepository? = null
 
     private val userId = UUID.fromString("00000000-0000-0000-0000-00000000000a")
-    private val group1Id = UUID.fromString("00000000-0000-0000-0000-000000000001")
-    private val group2Id = UUID.fromString("00000000-0000-0000-0000-000000000002")
+    private val role1Id = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    private val role2Id = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
     @Test
     fun `Should return an empty set when the user has no permission`() {
@@ -57,7 +57,7 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
+            .`when`(userRoleRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
 
         val result = service!!.getGrantedPermissions(userId)
@@ -79,7 +79,7 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(listOf(directPermission))
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
+            .`when`(userRoleRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
 
         val result = service!!.getGrantedPermissions(userId)
@@ -88,18 +88,18 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should let a direct user deny win over a group allow`() {
+    fun `Should let a direct user deny win over a role allow`() {
         val user = UserTestFactory.initUser(id = userId)
-        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
+        val role = RoleTestFactory.initRole(id = role1Id, name = "G")
         val directDeny =
             PermissionTestFactory.initUserPermission(
                 user = user,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = false,
             )
-        val groupAllow =
-            PermissionTestFactory.initGroupPermission(
-                group = group,
+        val roleAllow =
+            PermissionTestFactory.initRolePermission(
+                role = role,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = true,
             )
@@ -108,14 +108,14 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(listOf(directDeny))
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, group)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, role)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(group))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(role))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
-            .thenReturn(listOf(groupAllow))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
+            .thenReturn(listOf(roleAllow))
 
         val result = service!!.getGrantedPermissions(userId)
 
@@ -123,18 +123,18 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should let a direct user allow win over a group deny`() {
+    fun `Should let a direct user allow win over a role deny`() {
         val user = UserTestFactory.initUser(id = userId)
-        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
+        val role = RoleTestFactory.initRole(id = role1Id, name = "G")
         val userAllow =
             PermissionTestFactory.initUserPermission(
                 user = user,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = true,
             )
-        val groupDeny =
-            PermissionTestFactory.initGroupPermission(
-                group = group,
+        val roleDeny =
+            PermissionTestFactory.initRolePermission(
+                role = role,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = false,
             )
@@ -143,14 +143,14 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(listOf(userAllow))
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, group)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, role)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(group))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(role))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
-            .thenReturn(listOf(groupDeny))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
+            .thenReturn(listOf(roleDeny))
 
         val result = service!!.getGrantedPermissions(userId)
 
@@ -158,9 +158,9 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should apply a user override when no group defines the permission`() {
+    fun `Should apply a user override when no role defines the permission`() {
         val user = UserTestFactory.initUser(id = userId)
-        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
+        val role = RoleTestFactory.initRole(id = role1Id, name = "G")
         val userAllow =
             PermissionTestFactory.initUserPermission(
                 user = user,
@@ -172,13 +172,13 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(listOf(userAllow))
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, group)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, role)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(group))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(role))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(emptyList())
 
         val result = service!!.getGrantedPermissions(userId)
@@ -187,12 +187,12 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should grant a permission allowed by a single root group`() {
+    fun `Should grant a permission allowed by a single root role`() {
         val user = UserTestFactory.initUser(id = userId)
-        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
-        val groupAllow =
-            PermissionTestFactory.initGroupPermission(
-                group = group,
+        val role = RoleTestFactory.initRole(id = role1Id, name = "G")
+        val roleAllow =
+            PermissionTestFactory.initRolePermission(
+                role = role,
                 permission = PermissionEnum.MANAGE_OWN_SESSIONS,
                 allow = true,
             )
@@ -201,14 +201,14 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, group)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, role)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(group))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(role))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
-            .thenReturn(listOf(groupAllow))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
+            .thenReturn(listOf(roleAllow))
 
         val result = service!!.getGrantedPermissions(userId)
 
@@ -218,17 +218,17 @@ class PermissionServiceTest {
     @Test
     fun `Should grant when an ancestor allows even if the child denies (allow wins)`() {
         val user = UserTestFactory.initUser(id = userId)
-        val parent = GroupTestFactory.initGroup(id = group1Id, name = "P", parent = null)
-        val child = GroupTestFactory.initGroup(id = group2Id, name = "C", parent = parent)
+        val parent = RoleTestFactory.initRole(id = role1Id, name = "P", parent = null)
+        val child = RoleTestFactory.initRole(id = role2Id, name = "C", parent = parent)
         val parentAllow =
-            PermissionTestFactory.initGroupPermission(
-                group = parent,
+            PermissionTestFactory.initRolePermission(
+                role = parent,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = true,
             )
         val childDeny =
-            PermissionTestFactory.initGroupPermission(
-                group = child,
+            PermissionTestFactory.initRolePermission(
+                role = child,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = false,
             )
@@ -237,16 +237,16 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, child)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, child)))
         Mockito
-            .`when`(groupRepository!!.findById(group2Id))
+            .`when`(roleRepository!!.findById(role2Id))
             .thenReturn(Optional.of(child))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(listOf(parentAllow))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role2Id))
             .thenReturn(listOf(childDeny))
 
         val result = service!!.getGrantedPermissions(userId)
@@ -255,19 +255,19 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should grant when any group allows even if another group denies (allow wins)`() {
+    fun `Should grant when any role allows even if another role denies (allow wins)`() {
         val user = UserTestFactory.initUser(id = userId)
-        val groupA = GroupTestFactory.initGroup(id = group1Id, name = "A", parent = null)
-        val groupB = GroupTestFactory.initGroup(id = group2Id, name = "B", parent = null)
+        val roleA = RoleTestFactory.initRole(id = role1Id, name = "A", parent = null)
+        val roleB = RoleTestFactory.initRole(id = role2Id, name = "B", parent = null)
         val allowA =
-            PermissionTestFactory.initGroupPermission(
-                group = groupA,
+            PermissionTestFactory.initRolePermission(
+                role = roleA,
                 permission = PermissionEnum.MANAGE_OWN_SESSIONS,
                 allow = true,
             )
         val denyB =
-            PermissionTestFactory.initGroupPermission(
-                group = groupB,
+            PermissionTestFactory.initRolePermission(
+                role = roleB,
                 permission = PermissionEnum.MANAGE_OWN_SESSIONS,
                 allow = false,
             )
@@ -276,19 +276,19 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, groupA), UserGroup(user, groupB)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, roleA), UserRole(user, roleB)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(groupA))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(roleA))
         Mockito
-            .`when`(groupRepository!!.findById(group2Id))
-            .thenReturn(Optional.of(groupB))
+            .`when`(roleRepository!!.findById(role2Id))
+            .thenReturn(Optional.of(roleB))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(listOf(allowA))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role2Id))
             .thenReturn(listOf(denyB))
 
         val result = service!!.getGrantedPermissions(userId)
@@ -299,11 +299,11 @@ class PermissionServiceTest {
     @Test
     fun `Should grant a permission defined only by the child`() {
         val user = UserTestFactory.initUser(id = userId)
-        val parent = GroupTestFactory.initGroup(id = group1Id, name = "P", parent = null)
-        val child = GroupTestFactory.initGroup(id = group2Id, name = "C", parent = parent)
+        val parent = RoleTestFactory.initRole(id = role1Id, name = "P", parent = null)
+        val child = RoleTestFactory.initRole(id = role2Id, name = "C", parent = parent)
         val childAllow =
-            PermissionTestFactory.initGroupPermission(
-                group = child,
+            PermissionTestFactory.initRolePermission(
+                role = child,
                 permission = PermissionEnum.MANAGE_OWN_SESSIONS,
                 allow = true,
             )
@@ -312,16 +312,16 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, child)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, child)))
         Mockito
-            .`when`(groupRepository!!.findById(group2Id))
+            .`when`(roleRepository!!.findById(role2Id))
             .thenReturn(Optional.of(child))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(emptyList())
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role2Id))
             .thenReturn(listOf(childAllow))
 
         val result = service!!.getGrantedPermissions(userId)
@@ -332,12 +332,12 @@ class PermissionServiceTest {
     @Test
     fun `Should not loop forever on a cycle and stay consistent`() {
         val user = UserTestFactory.initUser(id = userId)
-        val groupB = GroupTestFactory.initGroup(id = group2Id, name = "B", parent = null)
-        val groupA = GroupTestFactory.initGroup(id = group1Id, name = "A", parent = groupB)
-        groupB.parent = groupA
+        val roleB = RoleTestFactory.initRole(id = role2Id, name = "B", parent = null)
+        val roleA = RoleTestFactory.initRole(id = role1Id, name = "A", parent = roleB)
+        roleB.parent = roleA
         val allowA =
-            PermissionTestFactory.initGroupPermission(
-                group = groupA,
+            PermissionTestFactory.initRolePermission(
+                role = roleA,
                 permission = PermissionEnum.MANAGE_OWN_SESSIONS,
                 allow = true,
             )
@@ -346,16 +346,16 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, groupA)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, roleA)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(groupA))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(roleA))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(listOf(allowA))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role2Id))
             .thenReturn(emptyList())
 
         val result = service!!.getGrantedPermissions(userId)
@@ -364,19 +364,19 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should grant when one of several groups allows even if another denies`() {
+    fun `Should grant when one of several roles allows even if another denies`() {
         val user = UserTestFactory.initUser(id = userId)
-        val groupAllowing = GroupTestFactory.initGroup(id = group1Id, name = "Allowing", parent = null)
-        val groupDenying = GroupTestFactory.initGroup(id = group2Id, name = "Denying", parent = null)
+        val roleAllowing = RoleTestFactory.initRole(id = role1Id, name = "Allowing", parent = null)
+        val roleDenying = RoleTestFactory.initRole(id = role2Id, name = "Denying", parent = null)
         val allow =
-            PermissionTestFactory.initGroupPermission(
-                group = groupAllowing,
+            PermissionTestFactory.initRolePermission(
+                role = roleAllowing,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = true,
             )
         val deny =
-            PermissionTestFactory.initGroupPermission(
-                group = groupDenying,
+            PermissionTestFactory.initRolePermission(
+                role = roleDenying,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = false,
             )
@@ -385,19 +385,19 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, groupAllowing), UserGroup(user, groupDenying)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, roleAllowing), UserRole(user, roleDenying)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(groupAllowing))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(roleAllowing))
         Mockito
-            .`when`(groupRepository!!.findById(group2Id))
-            .thenReturn(Optional.of(groupDenying))
+            .`when`(roleRepository!!.findById(role2Id))
+            .thenReturn(Optional.of(roleDenying))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(listOf(allow))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role2Id))
             .thenReturn(listOf(deny))
 
         val result = service!!.getGrantedPermissions(userId)
@@ -419,7 +419,7 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(listOf(directPermission))
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
+            .`when`(userRoleRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
 
         val result = service!!.hasPermission(userId, PermissionEnum.MANAGE_OWN_ACCOUNT)
@@ -433,7 +433,7 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
+            .`when`(userRoleRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
 
         val result = service!!.hasPermission(userId, PermissionEnum.MANAGE_ALL_USERS)
@@ -455,7 +455,7 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(listOf(directPermission))
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
+            .`when`(userRoleRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
 
         service!!.checkPermission(userId, PermissionEnum.MANAGE_OWN_ACCOUNT)
@@ -469,7 +469,7 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
+            .`when`(userRoleRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
 
         assertThrows(BadPermissionException::class.java) {
@@ -480,17 +480,17 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should return full permission catalog for a group with mixed overrides`() {
+    fun `Should return full permission catalog for a role with mixed overrides`() {
         val define =
-            PermissionTestFactory.initGroupPermission(
-                group = GroupTestFactory.initGroup(id = group1Id),
+            PermissionTestFactory.initRolePermission(
+                role = RoleTestFactory.initRole(id = role1Id),
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = true,
             )
 
-        Mockito.`when`(groupPermissionRepository!!.findByGroupId(group1Id)).thenReturn(listOf(define))
+        Mockito.`when`(rolePermissionRepository!!.findByRoleId(role1Id)).thenReturn(listOf(define))
 
-        val result = service!!.getGroupPermissions(group1Id)
+        val result = service!!.getRolePermissions(role1Id)
 
         assertThat(result).hasSize(PermissionEnum.entries.size)
         val defined = result.first { it.permission == PermissionEnum.MANAGE_ALL_USERS }
@@ -521,12 +521,12 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should expose the inherited value of user permissions granted by a group without locking them`() {
+    fun `Should expose the inherited value of user permissions granted by a role without locking them`() {
         val user = UserTestFactory.initUser(id = userId)
-        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
-        val groupAllow =
-            PermissionTestFactory.initGroupPermission(
-                group = group,
+        val role = RoleTestFactory.initRole(id = role1Id, name = "G")
+        val roleAllow =
+            PermissionTestFactory.initRolePermission(
+                role = role,
                 permission = PermissionEnum.MANAGE_OWN_ACCOUNT,
                 allow = true,
             )
@@ -535,14 +535,14 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, group)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, role)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(group))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(role))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
-            .thenReturn(listOf(groupAllow))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
+            .thenReturn(listOf(roleAllow))
 
         val result = service!!.getUserPermissionOverrides(userId, PageRequest.of(0, 10))
 
@@ -555,30 +555,30 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should flag group permissions locked by an ancestor with the inherited value`() {
-        val parent = GroupTestFactory.initGroup(id = group1Id, name = "P", parent = null)
-        val child = GroupTestFactory.initGroup(id = group2Id, name = "C", parent = parent)
+    fun `Should flag role permissions locked by an ancestor with the inherited value`() {
+        val parent = RoleTestFactory.initRole(id = role1Id, name = "P", parent = null)
+        val child = RoleTestFactory.initRole(id = role2Id, name = "C", parent = parent)
         val parentAllow =
-            PermissionTestFactory.initGroupPermission(
-                group = parent,
+            PermissionTestFactory.initRolePermission(
+                role = parent,
                 permission = PermissionEnum.MANAGE_OWN_ACCOUNT,
                 allow = true,
             )
 
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role2Id))
             .thenReturn(emptyList())
         Mockito
-            .`when`(groupRepository!!.findById(group2Id))
+            .`when`(roleRepository!!.findById(role2Id))
             .thenReturn(Optional.of(child))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
+            .`when`(roleRepository!!.findById(role1Id))
             .thenReturn(Optional.of(parent))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(listOf(parentAllow))
 
-        val result = service!!.getGroupPermissions(group2Id)
+        val result = service!!.getRolePermissions(role2Id)
 
         val locked = result.first { it.permission == PermissionEnum.MANAGE_OWN_ACCOUNT }
         assertThat(locked.locked).isTrue()
@@ -587,23 +587,23 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should not flag a group own permission as locked`() {
-        val group = GroupTestFactory.initGroup(id = group1Id, name = "G", parent = null)
+    fun `Should not flag a role own permission as locked`() {
+        val role = RoleTestFactory.initRole(id = role1Id, name = "G", parent = null)
         val own =
-            PermissionTestFactory.initGroupPermission(
-                group = group,
+            PermissionTestFactory.initRolePermission(
+                role = role,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = true,
             )
 
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(listOf(own))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(group))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(role))
 
-        val result = service!!.getGroupPermissions(group1Id)
+        val result = service!!.getRolePermissions(role1Id)
 
         val setting = result.first { it.permission == PermissionEnum.MANAGE_ALL_USERS }
         assertThat(setting.locked).isFalse()
@@ -611,12 +611,12 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should mark a user override granted by a group as not locked with inherited allow true`() {
+    fun `Should mark a user override granted by a role as not locked with inherited allow true`() {
         val user = UserTestFactory.initUser(id = userId)
-        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
-        val groupAllow =
-            PermissionTestFactory.initGroupPermission(
-                group = group,
+        val role = RoleTestFactory.initRole(id = role1Id, name = "G")
+        val roleAllow =
+            PermissionTestFactory.initRolePermission(
+                role = role,
                 permission = PermissionEnum.MANAGE_ALL_USERS,
                 allow = true,
             )
@@ -625,14 +625,14 @@ class PermissionServiceTest {
             .`when`(userPermissionRepository!!.findByUserId(userId))
             .thenReturn(emptyList())
         Mockito
-            .`when`(userGroupRepository!!.findByUserId(userId))
-            .thenReturn(listOf(UserGroup(user, group)))
+            .`when`(userRoleRepository!!.findByUserId(userId))
+            .thenReturn(listOf(UserRole(user, role)))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
-            .thenReturn(Optional.of(group))
+            .`when`(roleRepository!!.findById(role1Id))
+            .thenReturn(Optional.of(role))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
-            .thenReturn(listOf(groupAllow))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
+            .thenReturn(listOf(roleAllow))
 
         val result = service!!.getUserPermissionOverrides(userId, PageRequest.of(0, 10))
 
@@ -642,30 +642,30 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should not lock a group permission when a strict ancestor denies it`() {
-        val parent = GroupTestFactory.initGroup(id = group1Id, name = "P", parent = null)
-        val child = GroupTestFactory.initGroup(id = group2Id, name = "C", parent = parent)
+    fun `Should not lock a role permission when a strict ancestor denies it`() {
+        val parent = RoleTestFactory.initRole(id = role1Id, name = "P", parent = null)
+        val child = RoleTestFactory.initRole(id = role2Id, name = "C", parent = parent)
         val parentDeny =
-            PermissionTestFactory.initGroupPermission(
-                group = parent,
+            PermissionTestFactory.initRolePermission(
+                role = parent,
                 permission = PermissionEnum.MANAGE_OWN_ACCOUNT,
                 allow = false,
             )
 
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group2Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role2Id))
             .thenReturn(emptyList())
         Mockito
-            .`when`(groupRepository!!.findById(group2Id))
+            .`when`(roleRepository!!.findById(role2Id))
             .thenReturn(Optional.of(child))
         Mockito
-            .`when`(groupRepository!!.findById(group1Id))
+            .`when`(roleRepository!!.findById(role1Id))
             .thenReturn(Optional.of(parent))
         Mockito
-            .`when`(groupPermissionRepository!!.findByGroupId(group1Id))
+            .`when`(rolePermissionRepository!!.findByRoleId(role1Id))
             .thenReturn(listOf(parentDeny))
 
-        val result = service!!.getGroupPermissions(group2Id)
+        val result = service!!.getRolePermissions(role2Id)
 
         val setting = result.first { it.permission == PermissionEnum.MANAGE_OWN_ACCOUNT }
         assertThat(setting.locked).isFalse()
@@ -673,21 +673,21 @@ class PermissionServiceTest {
     }
 
     @Test
-    fun `Should set a group permission`() {
-        val group = GroupTestFactory.initGroup(id = group1Id, name = "G")
+    fun `Should set a role permission`() {
+        val role = RoleTestFactory.initRole(id = role1Id, name = "G")
 
-        Mockito.`when`(groupRepository!!.findById(group1Id)).thenReturn(Optional.of(group))
+        Mockito.`when`(roleRepository!!.findById(role1Id)).thenReturn(Optional.of(role))
 
-        service!!.setGroupPermission(group1Id, PermissionEnum.MANAGE_ALL_GROUPS, true)
+        service!!.setRolePermission(role1Id, PermissionEnum.MANAGE_ALL_ROLES, true)
 
-        Mockito.verify(groupPermissionRepository!!).save(GroupPermission(group, PermissionEnum.MANAGE_ALL_GROUPS, true))
+        Mockito.verify(rolePermissionRepository!!).save(RolePermission(role, PermissionEnum.MANAGE_ALL_ROLES, true))
     }
 
     @Test
-    fun `Should remove a group permission`() {
-        service!!.removeGroupPermission(group1Id, PermissionEnum.MANAGE_ALL_GROUPS)
+    fun `Should remove a role permission`() {
+        service!!.removeRolePermission(role1Id, PermissionEnum.MANAGE_ALL_ROLES)
 
-        Mockito.verify(groupPermissionRepository!!).deleteById(GroupPermissionId(group1Id, PermissionEnum.MANAGE_ALL_GROUPS))
+        Mockito.verify(rolePermissionRepository!!).deleteById(RolePermissionId(role1Id, PermissionEnum.MANAGE_ALL_ROLES))
     }
 
     @Test

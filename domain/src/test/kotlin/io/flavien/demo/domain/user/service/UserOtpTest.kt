@@ -1,7 +1,7 @@
 package io.flavien.demo.domain.user.service
 
-import io.flavien.demo.domain.group.service.GroupService
 import io.flavien.demo.domain.permission.service.PermissionService
+import io.flavien.demo.domain.role.service.RoleService
 import io.flavien.demo.domain.session.entity.OtpPending
 import io.flavien.demo.domain.session.exception.InvalidOtpException
 import io.flavien.demo.domain.session.exception.OtpAlreadyConfiguredException
@@ -59,7 +59,7 @@ class UserOtpTest {
     var otpPendingRepository: OtpPendingRepository? = null
 
     @Mock
-    var groupService: GroupService? = null
+    var roleService: RoleService? = null
 
     @Mock
     var permissionService: PermissionService? = null

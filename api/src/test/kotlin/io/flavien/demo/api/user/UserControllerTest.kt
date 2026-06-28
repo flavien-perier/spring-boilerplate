@@ -1,21 +1,21 @@
 package io.flavien.demo.api.user
 
 import io.flavien.demo.api.generated.dto.ForgotPasswordDto
-import io.flavien.demo.api.generated.dto.GroupPageDto
 import io.flavien.demo.api.generated.dto.PermissionSettingPageDto
 import io.flavien.demo.api.generated.dto.PermissionUpdateDto
+import io.flavien.demo.api.generated.dto.RolePageDto
 import io.flavien.demo.api.generated.dto.UserPageDto
-import io.flavien.demo.api.group.GroupDtoTestFactory
-import io.flavien.demo.api.group.GroupTestFactory
-import io.flavien.demo.api.group.mapper.GroupMapper
 import io.flavien.demo.api.permission.mapper.PermissionMapper
+import io.flavien.demo.api.role.RoleDtoTestFactory
+import io.flavien.demo.api.role.RoleTestFactory
+import io.flavien.demo.api.role.mapper.RoleMapper
 import io.flavien.demo.api.session.util.ContextUtil
 import io.flavien.demo.api.user.mapper.UserMapper
 import io.flavien.demo.api.user.mapper.UserUpdateMapper
-import io.flavien.demo.domain.group.service.GroupService
 import io.flavien.demo.domain.permission.model.PermissionEnum
 import io.flavien.demo.domain.permission.model.PermissionSetting
 import io.flavien.demo.domain.permission.service.PermissionService
+import io.flavien.demo.domain.role.service.RoleService
 import io.flavien.demo.domain.user.entity.User
 import io.flavien.demo.domain.user.service.UserService
 import io.mockk.every
@@ -51,17 +51,17 @@ class UserControllerTest {
     var permissionService: PermissionService? = null
 
     @Mock
-    var groupService: GroupService? = null
+    var roleService: RoleService? = null
 
     @Mock
-    var groupMapper: GroupMapper? = null
+    var roleMapper: RoleMapper? = null
 
     @Mock
     var permissionMapper: PermissionMapper? = null
 
     companion object {
         private val USER_ID = UUID.fromString("00000000-0000-7000-8000-000000000001")
-        private val GROUP_10_ID = UUID.fromString("00000000-0000-7000-8000-000000000010")
+        private val ROLE_10_ID = UUID.fromString("00000000-0000-7000-8000-000000000010")
     }
 
     @Test
@@ -285,11 +285,11 @@ class UserControllerTest {
         val settings =
             listOf(
                 PermissionSetting(PermissionEnum.MANAGE_ALL_USERS, true),
-                PermissionSetting(PermissionEnum.MANAGE_ALL_GROUPS, null),
+                PermissionSetting(PermissionEnum.MANAGE_ALL_ROLES, null),
             )
         val settingsPage = PageImpl(settings, pageable, 2)
-        val dto1 = GroupDtoTestFactory.initPermissionSettingDto(permission = "MANAGE_ALL_USERS", allow = true)
-        val dto2 = GroupDtoTestFactory.initPermissionSettingDto(permission = "MANAGE_ALL_GROUPS", allow = null)
+        val dto1 = RoleDtoTestFactory.initPermissionSettingDto(permission = "MANAGE_ALL_USERS", allow = true)
+        val dto2 = RoleDtoTestFactory.initPermissionSettingDto(permission = "MANAGE_ALL_ROLES", allow = null)
         val expectedPageDto =
             PermissionSettingPageDto(
                 totalElements = 2,
@@ -309,7 +309,7 @@ class UserControllerTest {
         assertThat(response.body!!.content).hasSize(2)
         assertThat(response.body!!.content[0].permission).isEqualTo("MANAGE_ALL_USERS")
         assertThat(response.body!!.content[0].allow).isTrue()
-        assertThat(response.body!!.content[1].permission).isEqualTo("MANAGE_ALL_GROUPS")
+        assertThat(response.body!!.content[1].permission).isEqualTo("MANAGE_ALL_ROLES")
         assertThat(response.body!!.content[1].allow).isNull()
         assertThat(response.body!!.totalElements).isEqualTo(2)
         assertThat(response.body!!.totalPages).isEqualTo(1)
@@ -344,7 +344,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `Test getUserGroups`() {
+    fun `Test getUserRoles`() {
         val email = "perier@flavien.io"
         val page = 1
         val pageSize = 10
@@ -362,13 +362,13 @@ class UserControllerTest {
                     ),
             )
         val user = UserTestFactory.initUser(id = USER_ID)
-        val group1 = GroupTestFactory.initGroup(id = UUID.fromString("00000000-0000-7000-8000-000000000001"), name = "G1")
-        val group2 = GroupTestFactory.initGroup(id = UUID.fromString("00000000-0000-7000-8000-000000000002"), name = "G2")
-        val groupsPage = PageImpl(listOf(group1, group2), pageable, 2)
-        val dto1 = GroupDtoTestFactory.initGroupDto(name = "G1")
-        val dto2 = GroupDtoTestFactory.initGroupDto(name = "G2")
+        val role1 = RoleTestFactory.initRole(id = UUID.fromString("00000000-0000-7000-8000-000000000001"), name = "G1")
+        val role2 = RoleTestFactory.initRole(id = UUID.fromString("00000000-0000-7000-8000-000000000002"), name = "G2")
+        val rolesPage = PageImpl(listOf(role1, role2), pageable, 2)
+        val dto1 = RoleDtoTestFactory.initRoleDto(name = "G1")
+        val dto2 = RoleDtoTestFactory.initRoleDto(name = "G2")
         val expectedPageDto =
-            GroupPageDto(
+            RolePageDto(
                 totalElements = 2,
                 totalPages = 1,
                 number = 0,
@@ -377,10 +377,10 @@ class UserControllerTest {
             )
 
         Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
-        Mockito.`when`(groupService!!.getUserGroups(user.id!!, pageable)).thenReturn(groupsPage)
-        Mockito.`when`(groupMapper!!.toGroupPageDto(groupsPage)).thenReturn(expectedPageDto)
+        Mockito.`when`(roleService!!.getUserRoles(user.id!!, pageable)).thenReturn(rolesPage)
+        Mockito.`when`(roleMapper!!.toRolePageDto(rolesPage)).thenReturn(expectedPageDto)
 
-        val response = userController!!.getUserGroups(email, page, pageSize, sortColumn, sortOrder)
+        val response = userController!!.getUserRoles(email, page, pageSize, sortColumn, sortOrder)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body!!.content).containsExactly(dto1, dto2)
@@ -390,29 +390,29 @@ class UserControllerTest {
     }
 
     @Test
-    fun `Test addUserToGroup`() {
+    fun `Test addUserToRole`() {
         val email = "perier@flavien.io"
         val user = UserTestFactory.initUser(id = USER_ID)
 
         Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
 
-        val response = userController!!.addUserToGroup(email, GROUP_10_ID.toString())
+        val response = userController!!.addUserToRole(email, ROLE_10_ID.toString())
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(groupService!!).addUserToGroup(user.id!!, GROUP_10_ID)
+        Mockito.verify(roleService!!).addUserToRole(user.id!!, ROLE_10_ID)
     }
 
     @Test
-    fun `Test removeUserFromGroup`() {
+    fun `Test removeUserFromRole`() {
         val email = "perier@flavien.io"
         val user = UserTestFactory.initUser(id = USER_ID)
 
         Mockito.`when`(userService!!.getByEmail(email)).thenReturn(user)
 
-        val response = userController!!.removeUserFromGroup(email, GROUP_10_ID.toString())
+        val response = userController!!.removeUserFromRole(email, ROLE_10_ID.toString())
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        Mockito.verify(groupService!!).removeUserFromGroup(user.id!!, GROUP_10_ID)
+        Mockito.verify(roleService!!).removeUserFromRole(user.id!!, ROLE_10_ID)
     }
 
     @Test

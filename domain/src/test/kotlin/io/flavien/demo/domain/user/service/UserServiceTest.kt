@@ -1,7 +1,7 @@
 package io.flavien.demo.domain.user.service
 
-import io.flavien.demo.domain.group.service.GroupService
 import io.flavien.demo.domain.permission.service.PermissionService
+import io.flavien.demo.domain.role.service.RoleService
 import io.flavien.demo.domain.session.repository.OtpPendingRepository
 import io.flavien.demo.domain.session.service.AccessTokenService
 import io.flavien.demo.domain.session.service.OtpService
@@ -52,7 +52,7 @@ class UserServiceTest {
     var otpPendingRepository: OtpPendingRepository? = null
 
     @Mock
-    var groupService: GroupService? = null
+    var roleService: RoleService? = null
 
     @Mock
     var permissionService: PermissionService? = null

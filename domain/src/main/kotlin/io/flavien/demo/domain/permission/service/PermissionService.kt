@@ -1,17 +1,17 @@
 package io.flavien.demo.domain.permission.service
 
-import io.flavien.demo.domain.group.exception.GroupNotFoundException
-import io.flavien.demo.domain.group.repository.GroupRepository
-import io.flavien.demo.domain.group.repository.UserGroupRepository
-import io.flavien.demo.domain.permission.entity.GroupPermission
+import io.flavien.demo.domain.permission.entity.RolePermission
 import io.flavien.demo.domain.permission.entity.UserPermission
 import io.flavien.demo.domain.permission.exception.BadPermissionException
 import io.flavien.demo.domain.permission.model.PermissionEnum
 import io.flavien.demo.domain.permission.model.PermissionSetting
-import io.flavien.demo.domain.permission.model.id.GroupPermissionId
+import io.flavien.demo.domain.permission.model.id.RolePermissionId
 import io.flavien.demo.domain.permission.model.id.UserPermissionId
-import io.flavien.demo.domain.permission.repository.GroupPermissionRepository
+import io.flavien.demo.domain.permission.repository.RolePermissionRepository
 import io.flavien.demo.domain.permission.repository.UserPermissionRepository
+import io.flavien.demo.domain.role.exception.RoleNotFoundException
+import io.flavien.demo.domain.role.repository.RoleRepository
+import io.flavien.demo.domain.role.repository.UserRoleRepository
 import io.flavien.demo.domain.user.exception.UserNotFoundException
 import io.flavien.demo.domain.user.repository.UserRepository
 import org.springframework.data.domain.Page
@@ -25,18 +25,18 @@ import java.util.UUID
 @Service
 class PermissionService(
     private val userPermissionRepository: UserPermissionRepository,
-    private val userGroupRepository: UserGroupRepository,
-    private val groupPermissionRepository: GroupPermissionRepository,
-    private val groupRepository: GroupRepository,
+    private val userRoleRepository: UserRoleRepository,
+    private val rolePermissionRepository: RolePermissionRepository,
+    private val roleRepository: RoleRepository,
     private val userRepository: UserRepository,
 ) {
     @Transactional(readOnly = true)
     fun getGrantedPermissions(userId: UUID): Set<PermissionEnum> {
         val directDecisions = userPermissionRepository.findByUserId(userId).associate { it.permission to it.allow }
-        val groupDecisions = resolveGroupDecisions(userId)
+        val roleDecisions = resolveRoleDecisions(userId)
 
         return PermissionEnum.entries
-            .filter { permission -> directDecisions[permission] ?: groupDecisions[permission] ?: false }
+            .filter { permission -> directDecisions[permission] ?: roleDecisions[permission] ?: false }
             .toSet()
     }
 
@@ -62,9 +62,9 @@ class PermissionService(
     }
 
     @Transactional(readOnly = true)
-    fun getGroupPermissions(groupId: UUID): List<PermissionSetting> {
-        val defined = groupPermissionRepository.findByGroupId(groupId).associate { it.permission to it.allow }
-        val ancestorDecisions = resolveAncestorDecisions(groupId)
+    fun getRolePermissions(roleId: UUID): List<PermissionSetting> {
+        val defined = rolePermissionRepository.findByRoleId(roleId).associate { it.permission to it.allow }
+        val ancestorDecisions = resolveAncestorDecisions(roleId)
         return PermissionEnum.entries.map { permission ->
             PermissionSetting(
                 permission = permission,
@@ -81,14 +81,14 @@ class PermissionService(
         pageable: Pageable,
     ): Page<PermissionSetting> {
         val defined = userPermissionRepository.findByUserId(userId).associate { it.permission to it.allow }
-        val groupDecisions = resolveGroupDecisions(userId)
+        val roleDecisions = resolveRoleDecisions(userId)
         val all =
             PermissionEnum.entries.map { permission ->
                 PermissionSetting(
                     permission = permission,
                     allow = defined[permission],
                     locked = false,
-                    inheritedAllow = groupDecisions[permission],
+                    inheritedAllow = roleDecisions[permission],
                 )
             }
 
@@ -127,21 +127,21 @@ class PermissionService(
     }
 
     @Transactional
-    fun setGroupPermission(
-        groupId: UUID,
+    fun setRolePermission(
+        roleId: UUID,
         permission: PermissionEnum,
         allow: Boolean,
     ) {
-        val group = groupRepository.findById(groupId).orElseThrow { GroupNotFoundException("Group id $groupId not found") }
-        groupPermissionRepository.save(GroupPermission(group, permission, allow))
+        val role = roleRepository.findById(roleId).orElseThrow { RoleNotFoundException("Role id $roleId not found") }
+        rolePermissionRepository.save(RolePermission(role, permission, allow))
     }
 
     @Transactional
-    fun removeGroupPermission(
-        groupId: UUID,
+    fun removeRolePermission(
+        roleId: UUID,
         permission: PermissionEnum,
     ) {
-        groupPermissionRepository.deleteById(GroupPermissionId(groupId, permission))
+        rolePermissionRepository.deleteById(RolePermissionId(roleId, permission))
     }
 
     @Transactional
@@ -162,25 +162,25 @@ class PermissionService(
         userPermissionRepository.deleteById(UserPermissionId(userId, permission))
     }
 
-    private fun resolveGroupDecisions(userId: UUID): Map<PermissionEnum, Boolean> =
-        resolveDecisionsForGroups(buildGroupClosure(userGroupRepository.findByUserId(userId).map { it.group.id!! }))
+    private fun resolveRoleDecisions(userId: UUID): Map<PermissionEnum, Boolean> =
+        resolveDecisionsForRoles(buildRoleClosure(userRoleRepository.findByUserId(userId).map { it.role.id!! }))
 
-    private fun resolveAncestorDecisions(groupId: UUID): Map<PermissionEnum, Boolean> {
+    private fun resolveAncestorDecisions(roleId: UUID): Map<PermissionEnum, Boolean> {
         val parentId =
-            groupRepository
-                .findById(groupId)
+            roleRepository
+                .findById(roleId)
                 .orElse(null)
                 ?.parent
                 ?.id ?: return emptyMap()
-        return resolveDecisionsForGroups(buildGroupClosure(listOf(parentId)))
+        return resolveDecisionsForRoles(buildRoleClosure(listOf(parentId)))
     }
 
-    private fun resolveDecisionsForGroups(groupIds: Set<UUID>): Map<PermissionEnum, Boolean> {
+    private fun resolveDecisionsForRoles(roleIds: Set<UUID>): Map<PermissionEnum, Boolean> {
         val allowed = mutableSetOf<PermissionEnum>()
-        groupIds.forEach { groupId ->
-            groupPermissionRepository.findByGroupId(groupId).forEach { groupPermission ->
-                if (groupPermission.allow) {
-                    allowed.add(groupPermission.permission)
+        roleIds.forEach { roleId ->
+            rolePermissionRepository.findByRoleId(roleId).forEach { rolePermission ->
+                if (rolePermission.allow) {
+                    allowed.add(rolePermission.permission)
                 }
             }
         }
@@ -188,11 +188,11 @@ class PermissionService(
         return allowed.associateWith { true }
     }
 
-    private fun buildGroupClosure(directGroupIds: List<UUID>): Set<UUID> {
+    private fun buildRoleClosure(directRoleIds: List<UUID>): Set<UUID> {
         val visited = mutableSetOf<UUID>()
 
-        for (groupId in directGroupIds) {
-            var current = groupRepository.findById(groupId).orElse(null)
+        for (roleId in directRoleIds) {
+            var current = roleRepository.findById(roleId).orElse(null)
             while (current != null && visited.add(current.id!!)) {
                 current = current.parent
             }
