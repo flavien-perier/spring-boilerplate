@@ -4,81 +4,12 @@ import { createI18n } from "vue-i18n";
 import { createRouter, createMemoryHistory } from "vue-router";
 import ComponentLibrary from "../src/index";
 import "../src/styles/index.scss";
+import en from "./i18n/en.json";
+import fr from "./i18n/fr.json";
 
 const i18n = createI18n({
   locale: "en",
-  messages: {
-    en: {
-      "fio.email": "Email address",
-      "fio.password": "Password",
-      "fio.repeat-password": "Confirm password",
-      "fio.password.constraint.length":
-        "At least {minPasswordLength} characters",
-      "fio.password.constraint.lowercase": "At least one lowercase letter",
-      "fio.password.constraint.uppercase": "At least one uppercase letter",
-      "fio.password.constraint.number": "At least one number",
-      "fio.password.constraint.special-character":
-        "At least one special character",
-      "fio.markdown.bold": "Bold",
-      "fio.markdown.italic": "Italic",
-      "fio.markdown.heading": "Heading",
-      "fio.markdown.link": "Link",
-      "fio.markdown.list": "List",
-      "fio.markdown.code": "Code",
-      "fio.markdown.quote": "Quote",
-      "fio.markdown.placeholder.text": "text",
-      "fio.markdown.placeholder.link-text": "link text",
-      "fio.markdown.placeholder.url": "url",
-      "fio.layout.home": "Home",
-      "fio.layout.settings": "Settings",
-      "fio.layout.login": "Login",
-      "fio.layout.logout": "Logout",
-      "fio.layout.account": "Account",
-      "fio.layout.users": "Users",
-      "fio.layout.tab-one": "Tab One",
-      "fio.layout.tab-two": "Tab Two",
-      "fio.layout.tab-three": "Tab Three",
-      "fio.table.page-size": "Page size",
-      "fio.table.page-info": "Page {page} of {total}",
-      "fio.table.example.user": "User",
-      "fio.table.example.email": "Email",
-    },
-    fr: {
-      "fio.email": "Adresse e-mail",
-      "fio.password": "Mot de passe",
-      "fio.repeat-password": "Confirmer le mot de passe",
-      "fio.password.constraint.length":
-        "Au moins {minPasswordLength} caractères",
-      "fio.password.constraint.lowercase": "Au moins une lettre minuscule",
-      "fio.password.constraint.uppercase": "Au moins une lettre majuscule",
-      "fio.password.constraint.number": "Au moins un chiffre",
-      "fio.password.constraint.special-character":
-        "Au moins un caractère spécial",
-      "fio.markdown.bold": "Gras",
-      "fio.markdown.italic": "Italique",
-      "fio.markdown.heading": "Titre",
-      "fio.markdown.link": "Lien",
-      "fio.markdown.list": "Liste",
-      "fio.markdown.code": "Code",
-      "fio.markdown.quote": "Citation",
-      "fio.markdown.placeholder.text": "texte",
-      "fio.markdown.placeholder.link-text": "texte du lien",
-      "fio.markdown.placeholder.url": "url",
-      "fio.layout.home": "Accueil",
-      "fio.layout.settings": "Paramètres",
-      "fio.layout.login": "Connexion",
-      "fio.layout.logout": "Déconnexion",
-      "fio.layout.account": "Compte",
-      "fio.layout.users": "Utilisateurs",
-      "fio.layout.tab-one": "Onglet un",
-      "fio.layout.tab-two": "Onglet deux",
-      "fio.layout.tab-three": "Onglet trois",
-      "fio.table.page-size": "Taille de page",
-      "fio.table.page-info": "Page {page} sur {total}",
-      "fio.table.example.user": "Utilisateur",
-      "fio.table.example.email": "E-mail",
-    },
-  },
+  messages: { en, fr },
 });
 
 const router = createRouter({

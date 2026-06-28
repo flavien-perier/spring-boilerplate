@@ -1,7 +1,10 @@
 <template>
   <div
     class="input-field input-field--toggle"
-    :class="{ 'input-field--disabled': disabled }"
+    :class="[
+      { 'input-field--disabled': disabled },
+      size && `input-field--toggle--${size}`,
+    ]"
   >
     <label :for="inputId" class="input-toggle">
       <input
@@ -34,6 +37,7 @@
 <script setup lang="ts">
 import { computed, ref, useId } from "vue";
 import type { InputComponent } from "./model/input-component";
+import type { InputSize } from "@/model/input-size";
 import { useDraggableToggle } from "./composables/use-draggable-toggle";
 
 defineOptions({
@@ -46,7 +50,10 @@ const {
   modelValue = false,
   label,
   disabled = false,
-} = defineProps<InputComponent<boolean> & { label?: string }>();
+  size,
+} = defineProps<
+  InputComponent<boolean> & { label?: string; size?: InputSize }
+>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
@@ -85,6 +92,34 @@ const thumbStyle = computed(() =>
   display: flex;
   align-items: center;
   gap: $margin-xs;
+
+  --toggle-thumb: #{$font-l-size};
+  --toggle-track-w: #{$font-xxl-size * 1.8};
+  --toggle-track-h: calc(#{$font-l-size} + #{$margin-xxs * 2});
+
+  &--xs {
+    --toggle-thumb: #{$font-size};
+    --toggle-track-w: #{$font-xl-size * 1.8};
+    --toggle-track-h: calc(#{$font-size} + #{$margin-xxs * 2});
+  }
+
+  &--s {
+    --toggle-thumb: #{$font-l-size * 0.85};
+    --toggle-track-w: #{$font-xl-size * 1.7};
+    --toggle-track-h: calc(#{$font-l-size * 0.85} + #{$margin-xxs * 2});
+  }
+
+  &--l {
+    --toggle-thumb: #{$font-xl-size};
+    --toggle-track-w: #{$font-xxl-size * 2.2};
+    --toggle-track-h: calc(#{$font-xl-size} + #{$margin-xxs * 2});
+  }
+
+  &--xl {
+    --toggle-thumb: #{$font-xxl-size};
+    --toggle-track-w: #{$font-xxl-size * 2.6};
+    --toggle-track-h: calc(#{$font-xxl-size} + #{$margin-xxs * 2});
+  }
 }
 
 .input-label--toggle {
@@ -110,12 +145,12 @@ const thumbStyle = computed(() =>
 .input-toggle__track {
   display: inline-flex;
   align-items: center;
-  width: $font-xxl-size * 1.8;
-  height: calc(#{$font-l-size} + #{$margin-xxs * 2});
+  width: var(--toggle-track-w);
+  height: var(--toggle-track-h);
   padding: 0 $margin-xxs;
   background-color: lighter(secondary, 40);
   border: $border-size solid lighter(secondary, 40);
-  border-radius: calc(#{$font-l-size} + #{$margin-xxs * 2});
+  border-radius: var(--toggle-track-h);
   box-sizing: border-box;
   transition: background-color 0.2s ease, border-color 0.2s ease;
   touch-action: none;
@@ -128,8 +163,8 @@ const thumbStyle = computed(() =>
 
 .input-toggle__thumb {
   display: block;
-  width: $font-l-size;
-  height: $font-l-size;
+  width: var(--toggle-thumb);
+  height: var(--toggle-thumb);
   background-color: lighter(secondary, 90);
   border-radius: 50%;
   transform: translateX(0);
@@ -148,7 +183,8 @@ const thumbStyle = computed(() =>
 .input-control--toggle:checked + .input-toggle__track .input-toggle__thumb {
   transform: translateX(
     calc(
-      #{$font-xxl-size * 1.8} - #{$border-size * 2} - #{$margin-xxs * 2} - #{$font-l-size}
+      var(--toggle-track-w) - #{$border-size * 2} - #{$margin-xxs * 2} -
+        var(--toggle-thumb)
     )
   );
   background-color: lighter(secondary, 90);

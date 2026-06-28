@@ -191,13 +191,12 @@ class MarkdownUtil {
         }
       }
 
-      // Plain run up to the next potential token (always advances at least one).
       let j = i + 1;
       while (
         j < text.length &&
         text[j] !== "`" &&
         !(enableLinks && text[j] === "[")
-        ) {
+      ) {
         j += 1;
       }
       result += this.parseEmphasis(this.escapeHtml(text.slice(i, j)));
@@ -228,8 +227,6 @@ class MarkdownUtil {
       );
     }
 
-    // Blockquote, unordered list and ordered list share one shape: an escaped
-    // marker span followed by the highlighted remainder of the line.
     const blockPrefixes = [
       /^(\s*>\s?)(.*)$/,
       /^(\s*[-*+]\s+)(.*)$/,
@@ -312,5 +309,5 @@ class MarkdownUtil {
 
 const markdownUtil = new MarkdownUtil();
 
-export {markdownUtil};
-export type {MarkdownOptions};
+export { markdownUtil };
+export type { MarkdownOptions };

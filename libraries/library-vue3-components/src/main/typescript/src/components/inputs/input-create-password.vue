@@ -4,82 +4,28 @@
       <input-password
         :label="$t('fio.password')"
         v-model="password"
-        :is-valid="
-          lengthValid &&
-          lowercaseValid &&
-          uppercaseValid &&
-          numberValid &&
-          specialCharValid
-        "
+        :is-valid="constraintsValid"
         :disabled="disabled"
         @focus="showPasswordInfo = true"
         @blur="showPasswordInfo = false"
       />
 
       <Transition name="constraints">
-        <div
-          class="password-constraints"
-          v-if="
-            showPasswordInfo &&
-            (!lengthValid ||
-              !lowercaseValid ||
-              !uppercaseValid ||
-              !numberValid ||
-              !specialCharValid)
-          "
+        <ul
+          class="constraints-list"
+          v-if="showPasswordInfo && !constraintsValid"
         >
-          <ul class="constraints-list">
-            <li>
-              <fio-icon
-                v-if="lengthValid"
-                icon="circle-check"
-                color="success"
-              />
-              <fio-icon v-else icon="circle-xmark" color="danger" />
-              {{
-                $t("fio.password.constraint.length", {
-                  minPasswordLength: props.minPasswordLength,
-                })
-              }}
-            </li>
-            <li>
-              <fio-icon
-                v-if="lowercaseValid"
-                icon="circle-check"
-                color="success"
-              />
-              <fio-icon v-else icon="circle-xmark" color="danger" />
-              {{ $t("fio.password.constraint.lowercase") }}
-            </li>
-            <li>
-              <fio-icon
-                v-if="uppercaseValid"
-                icon="circle-check"
-                color="success"
-              />
-              <fio-icon v-else icon="circle-xmark" color="danger" />
-              {{ $t("fio.password.constraint.uppercase") }}
-            </li>
-            <li>
-              <fio-icon
-                v-if="numberValid"
-                icon="circle-check"
-                color="success"
-              />
-              <fio-icon v-else icon="circle-xmark" color="danger" />
-              {{ $t("fio.password.constraint.number") }}
-            </li>
-            <li>
-              <fio-icon
-                v-if="specialCharValid"
-                icon="circle-check"
-                color="success"
-              />
-              <fio-icon v-else icon="circle-xmark" color="danger" />
-              {{ $t("fio.password.constraint.special-character") }}
-            </li>
-          </ul>
-        </div>
+          <li
+            v-for="constraint in passwordConstraints"
+            :key="constraint.i18nKey"
+          >
+            <fio-icon
+              :icon="constraint.valid ? 'circle-check' : 'circle-xmark'"
+              :color="constraint.valid ? 'success' : 'danger'"
+            />
+            {{ $t(constraint.i18nKey, constraint.params) }}
+          </li>
+        </ul>
       </Transition>
     </div>
 
@@ -88,13 +34,13 @@
       v-model="confirmPassword"
       :is-valid="passwordMatch"
       :disabled="disabled"
-      @input="validatePassword"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { passwordUtil } from "../../utils/password-util";
 import InputPassword from "./input-password.vue";
 import FioIcon from "../icon.vue";
@@ -115,65 +61,65 @@ const props = withDefaults(
 
 const emit = defineEmits(["update:modelValue", "update:isValid"]);
 
+const { t: $t } = useI18n();
+
 const password = computed({
   get: () => props.modelValue,
   set: (value) => emit("update:modelValue", value),
 });
-const confirmPassword = ref("");
 
-const lengthValid = ref(false);
-const lowercaseValid = ref(false);
-const uppercaseValid = ref(false);
-const numberValid = ref(false);
-const specialCharValid = ref(false);
-const passwordMatch = ref(false);
+const confirmPassword = ref("");
 
 const showPasswordInfo = ref(false);
 
-function validatePassword() {
-  lengthValid.value = passwordUtil.checkPasswordLength(
-    password.value,
-    props.minPasswordLength
-  );
-  lowercaseValid.value = passwordUtil.checkPasswordLowercase(password.value);
-  uppercaseValid.value = passwordUtil.checkPasswordUppercase(password.value);
-  numberValid.value = passwordUtil.checkPasswordNumber(password.value);
-  specialCharValid.value = passwordUtil.checkSpecialCharacter(password.value);
-  passwordMatch.value =
-    password.value == confirmPassword.value && confirmPassword.value !== "";
+interface PasswordConstraint {
+  i18nKey: string;
+  params?: Record<string, unknown>;
+  valid: boolean;
 }
 
-const isPasswordValid = computed(() => {
-  return (
-    lengthValid.value &&
-    lowercaseValid.value &&
-    uppercaseValid.value &&
-    numberValid.value &&
-    specialCharValid.value &&
-    passwordMatch.value
-  );
-});
+const passwordConstraints = computed<PasswordConstraint[]>(() => [
+  {
+    i18nKey: "fio.password.constraint.length",
+    params: { minPasswordLength: props.minPasswordLength },
+    valid: passwordUtil.checkPasswordLength(
+      password.value,
+      props.minPasswordLength
+    ),
+  },
+  {
+    i18nKey: "fio.password.constraint.lowercase",
+    valid: passwordUtil.checkPasswordLowercase(password.value),
+  },
+  {
+    i18nKey: "fio.password.constraint.uppercase",
+    valid: passwordUtil.checkPasswordUppercase(password.value),
+  },
+  {
+    i18nKey: "fio.password.constraint.number",
+    valid: passwordUtil.checkPasswordNumber(password.value),
+  },
+  {
+    i18nKey: "fio.password.constraint.special-character",
+    valid: passwordUtil.checkSpecialCharacter(password.value),
+  },
+]);
 
-watch(isPasswordValid, (newValue) => {
-  emit("update:isValid", newValue);
-});
-
-onMounted(() => {
-  validatePassword();
-});
-
-watch(
-  () => props.modelValue,
-  () => {
-    validatePassword();
-  }
+const constraintsValid = computed(() =>
+  passwordConstraints.value.every((c) => c.valid)
 );
-watch(
-  () => props.minPasswordLength,
-  () => {
-    validatePassword();
-  }
+
+const passwordMatch = computed(
+  () => password.value === confirmPassword.value && confirmPassword.value !== ""
 );
+
+const isPasswordValid = computed(
+  () => constraintsValid.value && passwordMatch.value
+);
+
+watch(isPasswordValid, (value) => emit("update:isValid", value), {
+  immediate: true,
+});
 </script>
 
 <style scoped lang="scss">
@@ -185,26 +131,22 @@ watch(
   margin-bottom: $margin-xl;
 }
 
-.password-constraints {
+.constraints-list {
   position: absolute;
   top: 100%;
-  background-color: lighter(secondary, 90);
-  border: $border-size solid lighter(secondary, 80);
-  border-radius: $border-radius-size;
-  box-shadow: 0 4px 12px rgba(darker(secondary, 90), 0.1);
-  z-index: 3;
-  margin-top: $margin-xxs;
-  padding: $margin-s $margin;
-  min-width: 16rem;
-}
-
-.constraints-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: $margin-s $margin;
   display: flex;
   flex-direction: column;
   gap: $margin-xs;
+  background-color: lighter(secondary, 90);
+  border: $border-size solid lighter(secondary, 80);
+  border-radius: $border-radius-size;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 3;
+  margin-top: $margin-xxs;
+  min-width: 16rem;
 
   li {
     display: flex;

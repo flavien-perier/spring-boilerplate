@@ -92,6 +92,7 @@ export type { SelectOption } from "./components/inputs/input-select.vue";
 export type { NavbarElement } from "./model/navbar-element";
 export type { IconColor } from "./model/icon-color";
 export type { IconSize } from "./model/icon-size";
+export type { InputSize } from "./model/input-size";
 export type { ImageName } from "./model/images";
 export type {
   TableHeader,

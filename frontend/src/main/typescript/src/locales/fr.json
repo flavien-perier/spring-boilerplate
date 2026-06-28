@@ -113,8 +113,6 @@
   "fio.password.constraint.uppercase": "Au moins une lettre majuscule",
   "fio.password.constraint.number": "Au moins un chiffre",
   "fio.password.constraint.special-character": "Au moins un caractère spécial",
-  "fio.table.page-size": "Lignes par page",
-  "fio.table.page-info": "Page {page} sur {total}",
   "fio.table.example.user": "Utilisateur",
   "fio.table.example.email": "Email"
 }

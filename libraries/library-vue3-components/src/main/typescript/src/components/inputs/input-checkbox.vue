@@ -7,6 +7,7 @@
       type="checkbox"
       :id="inputId"
       class="input-control input-control--checkbox"
+      :class="size && `input-control--checkbox--${size}`"
       :checked="modelValue"
       :disabled="disabled"
       @change="handleChange"
@@ -23,6 +24,7 @@
 <script setup lang="ts">
 import { useId } from "vue";
 import type { InputComponent } from "./model/input-component";
+import type { InputSize } from "@/model/input-size";
 
 defineOptions({
   name: "FioInputCheckbox",
@@ -34,7 +36,10 @@ const {
   modelValue = false,
   label,
   disabled = false,
-} = defineProps<InputComponent<boolean> & { label?: string }>();
+  size,
+} = defineProps<
+  InputComponent<boolean> & { label?: string; size?: InputSize }
+>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
@@ -71,6 +76,26 @@ function handleChange(event: Event) {
   padding: 0;
   accent-color: $primary;
   cursor: pointer;
+
+  &--xs {
+    width: $font-s-size;
+    height: $font-s-size;
+  }
+
+  &--s {
+    width: $font-size;
+    height: $font-size;
+  }
+
+  &--l {
+    width: $font-xl-size;
+    height: $font-xl-size;
+  }
+
+  &--xl {
+    width: $font-xxl-size;
+    height: $font-xxl-size;
+  }
 
   &:disabled {
     cursor: not-allowed;

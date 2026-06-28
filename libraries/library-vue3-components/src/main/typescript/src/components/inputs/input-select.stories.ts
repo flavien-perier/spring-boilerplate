@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
 import { ref } from "vue";
 import FioInputSelect from "./input-select.vue";
+import type { SelectOption } from "./input-select.vue";
 
 const meta: Meta<typeof FioInputSelect> = {
   title: "Components/Inputs/FioInputSelect",
@@ -21,7 +22,7 @@ const meta: Meta<typeof FioInputSelect> = {
     },
     options: {
       control: "object",
-      description: "Selectable options ({ value, label }[])",
+      description: "Selectable options ({ value, label, icon? }[])",
     },
     disabled: {
       control: "boolean",
@@ -38,9 +39,9 @@ type Story = StoryObj<typeof FioInputSelect>;
 export const Default: Story = {
   render: () => ({
     setup() {
-      const value = ref(null);
+      const value = ref<string | null>(null);
       const disabled = ref(false);
-      const options = [
+      const options: SelectOption[] = [
         { value: "admin", label: "Admin" },
         { value: "user", label: "User" },
         { value: "guest", label: "Guest" },
@@ -72,8 +73,8 @@ export const WithoutLabel: Story = {
   name: "Without Label",
   render: () => ({
     setup() {
-      const value = ref(null);
-      const options = [
+      const value = ref<string | null>(null);
+      const options: SelectOption[] = [
         { value: "fr", label: "Français" },
         { value: "en", label: "English" },
       ];
@@ -94,8 +95,8 @@ export const PreSelected: Story = {
   name: "Pre-selected",
   render: () => ({
     setup() {
-      const value = ref("user");
-      const options = [
+      const value = ref<string | null>("user");
+      const options: SelectOption[] = [
         { value: "admin", label: "Admin" },
         { value: "user", label: "User" },
         { value: "guest", label: "Guest" },
@@ -117,8 +118,8 @@ export const Disabled: Story = {
   name: "Disabled",
   render: () => ({
     setup() {
-      const value = ref("admin");
-      const options = [
+      const value = ref<string | null>("admin");
+      const options: SelectOption[] = [
         { value: "admin", label: "Admin" },
         { value: "user", label: "User" },
       ];
@@ -127,6 +128,57 @@ export const Disabled: Story = {
     template: `
       <div style="display: flex; flex-direction: column; gap: 1rem; width: 320px;">
         <fio-input-select v-model="value" label="Role" :options="options" :disabled="true" />
+      </div>
+    `,
+  }),
+};
+
+export const WithIcons: Story = {
+  name: "With Icons",
+  render: () => ({
+    setup() {
+      const value = ref<string | null>(null);
+      const options: SelectOption[] = [
+        { value: "home", label: "Home", icon: "home" },
+        { value: "user", label: "User", icon: "user" },
+        { value: "users", label: "Users", icon: "users" },
+        { value: "gear", label: "Settings", icon: "gear" },
+      ];
+      return { value, options };
+    },
+    template: `
+      <div style="display: flex; flex-direction: column; gap: 1rem; width: 320px;">
+        <fio-input-select
+          v-model="value"
+          label="Navigation"
+          null-option="— Select —"
+          :options="options"
+        />
+        <div style="color: #6c757d; font-size: 0.875rem;">
+          Selected: <code>{{ value ?? "(null)" }}</code>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const Small: Story = {
+  name: "Small Size",
+  render: () => ({
+    setup() {
+      const value = ref<string | null>("fr");
+      const options: SelectOption[] = [
+        { value: "fr", label: "Français" },
+        { value: "en", label: "English" },
+      ];
+      return { value, options };
+    },
+    template: `
+      <div style="display: flex; flex-direction: column; gap: 1rem; width: 200px;">
+        <fio-input-select v-model="value" label="Lang" :options="options" size="s" />
+        <div style="color: #6c757d; font-size: 0.875rem;">
+          Selected: <code>{{ value ?? "(null)" }}</code>
+        </div>
       </div>
     `,
   }),

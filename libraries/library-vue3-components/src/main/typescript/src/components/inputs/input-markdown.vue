@@ -1,6 +1,12 @@
 <template>
   <div class="input-field">
-    <label v-if="label" :for="editorId" class="input-label">{{ label }}</label>
+    <label
+      v-if="label"
+      :for="editorId"
+      class="input-label"
+      :class="props.size && `input-label--${props.size}`"
+      >{{ label }}</label
+    >
     <div v-if="showToolbar" class="fio-input-markdown__toolbar">
       <button
         type="button"
@@ -79,7 +85,10 @@
       ref="editor"
       :id="editorId"
       class="input-control fio-input-markdown__area"
-      :class="{ 'input-control--disabled': disabled }"
+      :class="[
+        { 'input-control--disabled': disabled },
+        props.size && `input-control--${props.size}`,
+      ]"
       :contenteditable="!disabled"
       :data-placeholder="placeholder"
       @input="onInput"
@@ -97,6 +106,7 @@ import { useI18n } from "vue-i18n";
 import FioIcon from "../icon.vue";
 import { markdownUtil } from "@/utils/markdown-util";
 import type { InputComponent } from "./model/input-component";
+import type { InputSize } from "@/model/input-size";
 
 defineOptions({
   name: "FioInputMarkdown",
@@ -107,8 +117,7 @@ const { t } = useI18n();
 const editorId = useId();
 
 // True while an IME (CJK / dead-key) composition is in progress. The input
-// handler rebuilds innerHTML, which would corrupt an in-flight composition, so
-// we hold off until `compositionend` fires.
+// handler rebuilds innerHTML, which would corrupt an in-flight composition.
 let isComposing = false;
 
 const props = withDefaults(
@@ -119,6 +128,7 @@ const props = withDefaults(
       showToolbar?: boolean;
       enableTitle?: boolean;
       enableLinks?: boolean;
+      size?: InputSize;
     }
   >(),
   {
@@ -142,7 +152,6 @@ const model = computed<string>({
 
 const editor = ref<HTMLElement | null>(null);
 
-/** Character offsets of the current selection within the editor's textContent. */
 function getSelectionOffsets(root: HTMLElement): {
   start: number;
   end: number;
@@ -160,8 +169,6 @@ function getSelectionOffsets(root: HTMLElement): {
     const end = (root.textContent ?? "").length;
     return { start: end, end };
   }
-  // A boundary's character offset is the length of the text spanning from the
-  // editor's start up to that boundary.
   const offsetOf = (container: Node, offset: number): number => {
     const measure = range.cloneRange();
     measure.selectNodeContents(root);
@@ -224,8 +231,6 @@ function setCaret(root: HTMLElement, offset: number): void {
 function render(value: string): void {
   const el = editor.value;
   if (!el) return;
-  // Re-highlighting by replacing innerHTML intentionally discards the browser's
-  // native undo/redo history - a known limitation of live-highlight editors.
   let html = markdownUtil.highlightMarkdown(value, {
     enableTitle: props.enableTitle,
     enableLinks: props.enableLinks,
@@ -244,7 +249,6 @@ function emitInput(): void {
   emit("input", new Event("input"));
 }
 
-/** Read the editor back into the model and re-highlight, preserving the caret. */
 function handleInput(event: Event): void {
   const el = editor.value;
   if (!el) return;
@@ -267,13 +271,9 @@ function onCompositionStart(): void {
 
 function onCompositionEnd(event: Event): void {
   isComposing = false;
-  // Composition is finalized: run the normal input handling exactly once.
   handleInput(event);
 }
 
-// Commit a new editor value from a toolbar action: update the model,
-// re-highlight, restore focus, place the selection at the given character
-// offsets and notify listeners.
 function applyEdit(
   value: string,
   selectionStart: number,
@@ -310,7 +310,6 @@ function onPaste(event: ClipboardEvent): void {
   insertText(text);
 }
 
-/** Wrap the current selection (or a placeholder) with the given marker. */
 function wrapSelection(marker: string, placeholder: string): void {
   const el = editor.value;
   if (!el || props.disabled) return;
@@ -326,7 +325,6 @@ function wrapSelection(marker: string, placeholder: string): void {
   );
 }
 
-/** Insert a line-level prefix (heading, list, quote) at the caret's line start. */
 function prefixLine(prefix: string): void {
   const el = editor.value;
   if (!el || props.disabled) return;
@@ -403,8 +401,6 @@ onMounted(() => {
     }
   }
 
-  // contenteditable-specific overrides on top of the shared .input-control
-  // base (padding, border, focus, disabled come from input.scss).
   &__area {
     white-space: pre-wrap;
     word-break: break-word;
@@ -418,8 +414,6 @@ onMounted(() => {
       pointer-events: none;
     }
 
-    // The highlight spans inside the editable area are injected via innerHTML,
-    // so (like v-html) they need :deep() to be reached by scoped rules.
     :deep(.md-marker) {
       color: darker(secondary, 30);
       opacity: 0.6;

@@ -1,6 +1,9 @@
 <template>
   <div class="fio-table-wrapper">
-    <table class="fio-table">
+    <table
+      class="fio-table"
+      :class="{ 'fio-table--with-footer': showPagination }"
+    >
       <thead>
         <tr>
           <th
@@ -44,72 +47,43 @@
     </table>
 
     <div v-if="showPagination" class="fio-table__footer">
-      <div class="fio-table__page-size">
-        <label for="fio-table-page-size" class="fio-table__page-size-label">
-          {{ $t("fio.table.page-size") }}
-        </label>
-        <select
-          id="fio-table-page-size"
-          class="fio-table__page-size-select"
-          :value="pageSize"
-          @change="onPageSizeChange"
-        >
-          <option
-            v-for="size in pageSizeOptions"
-            :key="size"
-            :value="size"
-            :selected="size === pageSize"
-          >
-            {{ size }}
-          </option>
-        </select>
-      </div>
+      <fio-input-select
+        class="fio-table__page-size"
+        size="xs"
+        :model-value="String(pageSize)"
+        :options="pageSizeSelectOptions"
+        @update:model-value="onPageSizeChange"
+      />
 
       <div class="fio-table__pager">
-        <span class="fio-table__pager-info">
-          {{
-            $t("fio.table.page-info", { page: currentPage, total: totalPages })
-          }}
-        </span>
+        <fio-input-button
+          v-for="btn in pagerButtonsBefore"
+          :key="btn.key"
+          class="fio-table__pager-btn"
+          variant="ghost"
+          size="xs"
+          :icon="btn.icon"
+          :disabled="btn.disabled"
+          @click="btn.go()"
+        />
 
-        <button
-          type="button"
-          class="fio-table__pager-btn"
-          :disabled="currentPage <= 1"
-          @click="goToPage(1)"
+        <span class="fio-table__pager-current"
+          >{{ currentPage }} / {{ totalPages }}</span
         >
-          <fio-icon icon="angle-left" size="s" />
-          <fio-icon icon="angle-left" size="s" />
-        </button>
-        <button
-          type="button"
-          class="fio-table__pager-btn"
-          :disabled="currentPage <= 1"
-          @click="goToPage(currentPage - 1)"
-        >
-          <fio-icon icon="angle-left" size="s" />
-        </button>
 
-        <span class="fio-table__pager-current">{{ currentPage }}</span>
-
-        <button
-          type="button"
+        <fio-input-button
+          v-for="btn in pagerButtonsAfter"
+          :key="btn.key"
           class="fio-table__pager-btn"
-          :disabled="currentPage >= totalPages"
-          @click="goToPage(currentPage + 1)"
-        >
-          <fio-icon icon="angle-right" size="s" />
-        </button>
-        <button
-          type="button"
-          class="fio-table__pager-btn"
-          :disabled="currentPage >= totalPages"
-          @click="goToPage(totalPages)"
-        >
-          <fio-icon icon="angle-right" size="s" />
-          <fio-icon icon="angle-right" size="s" />
-        </button>
+          variant="ghost"
+          size="xs"
+          :icon="btn.icon"
+          :disabled="btn.disabled"
+          @click="btn.go()"
+        />
       </div>
+
+      <span class="fio-table__footer-spacer" />
     </div>
   </div>
 </template>
@@ -119,6 +93,9 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { SortDirection, TableHeader } from "../model/table-header";
 import FioIcon from "./icon.vue";
+import FioInputSelect from "./inputs/input-select.vue";
+import type { SelectOption } from "./inputs/input-select.vue";
+import FioInputButton from "./inputs/input-button.vue";
 
 defineOptions({
   name: "FioTable",
@@ -177,6 +154,50 @@ const totalPages = computed(() => {
   return 1;
 });
 
+const pageSizeSelectOptions = computed<SelectOption[]>(() =>
+  props.pageSizeOptions.map((size) => ({
+    value: String(size),
+    label: String(size),
+  }))
+);
+
+interface PagerButton {
+  key: string;
+  icon: string;
+  disabled: boolean;
+  go: () => void;
+}
+
+const pagerButtonsBefore = computed<PagerButton[]>(() => [
+  {
+    key: "first",
+    icon: "angles-left",
+    disabled: props.currentPage <= 1,
+    go: () => goToPage(1),
+  },
+  {
+    key: "prev",
+    icon: "angle-left",
+    disabled: props.currentPage <= 1,
+    go: () => goToPage(props.currentPage - 1),
+  },
+]);
+
+const pagerButtonsAfter = computed<PagerButton[]>(() => [
+  {
+    key: "next",
+    icon: "angle-right",
+    disabled: props.currentPage >= totalPages.value,
+    go: () => goToPage(props.currentPage + 1),
+  },
+  {
+    key: "last",
+    icon: "angles-right",
+    disabled: props.currentPage >= totalPages.value,
+    go: () => goToPage(totalPages.value),
+  },
+]);
+
 function goToPage(page: number) {
   const clamped = Math.min(Math.max(1, page), totalPages.value);
   if (clamped !== props.currentPage) {
@@ -184,9 +205,8 @@ function goToPage(page: number) {
   }
 }
 
-function onPageSizeChange(event: Event) {
-  const target = event.target as HTMLSelectElement;
-  emit("pageSizeChange", Number(target.value));
+function onPageSizeChange(value: string | null) {
+  if (value !== null) emit("pageSizeChange", Number(value));
 }
 
 function sortIcon(header: TableHeader): string {

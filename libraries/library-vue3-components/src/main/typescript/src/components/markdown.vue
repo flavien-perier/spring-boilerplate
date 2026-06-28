@@ -1,29 +1,29 @@
 <template>
-  <div class="fio-markdown" v-html="rendered"/>
+  <div class="fio-markdown" v-html="rendered" />
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
-import {markdownUtil} from "@/utils/markdown-util";
+import { computed } from "vue";
+import { markdownUtil } from "@/utils/markdown-util";
 
 defineOptions({
   name: "FioMarkdown",
 });
 
 const props = withDefaults(
-    defineProps<{
-      source?: string;
-      enableTitle?: boolean;
-      enableLinks?: boolean;
-    }>(),
-    {source: "", enableTitle: true, enableLinks: true}
+  defineProps<{
+    source?: string;
+    enableTitle?: boolean;
+    enableLinks?: boolean;
+  }>(),
+  { source: "", enableTitle: true, enableLinks: true }
 );
 
 const rendered = computed(() =>
-    markdownUtil.renderMarkdown(props.source, {
-      enableTitle: props.enableTitle,
-      enableLinks: props.enableLinks,
-    })
+  markdownUtil.renderMarkdown(props.source, {
+    enableTitle: props.enableTitle,
+    enableLinks: props.enableLinks,
+  })
 );
 </script>
 
@@ -31,8 +31,6 @@ const rendered = computed(() =>
 @use "@/styles/variables" as *;
 @use "@/styles/variables-colors" as *;
 
-// The rendered HTML comes from v-html, so its children are not reachable by
-// plain scoped selectors; :deep() targets the generated markup.
 .fio-markdown {
   color: darker(secondary, 90);
   line-height: 1.6;

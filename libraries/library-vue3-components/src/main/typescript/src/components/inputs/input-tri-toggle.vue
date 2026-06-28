@@ -1,7 +1,10 @@
 <template>
   <div
     class="input-field input-field--tri-toggle"
-    :class="{ 'input-field--disabled': disabled }"
+    :class="[
+      { 'input-field--disabled': disabled },
+      size && `input-field--tri-toggle--${size}`,
+    ]"
   >
     <div class="input-tri-toggle">
       <input
@@ -68,6 +71,7 @@
 <script setup lang="ts">
 import { computed, ref, useId } from "vue";
 import type { InputComponent } from "./model/input-component";
+import type { InputSize } from "@/model/input-size";
 import { useDraggableToggle } from "./composables/use-draggable-toggle";
 
 defineOptions({
@@ -80,7 +84,10 @@ const {
   modelValue = null,
   label,
   disabled = false,
-} = defineProps<InputComponent<boolean | null> & { label?: string }>();
+  size,
+} = defineProps<
+  InputComponent<boolean | null> & { label?: string; size?: InputSize }
+>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: boolean | null];
@@ -116,19 +123,44 @@ const thumbStyle = computed(() =>
 @use "@/styles/variables" as *;
 @use "@/styles/variables-colors" as *;
 
-$tri-track-width: $font-xxl-size * 2.5;
-$tri-track-height: calc(#{$font-l-size} + #{$margin-xxs * 2});
-$tri-thumb-size: $font-l-size;
-$tri-step: calc(
-  (
-      #{$tri-track-width} - #{$border-size * 2} - #{$margin-xxs * 2} - #{$tri-thumb-size}
-    ) / 2
-);
-
 .input-field--tri-toggle {
   display: flex;
   align-items: center;
   gap: $margin-xs;
+
+  --tri-track-w: #{$font-xxl-size * 2.5};
+  --tri-track-h: calc(#{$font-l-size} + #{$margin-xxs * 2});
+  --tri-thumb: #{$font-l-size};
+  --tri-step: calc(
+    (
+        var(--tri-track-w) - #{$border-size * 2} - #{$margin-xxs * 2} -
+          var(--tri-thumb)
+      ) / 2
+  );
+
+  &--xs {
+    --tri-track-w: #{$font-xl-size * 2.5};
+    --tri-track-h: calc(#{$font-size} + #{$margin-xxs * 2});
+    --tri-thumb: #{$font-size};
+  }
+
+  &--s {
+    --tri-track-w: #{$font-xxl-size * 2.2};
+    --tri-track-h: calc(#{$font-l-size * 0.85} + #{$margin-xxs * 2});
+    --tri-thumb: #{$font-l-size * 0.85};
+  }
+
+  &--l {
+    --tri-track-w: #{$font-xxl-size * 3};
+    --tri-track-h: calc(#{$font-xl-size} + #{$margin-xxs * 2});
+    --tri-thumb: #{$font-xl-size};
+  }
+
+  &--xl {
+    --tri-track-w: #{$font-xxl-size * 3.5};
+    --tri-track-h: calc(#{$font-xxl-size} + #{$margin-xxs * 2});
+    --tri-thumb: #{$font-xxl-size};
+  }
 }
 
 .input-label--tri-toggle {
@@ -155,12 +187,12 @@ $tri-step: calc(
   position: relative;
   display: inline-flex;
   align-items: center;
-  width: $tri-track-width;
-  height: $tri-track-height;
+  width: var(--tri-track-w);
+  height: var(--tri-track-h);
   padding: 0 $margin-xxs;
   background-color: lighter(secondary, 40);
   border: $border-size solid lighter(secondary, 40);
-  border-radius: $tri-track-height;
+  border-radius: var(--tri-track-h);
   box-sizing: border-box;
   transition: background-color 0.2s ease, border-color 0.2s ease;
   touch-action: none;
@@ -179,8 +211,8 @@ $tri-step: calc(
   top: 50%;
   left: $margin-xxs;
   display: block;
-  width: $tri-thumb-size;
-  height: $tri-thumb-size;
+  width: var(--tri-thumb);
+  height: var(--tri-thumb);
   background-color: lighter(secondary, 90);
   border-radius: 50%;
   transform: translate(0, -50%);
@@ -232,13 +264,13 @@ $tri-step: calc(
 .input-control--tri-toggle:nth-child(2):checked
   ~ .input-tri-toggle__track
   .input-tri-toggle__thumb {
-  transform: translate($tri-step, -50%);
+  transform: translate(var(--tri-step), -50%);
 }
 
 .input-control--tri-toggle:nth-child(3):checked
   ~ .input-tri-toggle__track
   .input-tri-toggle__thumb {
-  transform: translate(calc(#{$tri-step} * 2), -50%);
+  transform: translate(calc(var(--tri-step) * 2), -50%);
 }
 
 .input-control--tri-toggle:focus-visible ~ .input-tri-toggle__track {

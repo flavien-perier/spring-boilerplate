@@ -11,12 +11,13 @@
       class="fio-btn__icon"
       v-if="waiting || icon"
     />
-    {{ label }}
+    <span v-if="label" class="fio-btn__label">{{ label }}</span>
   </button>
 </template>
 
 <script setup lang="ts">
 import FioIcon from "../icon.vue";
+import type { InputSize } from "@/model/input-size";
 
 defineOptions({
   name: "FioInputButton",
@@ -30,11 +31,11 @@ const {
   size,
   icon,
 } = defineProps<{
-  label: string;
+  label?: string;
   disabled?: boolean;
   waiting?: boolean;
-  variant?: "submit" | "warning" | "danger";
-  size?: "xs" | "s" | "m" | "l" | "xl";
+  variant?: "submit" | "warning" | "danger" | "ghost";
+  size?: InputSize;
   icon?: string;
 }>();
 
@@ -117,6 +118,21 @@ button.fio-btn {
 
     &:active:not(:disabled) {
       background-color: darker(danger, 40);
+    }
+  }
+
+  &--ghost {
+    background-color: lighter(secondary, 90);
+    color: darker(secondary, 90);
+    border: 1px solid lighter(secondary, 40);
+
+    &:hover:not(:disabled) {
+      background-color: lighter(primary, 70);
+      color: darker(primary, 70);
+    }
+
+    &:active:not(:disabled) {
+      background-color: lighter(primary, 60);
     }
   }
 }

@@ -1,33 +1,36 @@
 <template>
-  <div class="input-field">
-    <label for="email" class="input-label">{{ $t("fio.email") }}</label>
-    <input
-      type="text"
-      id="email"
-      class="input-control"
-      :class="{ 'input-control--invalid': !isValid && email.length > 0 }"
-      :placeholder="$t('fio.email')"
-      v-model="email"
-      :disabled="disabled"
-      @input="emitInput($event)"
-      @focus="emitFocus($event)"
-      @blur="emitBlur($event)"
-    />
-  </div>
+  <fio-input-text
+    :model-value="modelValue"
+    :label="$t('fio.email')"
+    :placeholder="$t('fio.email')"
+    :invalid="!isValid && modelValue.length > 0"
+    :disabled="disabled"
+    :size="size"
+    @update:model-value="(v) => emit('update:modelValue', v)"
+    @input="(e) => emit('input', e)"
+    @focus="(e) => emit('focus', e)"
+    @blur="(e) => emit('blur', e)"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import FioInputText from "./input-text.vue";
 import type { InputComponent } from "./model/input-component";
+import type { InputSize } from "@/model/input-size";
 
 defineOptions({
   name: "FioInputEmail",
 });
 
-const isValid = ref(true);
+const { t: $t } = useI18n();
 
-const { modelValue = "", disabled = false } =
-  defineProps<InputComponent<string>>();
+const {
+  modelValue = "",
+  disabled = false,
+  size,
+} = defineProps<InputComponent<string> & { size?: InputSize }>();
 
 const emit = defineEmits([
   "update:modelValue",
@@ -37,33 +40,12 @@ const emit = defineEmits([
   "blur",
 ]);
 
-const email = computed({
-  get: () => modelValue,
-  set: (value) => {
-    isValid.value = checkEmail(value);
-    emit("update:isValid", isValid.value);
-    emit("update:modelValue", value);
-  },
-});
+// Intentionally flagless: a `g` flag would make `.test()` stateful.
+const emailPattern = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/;
 
-onMounted(() => {
-  isValid.value = checkEmail(modelValue);
-  emit("update:isValid", isValid.value);
-});
+const isValid = computed(
+  () => modelValue.length > 0 && emailPattern.test(modelValue)
+);
 
-function checkEmail(email: string) {
-  return /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm.test(email);
-}
-
-function emitInput(event: Event) {
-  emit("input", event);
-}
-
-function emitFocus(event: Event) {
-  emit("focus", event);
-}
-
-function emitBlur(event: Event) {
-  emit("blur", event);
-}
+watch(isValid, (value) => emit("update:isValid", value), { immediate: true });
 </script>

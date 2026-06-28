@@ -1,12 +1,20 @@
 <template>
   <div class="input-field">
-    <label for="password" class="input-label">{{ label }}</label>
+    <label
+      for="password"
+      class="input-label"
+      :class="size && `input-label--${size}`"
+      >{{ label }}</label
+    >
     <div class="input-wrapper">
       <input
         :type="!showPassword || disabled ? 'password' : 'text'"
         id="password"
         class="input-control"
-        :class="{ 'input-control--invalid': !isValid && password.length > 0 }"
+        :class="[
+          { 'input-control--invalid': !isValid && password.length > 0 },
+          size && `input-control--${size}`,
+        ]"
         :placeholder="label"
         v-model="password"
         :disabled="disabled"
@@ -42,6 +50,7 @@
 import { ref, computed } from "vue";
 import FioIcon from "../icon.vue";
 import type { InputComponent } from "./model/input-component";
+import type { InputSize } from "@/model/input-size";
 
 defineOptions({
   name: "FioInputPassword",
@@ -56,6 +65,7 @@ const {
   InputComponent<string> & {
     label?: string;
     isValid?: boolean;
+    size?: InputSize;
   }
 >();
 

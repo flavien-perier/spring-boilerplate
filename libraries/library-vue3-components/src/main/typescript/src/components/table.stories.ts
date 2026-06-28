@@ -13,15 +13,6 @@ const meta: Meta<typeof FioTable> = {
 export default meta;
 type Story = StoryObj<typeof FioTable>;
 
-/* ------------------------------------------------------------------ *
- * Demo dataset + simulation helper                                    *
- *                                                                     *
- * `fio-table` is a controlled component: it only emits sort/page      *
- * events, the parent owns the data (exactly like the admin panel,     *
- * where a Pinia store does the work). These stories simulate that     *
- * store locally so sorting / paging / filtering actually react.       *
- * ------------------------------------------------------------------ */
-
 interface DemoRow {
   id: number;
   name: string;
@@ -199,8 +190,6 @@ const sortableHeaders: TableHeader[] = [
   { key: "date", name: "Date", position: 3, sortable: true, show: true },
 ];
 
-/* ------------------------------------------------------------------ */
-
 export const Default: Story = {
   args: {
     headers: fullHeaders,
@@ -354,7 +343,6 @@ export const WithSorting: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Click the "Name" header → rows re-sort ascending by name.
     await userEvent.click(canvas.getByText("Name"));
 
     const nameCells = Array.from(
@@ -405,29 +393,32 @@ export const WithPagination: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Page 1 starts at id 1.
     expect(
       canvasElement.querySelector("tbody tr td")?.textContent?.trim()
     ).toBe("1");
 
-    // Pager buttons are icon-only: [first, prev, next, last].
     const pagerButtons = canvasElement.querySelectorAll<HTMLButtonElement>(
       ".fio-table__pager-btn"
     );
-    await userEvent.click(pagerButtons[2]); // next page
+    await userEvent.click(pagerButtons[2]);
 
     expect(
       canvasElement
         .querySelector(".fio-table__pager-current")
         ?.textContent?.trim()
-    ).toBe("2");
+    ).toBe("2 / 6");
     expect(
       canvasElement.querySelector("tbody tr td")?.textContent?.trim()
     ).toBe("11");
 
-    // Changing the page size resets to page 1 and shows 25 rows.
-    const sizeSelect = canvas.getByLabelText(/page size/i);
-    await userEvent.selectOptions(sizeSelect, "25");
+    const sizeTrigger = canvasElement.querySelector(
+      ".fio-table__page-size .input-control--select"
+    ) as HTMLButtonElement;
+    await userEvent.click(sizeTrigger);
+    const sizeOption = canvasElement.querySelectorAll(
+      ".input-select__option"
+    )[1];
+    await userEvent.click(sizeOption);
     expect(canvasElement.querySelectorAll("tbody tr").length).toBe(25);
   },
 };
@@ -519,7 +510,6 @@ export const InteractivePlayground: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Filtering by a category narrows the table to matching rows only.
     const searchInput = canvas.getByPlaceholderText(/search by name/i);
     await userEvent.type(searchInput, "Books");
 

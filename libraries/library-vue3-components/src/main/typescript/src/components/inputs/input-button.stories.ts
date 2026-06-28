@@ -20,9 +20,9 @@ const meta: Meta<typeof FioInputButton> = {
     },
     variant: {
       control: "select",
-      options: ["submit", "danger"],
+      options: ["submit", "danger", "ghost"],
       description:
-        'Variant: "submit" renders a full-width primary button, any other value renders a danger button',
+        'Variant: "submit" renders a full-width primary button, "danger" renders a danger button, "ghost" renders a neutral button',
     },
     icon: {
       control: "select",
@@ -129,6 +129,26 @@ export const DangerWithIcon: Story = {
   },
 };
 
+export const Ghost: Story = {
+  name: "Ghost (icon-only)",
+  args: {
+    disabled: false,
+    variant: "ghost",
+    size: "xs",
+    icon: "angle-left",
+  },
+};
+
+export const GhostDisabled: Story = {
+  name: "Ghost (Disabled)",
+  args: {
+    disabled: true,
+    variant: "ghost",
+    size: "xs",
+    icon: "angle-left",
+  },
+};
+
 export const AllVariants: Story = {
   name: "All Variants",
   render: () => ({
@@ -142,6 +162,12 @@ export const AllVariants: Story = {
                 <fio-input-button label="Delete with Icon" variant="danger" icon="trash" />
                 <fio-input-button label="Waiting..." variant="submit" :waiting="true" />
                 <fio-input-button label="Waiting with Icon" variant="submit" icon="circle-check" :waiting="true" />
+                <div style="display: flex; gap: 0.5rem;">
+                  <fio-input-button variant="ghost" size="xs" icon="angles-left" />
+                  <fio-input-button variant="ghost" size="xs" icon="angle-left" />
+                  <fio-input-button variant="ghost" size="xs" icon="angle-right" />
+                  <fio-input-button variant="ghost" size="xs" icon="angles-right" />
+                </div>
             </div>
         `,
   }),

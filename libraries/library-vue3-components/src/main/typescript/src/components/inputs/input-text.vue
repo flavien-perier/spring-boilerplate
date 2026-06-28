@@ -1,16 +1,27 @@
 <template>
   <div class="input-field">
-    <label v-if="label" :for="inputId" class="input-label">{{ label }}</label>
+    <label
+      v-if="label"
+      :for="inputId"
+      class="input-label"
+      :class="size && `input-label--${size}`"
+      >{{ label }}</label
+    >
     <input
       type="text"
       :id="inputId"
       class="input-control"
-      :class="{ 'input-control--invalid': isInvalid }"
+      :class="[
+        { 'input-control--invalid': isInvalid },
+        size && `input-control--${size}`,
+      ]"
       :placeholder="placeholder"
       :maxlength="maxLength"
       :value="value"
       :disabled="disabled"
       @input="handleInput"
+      @focus="emit('focus', $event)"
+      @blur="emit('blur', $event)"
     />
   </div>
 </template>
@@ -18,6 +29,7 @@
 <script setup lang="ts">
 import { computed, useId, watch } from "vue";
 import type { InputComponent } from "./model/input-component";
+import type { InputSize } from "@/model/input-size";
 
 defineOptions({
   name: "FioInputText",
@@ -33,6 +45,8 @@ const props = withDefaults(
       label?: string;
       maxLength?: number;
       allowedCharacters?: RegExp;
+      invalid?: boolean;
+      size?: InputSize;
     }
   >(),
   { modelValue: "", disabled: false }
@@ -41,6 +55,8 @@ const props = withDefaults(
 const emit = defineEmits<{
   "update:modelValue": [value: string];
   input: [event: Event];
+  focus: [event: Event];
+  blur: [event: Event];
   "update:isValid": [value: boolean];
 }>();
 
@@ -66,12 +82,14 @@ function testPattern(pattern: RegExp, value: string): boolean {
   return pattern.test(value);
 }
 
-const isInvalid = computed(
-  () =>
+const isInvalid = computed(() => {
+  if (props.invalid !== undefined) return props.invalid;
+  return (
     value.value.length > 0 &&
     !!safePattern.value &&
     !testPattern(safePattern.value, value.value)
-);
+  );
+});
 
 watch(
   value,
