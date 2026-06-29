@@ -12,6 +12,7 @@
     />
 
     <fio-input-button
+      icon="floppy-disk"
       :label="$t('action.update')"
       :disabled="!buttonEnabled"
       :waiting="computeAction"

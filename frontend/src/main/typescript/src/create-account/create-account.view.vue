@@ -17,6 +17,7 @@
     />
 
     <fio-input-button
+      icon="user-plus"
       :label="$t('action.create')"
       :disabled="!buttonEnabled"
       :waiting="computeAction"
@@ -33,8 +34,14 @@ import { onBeforeRouteLeave } from "vue-router";
 
 const createAccountStore = useCreateAccountStore();
 const applicationStore = useApplicationStore();
-const { email, password, isPasswordValid, isEmailValid, buttonEnabled, computeAction } =
-  storeToRefs(createAccountStore);
+const {
+  email,
+  password,
+  isPasswordValid,
+  isEmailValid,
+  buttonEnabled,
+  computeAction,
+} = storeToRefs(createAccountStore);
 
 createAccountStore.init();
 

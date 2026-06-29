@@ -29,6 +29,7 @@
         />
 
         <fio-input-button
+          icon="floppy-disk"
           :label="$t('action.update')"
           :disabled="!buttonEnabled"
           :waiting="computeAction"
@@ -36,11 +37,12 @@
         />
 
         <fio-input-button
-            class="mt-xl"
-            :label="$t('action.export-data')"
-            :disabled="exportAction"
-            :waiting="exportAction"
-            @click="accountInformationStore.exportData"
+          class="mt-xl"
+          icon="download"
+          :label="$t('action.export-data')"
+          :disabled="exportAction"
+          :waiting="exportAction"
+          @click="accountInformationStore.exportData"
         />
       </div>
     </template>

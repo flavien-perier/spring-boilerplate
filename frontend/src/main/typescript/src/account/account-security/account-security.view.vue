@@ -46,6 +46,7 @@
           <template v-if="!otpEnabled && !otpSetupUri">
             <p class="text-center">{{ $t("otp.status-inactive") }}</p>
             <fio-input-button
+              icon="shield-halved"
               :label="$t('action.enable-otp')"
               :waiting="computeActionSetupOtp"
               @click="accountSecurityStore.setupOtp"
@@ -67,6 +68,7 @@
               :allowed-characters="/\d/"
             />
             <fio-input-button
+              icon="circle-check"
               :label="$t('action.confirm-otp')"
               :disabled="otpCode.length !== 6"
               :waiting="computeActionConfirmOtp"
@@ -77,6 +79,7 @@
           <template v-else>
             <fio-input-button
               variant="danger"
+              icon="xmark"
               :label="$t('action.disable-otp')"
               :waiting="computeActionDisableOtp"
               @click="accountSecurityStore.disableOtp"
@@ -87,6 +90,7 @@
         <div class="account-layout__danger-zone">
           <fio-input-button
             variant="danger"
+            icon="trash"
             :label="$t('action.delete-account')"
             :waiting="computeActionDeleteAccount"
             @click="accountSecurityStore.deleteAccount"

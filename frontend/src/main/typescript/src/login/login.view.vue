@@ -31,6 +31,7 @@
     }}</router-link>
 
     <fio-input-button
+      icon="right-to-bracket"
       :label="$t('action.connect')"
       :disabled="!buttonEnabled"
       :waiting="computeAction"

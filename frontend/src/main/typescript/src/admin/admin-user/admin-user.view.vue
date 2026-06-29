@@ -35,6 +35,7 @@
           class="mb-xs"
         />
         <fio-input-button
+          icon="floppy-disk"
           :label="$t('action.update')"
           :disabled="!editEmail"
           class="mb-s"
@@ -43,12 +44,14 @@
 
         <h4 class="mt-l mb-s">{{ $t("field.actions") }}</h4>
         <fio-input-button
+          icon="arrows-rotate"
           :label="$t('action.reset-otp')"
           :disabled="!user.otpEnabled"
           class="mb-xs"
           @click="adminUserStore.resetOtp()"
         />
         <fio-input-button
+          icon="key"
           :label="$t('action.reset-password')"
           class="mb-xs"
           @click="adminUserStore.sendPasswordReset()"
@@ -56,6 +59,7 @@
         <fio-input-button
           :label="$t('action.delete')"
           variant="danger"
+          icon="trash"
           class="mb-xs"
           @click="adminUserStore.deleteUser()"
         />

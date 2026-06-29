@@ -4,6 +4,7 @@
       <div class="admin-roles__header mb-s">
         <h3>{{ $t("menu.roles") }}</h3>
         <fio-input-button
+          icon="plus"
           :label="$t('action.create-role')"
           size="s"
           @click="openCreateModal"
@@ -60,6 +61,7 @@
             class="mb-xs"
           />
           <fio-input-button
+            icon="floppy-disk"
             :label="$t('action.update')"
             :disabled="!editRoleName"
             @click="adminRolesStore.updateRole()"
@@ -79,6 +81,7 @@
         <fio-input-button
           :label="$t('action.delete')"
           variant="danger"
+          icon="trash"
           size="s"
           class="mt-l"
           @click="adminRolesStore.deleteRole(selectedRole.id)"
