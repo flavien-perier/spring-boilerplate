@@ -64,6 +64,10 @@ axiosRetry(axiosInstance, {
 
     if (retryCount === 1 && applicationStore.isAuthenticated) {
       await applicationStore.renew(applicationStore!.user!.email);
+      if (applicationStore.accessToken) {
+        requestConfig.headers = requestConfig.headers ?? {};
+        requestConfig.headers.Authorization = `Bearer ${applicationStore.accessToken}`;
+      }
     } else {
       applicationStore.disconnected();
     }
