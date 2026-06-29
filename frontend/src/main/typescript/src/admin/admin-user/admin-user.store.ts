@@ -116,16 +116,26 @@ export const useAdminUserStore = defineStore("admin-user", {
         .catch(applicationStore.axiosException);
     },
     deleteUser() {
-      userApi
-        .deleteUser(this.userMail)
+      applicationStore
+        .showModal(
+          "modal.are-you-sure",
+          "modal.user-deletion-validation",
+          "modal.yes",
+          "modal.no"
+        )
         .then(() => {
-          applicationStore.sendNotification(
-            "info",
-            "notification.user-deleted"
-          );
-          this.$router.push({ name: "admin-users" });
+          userApi
+            .deleteUser(this.userMail)
+            .then(() => {
+              applicationStore.sendNotification(
+                "info",
+                "notification.user-deleted"
+              );
+              this.$router.push({ name: "admin-users" });
+            })
+            .catch(applicationStore.axiosException);
         })
-        .catch(applicationStore.axiosException);
+        .catch(() => {});
     },
     isUserInRole(roleId: string): boolean {
       return this.userRoles.some((g) => g.id === roleId);

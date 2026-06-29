@@ -71,20 +71,30 @@ export const useAccountSecurityStore = defineStore("account-security", {
               this.computeActionDeleteAccount = false;
             });
         })
-        .catch();
+        .catch(() => {});
     },
 
     deleteSession(sessionUuid: string) {
-      sessionApi
-        .deleteSession(sessionUuid)
+      applicationStore
+        .showModal(
+          "modal.are-you-sure",
+          "modal.session-deletion-validation",
+          "modal.yes",
+          "modal.no"
+        )
         .then(() => {
-          applicationStore.sendNotification(
-            "info",
-            "notification.session-deleted"
-          );
-          this.loadSessions();
+          sessionApi
+            .deleteSession(sessionUuid)
+            .then(() => {
+              applicationStore.sendNotification(
+                "info",
+                "notification.session-deleted"
+              );
+              this.loadSessions();
+            })
+            .catch(applicationStore.axiosException);
         })
-        .catch(applicationStore.axiosException);
+        .catch(() => {});
     },
 
     setupOtp() {

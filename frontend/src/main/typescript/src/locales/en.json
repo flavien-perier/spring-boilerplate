@@ -58,6 +58,9 @@
 
   "modal.are-you-sure": "Are you sure?",
   "modal.account-deletion-validation": "Are you sure you want to delete your account?",
+  "modal.session-deletion-validation": "Are you sure you want to delete this session?",
+  "modal.role-deletion-validation": "Are you sure you want to delete this role?",
+  "modal.user-deletion-validation": "Are you sure you want to delete this user?",
   "modal.yes": "Yes",
   "modal.no": "No",
 

@@ -57,16 +57,26 @@ export const useAdminUsersStore = defineStore("admin-users", {
       this.findUsers();
     },
     deleteUser(email: string) {
-      userApi
-        .deleteUser(email)
+      applicationStore
+        .showModal(
+          "modal.are-you-sure",
+          "modal.user-deletion-validation",
+          "modal.yes",
+          "modal.no"
+        )
         .then(() => {
-          applicationStore.sendNotification(
-            "info",
-            "notification.user-deleted"
-          );
-          this.findUsers();
+          userApi
+            .deleteUser(email)
+            .then(() => {
+              applicationStore.sendNotification(
+                "info",
+                "notification.user-deleted"
+              );
+              this.findUsers();
+            })
+            .catch(applicationStore.axiosException);
         })
-        .catch(applicationStore.axiosException);
+        .catch(() => {});
     },
   },
 });

@@ -111,20 +111,30 @@ export const useAdminRolesStore = defineStore("admin-roles", {
         .catch(applicationStore.axiosException);
     },
     deleteRole(roleId: string) {
-      roleApi
-        .deleteRole(roleId)
+      applicationStore
+        .showModal(
+          "modal.are-you-sure",
+          "modal.role-deletion-validation",
+          "modal.yes",
+          "modal.no"
+        )
         .then(() => {
-          applicationStore.sendNotification(
-            "info",
-            "notification.role-deleted"
-          );
-          if (this.selectedRoleId === roleId) {
-            this.selectedRoleId = null;
-            this.permissions = [];
-          }
-          this.findRoles();
+          roleApi
+            .deleteRole(roleId)
+            .then(() => {
+              applicationStore.sendNotification(
+                "info",
+                "notification.role-deleted"
+              );
+              if (this.selectedRoleId === roleId) {
+                this.selectedRoleId = null;
+                this.permissions = [];
+              }
+              this.findRoles();
+            })
+            .catch(applicationStore.axiosException);
         })
-        .catch(applicationStore.axiosException);
+        .catch(() => {});
     },
     loadRolePermissions(roleId: string) {
       roleApi
