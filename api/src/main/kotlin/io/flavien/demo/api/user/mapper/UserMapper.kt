@@ -14,7 +14,11 @@ interface UserMapper {
     fun toUserDto(user: User): UserDto
 
     @Mapping(target = "otpEnabled", expression = "java(user.getOtpSecret() != null)")
-    fun toUserExportDto(user: User): UserExportDto
+    fun toUserExportDto(
+        user: User,
+        roles: List<String>,
+        permissions: List<String>,
+    ): UserExportDto
 
     @Mapping(target = "propertySize", expression = "java(page.getSize())")
     fun toUserPageDto(page: Page<User>): UserPageDto

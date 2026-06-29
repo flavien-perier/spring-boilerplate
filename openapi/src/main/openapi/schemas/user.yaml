@@ -88,6 +88,8 @@ UserExportDto:
     - creationDate
     - updateDate
     - otpEnabled
+    - roles
+    - permissions
   properties:
     email:
       $ref: "common.yaml#/email"
@@ -109,6 +111,16 @@ UserExportDto:
     otpEnabled:
       type: boolean
       description: Whether OTP 2FA is active for this user.
+    roles:
+      type: array
+      description: Names of the roles assigned to the user.
+      items:
+        type: string
+    permissions:
+      type: array
+      description: Effective permissions granted to the user.
+      items:
+        type: string
 
 UserUpdateAdminDto:
   type: object

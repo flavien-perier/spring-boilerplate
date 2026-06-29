@@ -29,6 +29,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.UUID
@@ -223,6 +224,38 @@ class UserControllerTest {
             .isEqualTo(ResponseEntity<Unit>(HttpStatus.NO_CONTENT))
 
         Mockito.verify(userService!!).deleteById(userId)
+    }
+
+    @Test
+    fun `Test exportCurrentUserData`() {
+        val userId = USER_ID
+        val user = UserTestFactory.initUser(id = USER_ID)
+        val userRole =
+            RoleTestFactory.initRole(id = UUID.fromString("00000000-0000-7000-8000-000000000020"), name = "USER")
+        val adminRole =
+            RoleTestFactory.initRole(id = UUID.fromString("00000000-0000-7000-8000-000000000021"), name = "ADMIN")
+        // Roles are returned in a non-alphabetical order on purpose: the controller must sort them.
+        val rolesPage = PageImpl(listOf(userRole, adminRole))
+        val grantedPermissions = linkedSetOf(PermissionEnum.MANAGE_ALL_USERS, PermissionEnum.MANAGE_ALL_ROLES)
+        val sortedRoleNames = listOf("ADMIN", "USER")
+        val permissionNames = listOf("MANAGE_ALL_USERS", "MANAGE_ALL_ROLES")
+        val exportDto = UserDtoTestFactory.initUserExportDto(roles = sortedRoleNames, permissions = permissionNames)
+
+        mockkObject(ContextUtil)
+        every { ContextUtil.userId } returns userId
+
+        Mockito.`when`(userService!!.getById(userId)).thenReturn(user)
+        Mockito.`when`(roleService!!.getUserRoles(userId, Pageable.unpaged())).thenReturn(rolesPage)
+        Mockito.`when`(permissionService!!.getGrantedPermissions(userId)).thenReturn(grantedPermissions)
+        Mockito.`when`(userMapper!!.toUserExportDto(user, sortedRoleNames, permissionNames)).thenReturn(exportDto)
+
+        val response = userController!!.exportCurrentUserData()
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body).isEqualTo(exportDto)
+
+        // Explicitly verify the role names were sorted alphabetically before being mapped.
+        Mockito.verify(userMapper!!).toUserExportDto(user, sortedRoleNames, permissionNames)
     }
 
     @Test

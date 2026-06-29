@@ -119,9 +119,17 @@ class UserController(
     }
 
     override fun exportCurrentUserData(): ResponseEntity<UserExportDto> {
-        val user = userService.getById(ContextUtil.userId)
+        val userId = ContextUtil.userId
+        val user = userService.getById(userId)
+        val roles =
+            roleService
+                .getUserRoles(userId, Pageable.unpaged())
+                .content
+                .map { it.name }
+                .sorted()
+        val permissions = permissionService.getGrantedPermissions(userId).map { it.name }
 
-        return ResponseEntity.ok(userMapper.toUserExportDto(user))
+        return ResponseEntity.ok(userMapper.toUserExportDto(user, roles, permissions))
     }
 
     override fun findUsers(
